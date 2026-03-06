@@ -4,6 +4,8 @@ React-first presentation runtime with an MDX deck pipeline, presenter/viewer mod
 
 [中文说明](./README.zh-CN.md)
 
+https://github.com/user-attachments/assets/553392a4-36ae-4505-87c2-ca54e7e00f08
+
 ## Overview
 
 `slidev-react` is an experimental slide system built around:
