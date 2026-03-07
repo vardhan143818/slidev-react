@@ -16,14 +16,14 @@
     "jsx": "react-jsx",
     "noUnusedLocals": false,
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./packages/client/src/*"],
       "@generated/*": ["./.generated/*"]
     }
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.d.ts",
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "packages/**/*.d.ts",
     ".generated/**/*.ts",
     ".generated/**/*.tsx",
     "vite.config.ts",

@@ -29,7 +29,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: `PRESENTATION_WS_HOST=${host} PRESENTATION_WS_PORT=${relayPort} bun run presentation:server`,
+      command: `PRESENTATION_WS_HOST=${host} PRESENTATION_WS_PORT=${relayPort} pnpm run presentation:server`,
       url: `http://${host}:${relayPort}/healthz`,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
@@ -37,7 +37,7 @@ export default defineConfig({
       timeout: 30 * 1000,
     },
     {
-      command: `bun run dev --host ${host} --port ${port}`,
+      command: `pnpm run dev -- --host ${host} --port ${port}`,
       url: baseURL,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",

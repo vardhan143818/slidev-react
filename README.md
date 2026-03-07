@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/553392a4-36ae-4505-87c2-ca54e7e00f08
 - React 19 for rendering
 - MDX as the authoring format
 - Vite for the app runtime
-- a compile-time slides pipeline under `src/slides`
+- a compile-time slides pipeline under `packages/node/src/slides`
 - a presentation shell with presenter/viewer sync, reveal flow, drawings, and recording
 
 This repo is not a Vue Slidev runtime. It is a React + MDX implementation that borrows some presentation ideas while using its own slides model and rendering pipeline.
@@ -44,45 +44,45 @@ This repository is an open-source application/runtime repo, not an npm package. 
 ### Requirements
 
 - Node.js `>=22`
-- Bun `1.3.3`
+- pnpm `10`
 
 ### Install
 
 ```bash
-bun install
+pnpm install
 ```
 
 ### Start development
 
 ```bash
-bun run dev
+pnpm dev
 ```
 
 ### Build production assets
 
 ```bash
-bun run build
+pnpm build
 ```
 
 ### Preview the build
 
 ```bash
-bun run preview
+pnpm preview
 ```
 
 ### Export slides artifacts with Playwright
 
 ```bash
-bun run export:slides
+pnpm export:slides
 ```
 
 ### Lint slides authoring
 
 ```bash
-bun run lint:slides
+pnpm lint:slides
 ```
 
-Use `bun run lint:slides -- --strict` to fail on warnings in CI.
+Use `pnpm lint:slides -- --strict` to fail on warnings in CI.
 
 This writes browser-rendered artifacts to `output/export/<slides-name>/`:
 
@@ -92,17 +92,17 @@ This writes browser-rendered artifacts to `output/export/<slides-name>/`:
 Useful variants:
 
 ```bash
-bun run export:slides:pdf
-bun run export:slides:png
-bun run export:slides -- --slides 3-7
-bun run export:slides -- --with-clicks
-bun run export:slides -- --base-url http://127.0.0.1:4173
+pnpm export:slides:pdf
+pnpm export:slides:png
+pnpm export:slides -- --slides 3-7
+pnpm export:slides -- --with-clicks
+pnpm export:slides -- --base-url http://127.0.0.1:4173
 ```
 
 ### Clean generated output
 
 ```bash
-bun run clean
+pnpm clean
 ```
 
 ## Presentation Mode
@@ -110,13 +110,13 @@ bun run clean
 Start the app first:
 
 ```bash
-bun run dev
+pnpm dev
 ```
 
 Optional: start the relay server for cross-device sync:
 
 ```bash
-bun run presentation:server
+pnpm presentation:server
 ```
 
 Default relay endpoint: `ws://localhost:4860/ws`
@@ -137,7 +137,7 @@ The presenter shell currently includes:
 - print-ready slides export via browser Print / Save as PDF
 - quick overview and presenter-side controls
 - wake lock, mirror-stage launch, fullscreen toggle, stage scale, and idle-cursor settings in presenter mode
-- `bun run lint:slides` for authoring warnings such as unknown themes, addons, or layouts
+- `pnpm lint:slides` for authoring warnings such as unknown themes, addons, or layouts
 
 ## Slides Authoring
 
@@ -166,7 +166,7 @@ Notes:
 - `clicks:` defines explicit reveal steps even when the slide has fewer `<Reveal />` blocks
 - `notes:` is available in presenter mode and works best with YAML block strings
 - `src:` loads a single external slide file relative to `slides.mdx`
-- `theme:` loads a local runtime theme from `src/theme/themes/*/index.ts`, with the default theme as fallback
+- `theme:` loads a local runtime theme from `packages/client/src/theme/themes/*/index.ts`, with the default theme as fallback
 - invalid frontmatter now reports field-level parser errors, and compile-time generation warns for unknown local themes or addons
 
 Example:
@@ -224,7 +224,7 @@ notes: |
 
 When `src:` is present, do not also put inline slide body content in the same slide block.
 
-To export slides as PDF today, open the presenter shell and use the `Print / PDF` button, visit the current slides URL with `?export=print`, or run `bun run export:slides` for Playwright-driven PDF and PNG artifacts.
+To export slides as PDF today, open the presenter shell and use the `Print / PDF` button, visit the current slides URL with `?export=print`, or run `pnpm export:slides` for Playwright-driven PDF and PNG artifacts.
 
 ## Local Themes
 
@@ -237,7 +237,7 @@ theme: paper
 ---
 ```
 
-Local themes live under `src/theme/themes/<theme-id>/` and are discovered automatically when they export `theme` from `index.ts`.
+Local themes live under `packages/client/src/theme/themes/<theme-id>/` and are discovered automatically when they export `theme` from `index.ts`.
 
 Current theme contract:
 
@@ -246,7 +246,7 @@ Current theme contract:
 - `mdxComponents` to override MDX helpers such as `Badge`
 - `provider` for theme-scoped React context when needed
 
-Theme CSS files placed at `src/theme/themes/<theme-id>/style.css` are also auto-loaded. If a requested theme is missing, the runtime falls back to the default theme.
+Theme CSS files placed at `packages/client/src/theme/themes/<theme-id>/style.css` are also auto-loaded. If a requested theme is missing, the runtime falls back to the default theme.
 
 ## Local Addons
 
@@ -327,22 +327,22 @@ Top-level source areas under [`src/`](./src):
 - `ui/`: reusable presentation components and MDX helpers
 - `theme/`: layouts and visual tokens
 
-For more internal structure guidance, see [`src/README.md`](./src/README.md).
+For more internal structure guidance, see [`packages/client/README.md`](./packages/client/README.md) and [`packages/node/README.md`](./packages/node/README.md).
 
 ## Scripts
 
-- `bun run clean`: remove generated output such as `dist/`, `.generated/`, and `output/`
-- `bun run dev`: start the development server
-- `bun run build`: build the app
-- `bun run preview`: preview the production build
-- `bun run presentation:server`: start the WebSocket relay server
-- `bun run test`: run the Vitest suite
-- `bun run test:e2e`: run the Playwright end-to-end suite
-- `bun run test:e2e:headed`: run the Playwright suite with a visible browser
-- `bun run test:e2e:install`: install the Chromium browser used by Playwright
-- `bun run lint`: run type-aware Oxlint on `src/`
-- `bun run format`: format the repository with Oxfmt
-- `bun run format:check`: check repository formatting with Oxfmt
+- `pnpm clean`: remove generated output such as `dist/`, `.generated/`, and `output/`
+- `pnpm dev`: start the development server
+- `pnpm build`: build the app
+- `pnpm preview`: preview the production build
+- `pnpm presentation:server`: start the WebSocket relay server
+- `pnpm test`: run the Vitest suite
+- `pnpm test:e2e`: run the Playwright end-to-end suite
+- `pnpm test:e2e:headed`: run the Playwright suite with a visible browser
+- `pnpm test:e2e:install`: install the Chromium browser used by Playwright
+- `pnpm lint`: run type-aware Oxlint on `src/` and `packages/`
+- `pnpm format`: format the repository with Oxfmt
+- `pnpm format:check`: check repository formatting with Oxfmt
 
 ## Build Artifact Management
 
@@ -352,14 +352,14 @@ Build output is disposable and should not be committed. In this repository:
 - `.generated/` is compile-time slides output
 - `output/` is treated as generated runtime output
 
-Before opening a PR, remove generated files with `bun run clean` if they are unrelated to the change.
+Before opening a PR, remove generated files with `pnpm clean` if they are unrelated to the change.
 
 ## Testing
 
 Run the test suite with:
 
 ```bash
-bun run test
+pnpm test
 ```
 
 ## Acknowledgements

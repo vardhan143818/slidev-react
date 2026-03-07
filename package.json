@@ -4,29 +4,34 @@
   "private": true,
   "description": "Open-source React + MDX presentation app/runtime (not published to npm)",
   "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist .generated output",
+    "slidev-react": "node --import tsx ./packages/cli/bin/slidev-react.js",
     "dev": "vite",
     "build": "vite build",
-    "make": "bun run build",
+    "make": "pnpm run build",
     "preview": "vite preview",
-    "export:slides": "bun ./scripts/export-slides.ts",
-    "export:slides:pdf": "bun ./scripts/export-slides.ts --format pdf",
-    "export:slides:png": "bun ./scripts/export-slides.ts --format png",
-    "lint:slides": "bun ./scripts/lint-slides.ts",
-    "presentation:server": "bun ./scripts/presentation-server.ts",
+    "export:slides": "node --import tsx ./scripts/export-slides.ts",
+    "export:slides:pdf": "node --import tsx ./scripts/export-slides.ts --format pdf",
+    "export:slides:png": "node --import tsx ./scripts/export-slides.ts --format png",
+    "lint:slides": "node --import tsx ./scripts/lint-slides.ts",
+    "presentation:server": "node --import tsx ./scripts/presentation-server.ts",
     "test": "vitest --run",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:install": "playwright install chromium",
-    "lint": "oxlint --type-aware --tsconfig tsconfig.json src",
+    "lint": "oxlint --type-aware --tsconfig tsconfig.json src packages",
     "format": "oxfmt .",
     "format:check": "oxfmt --check ."
   },
   "dependencies": {
     "@mdx-js/mdx": "3.1.1",
     "@mdx-js/react": "3.1.1",
+    "@slidev-react/core": "workspace:*",
     "katex": "0.16.33",
     "lucide-react": "0.568.0",
     "mermaid": "11.12.3",
@@ -44,6 +49,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "@slidev-react/cli": "workspace:*",
+    "@slidev-react/client": "workspace:*",
+    "@slidev-react/node": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
@@ -53,12 +61,19 @@
     "oxlint-tsgolint": "^0.16.0",
     "postcss": "^8.5.6",
     "tailwindcss": "4.2.1",
+    "tsx": "^4.20.6",
     "typescript": "5.9.3",
     "vite": "^7.3.1",
-    "vitest": "4.0.9"
+    "vitest": "4.0.9",
+    "ws": "^8.18.3"
   },
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "bun@1.3.3"
+  "packageManager": "pnpm@10.0.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
 }

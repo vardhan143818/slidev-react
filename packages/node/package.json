@@ -1,0 +1,15 @@
+{
+  "name": "@slidev-react/node",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Node-side command APIs for slidev-react authoring and build workflows",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./slides/*": "./src/slides/*.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

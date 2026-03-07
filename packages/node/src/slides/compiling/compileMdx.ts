@@ -1,0 +1,16 @@
+import type { SlideComponent } from "../model/slide.ts";
+import { evaluate } from "@mdx-js/mdx";
+import { useMDXComponents } from "@mdx-js/react";
+import * as jsxRuntime from "react/jsx-runtime";
+import { getMdxCompileOptions } from "./mdx-options.ts";
+
+export async function compileMdx(source: string): Promise<SlideComponent> {
+  const evaluated = await evaluate(source, {
+    ...jsxRuntime,
+    useMDXComponents,
+    development: false,
+    ...getMdxCompileOptions(),
+  });
+
+  return evaluated.default as SlideComponent;
+}

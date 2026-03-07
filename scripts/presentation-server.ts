@@ -1,9 +1,13 @@
+import { createServer } from "node:http";
+import { WebSocketServer } from "ws";
+
 type ClientData = {
   sessionId: string;
   senderId: string;
 };
 
-const rooms = new Map<string, Set<ServerWebSocket<ClientData>>>();
+const rooms = new Map<string, Set<import("ws").WebSocket>>();
+const clientData = new WeakMap<import("ws").WebSocket, ClientData>();
 
 function sanitizeSessionId(value: string): string {
   const normalized = value
@@ -20,64 +24,89 @@ function roomFor(sessionId: string) {
   const existing = rooms.get(sessionId);
   if (existing) return existing;
 
-  const created = new Set<ServerWebSocket<ClientData>>();
+  const created = new Set<import("ws").WebSocket>();
   rooms.set(sessionId, created);
   return created;
 }
 
-function removeFromRoom(ws: ServerWebSocket<ClientData>) {
-  const room = rooms.get(ws.data.sessionId);
+function removeFromRoom(ws: import("ws").WebSocket) {
+  const data = clientData.get(ws);
+  if (!data) return;
+
+  const room = rooms.get(data.sessionId);
   if (!room) return;
 
   room.delete(ws);
-  if (room.size === 0) rooms.delete(ws.data.sessionId);
+  if (room.size === 0) rooms.delete(data.sessionId);
 }
 
 const port = Number(process.env.PRESENTATION_WS_PORT ?? 4860);
 const hostname = process.env.PRESENTATION_WS_HOST ?? "0.0.0.0";
 
-Bun.serve<ClientData>({
-  hostname,
-  port,
-  fetch(req, server) {
-    const url = new URL(req.url);
+const server = createServer((req, res) => {
+  const url = new URL(req.url ?? "/", `http://${req.headers.host ?? `${hostname}:${port}`}`);
 
-    if (url.pathname === "/healthz") return new Response("ok");
+  if (url.pathname === "/healthz") {
+    res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+    res.end("ok");
+    return;
+  }
 
-    if (url.pathname !== "/ws") return new Response("slide-react presentation relay ready");
+  if (url.pathname !== "/ws") {
+    res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+    res.end("slide-react presentation relay ready");
+    return;
+  }
 
-    const sessionId = sanitizeSessionId(url.searchParams.get("session") ?? "default");
-    const senderId = url.searchParams.get("sender") ?? "anonymous";
-    const upgraded = server.upgrade(req, {
-      data: {
-        sessionId,
-        senderId,
-      },
-    });
-
-    if (upgraded) return;
-
-    return new Response("websocket upgrade failed", { status: 400 });
-  },
-  websocket: {
-    open(ws) {
-      const room = roomFor(ws.data.sessionId);
-      room.add(ws);
-    },
-    message(ws, message) {
-      const room = rooms.get(ws.data.sessionId);
-      if (!room) return;
-
-      for (const peer of room) {
-        if (peer === ws) continue;
-
-        peer.send(message);
-      }
-    },
-    close(ws) {
-      removeFromRoom(ws);
-    },
-  },
+  res.writeHead(426, { "content-type": "text/plain; charset=utf-8" });
+  res.end("websocket upgrade required");
 });
 
-console.log(`[slide-react] presentation relay listening on ws://${hostname}:${port}/ws`);
+const wss = new WebSocketServer({ noServer: true });
+
+server.on("upgrade", (req, socket, head) => {
+  const url = new URL(req.url ?? "/", `http://${req.headers.host ?? `${hostname}:${port}`}`);
+
+  if (url.pathname !== "/ws") {
+    socket.destroy();
+    return;
+  }
+
+  const data = {
+    sessionId: sanitizeSessionId(url.searchParams.get("session") ?? "default"),
+    senderId: url.searchParams.get("sender") ?? "anonymous",
+  };
+
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    clientData.set(ws, data);
+    wss.emit("connection", ws, req);
+  });
+});
+
+wss.on("connection", (ws) => {
+  const data = clientData.get(ws);
+  if (!data) {
+    ws.close();
+    return;
+  }
+
+  roomFor(data.sessionId).add(ws);
+
+  ws.on("message", (message, isBinary) => {
+    const room = rooms.get(data.sessionId);
+    if (!room) return;
+
+    for (const peer of room) {
+      if (peer === ws || peer.readyState !== ws.OPEN) continue;
+      peer.send(message, { binary: isBinary });
+    }
+  });
+
+  ws.on("close", () => {
+    removeFromRoom(ws);
+  });
+});
+
+server.listen(port, hostname, () => {
+  console.log(`[slide-react] presentation relay listening on ws://${hostname}:${port}/ws`);
+});

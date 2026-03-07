@@ -1,0 +1,15 @@
+{
+  "name": "@slidev-react/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pure presentation models, flow, and shared contracts for slidev-react",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

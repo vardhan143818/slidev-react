@@ -11,7 +11,7 @@
 - React 19 渲染层
 - MDX 内容编写格式
 - Vite 应用运行时
-- 位于 `src/slides` 下的编译期 slides 处理链路
+- 位于 `packages/node/src/slides` 下的编译期 slides 处理链路
 - 支持 presenter/viewer 同步、渐进揭示、涂鸦和录制的演示壳层
 
 这个仓库不是 Vue 版 Slidev 运行时，而是一套 React + MDX 的独立实现。它借鉴了一些开发者演示工具的思路，但使用的是自己的 slides 模型和渲染链路。
@@ -42,45 +42,45 @@
 ### 环境要求
 
 - Node.js `>=22`
-- Bun `1.3.3`
+- pnpm `10`
 
 ### 安装依赖
 
 ```bash
-bun install
+pnpm install
 ```
 
 ### 启动开发环境
 
 ```bash
-bun run dev
+pnpm dev
 ```
 
 ### 构建生产产物
 
 ```bash
-bun run build
+pnpm build
 ```
 
 ### 预览构建结果
 
 ```bash
-bun run preview
+pnpm preview
 ```
 
 ### 用 Playwright 导出演示产物
 
 ```bash
-bun run export:slides
+pnpm export:slides
 ```
 
 ### 检查 slides 编写问题
 
 ```bash
-bun run lint:slides
+pnpm lint:slides
 ```
 
-如果你想在 CI 里把 warning 也当失败处理，可以用 `bun run lint:slides -- --strict`。
+如果你想在 CI 里把 warning 也当失败处理，可以用 `pnpm lint:slides -- --strict`。
 
 它会把浏览器真实渲染后的产物写到 `output/export/<slides-name>/`：
 
@@ -90,17 +90,17 @@ bun run lint:slides
 常见变体：
 
 ```bash
-bun run export:slides:pdf
-bun run export:slides:png
-bun run export:slides -- --slides 3-7
-bun run export:slides -- --with-clicks
-bun run export:slides -- --base-url http://127.0.0.1:4173
+pnpm export:slides:pdf
+pnpm export:slides:png
+pnpm export:slides -- --slides 3-7
+pnpm export:slides -- --with-clicks
+pnpm export:slides -- --base-url http://127.0.0.1:4173
 ```
 
 ### 清理生成产物
 
 ```bash
-bun run clean
+pnpm clean
 ```
 
 ## 演示模式
@@ -108,13 +108,13 @@ bun run clean
 先启动应用：
 
 ```bash
-bun run dev
+pnpm dev
 ```
 
 如果需要跨设备同步，可以额外启动 relay 服务：
 
 ```bash
-bun run presentation:server
+pnpm presentation:server
 ```
 
 默认 relay 地址：`ws://localhost:4860/ws`
@@ -135,7 +135,7 @@ bun run presentation:server
 - 基于浏览器打印能力的 print / PDF 导出
 - 总览面板和 presenter 控制面板
 - presenter 模式下的 wake lock、mirror stage 打开能力、fullscreen 切换、stage scale 和空闲隐藏光标设置
-- `bun run lint:slides`，用于在构建前发现未知 theme、addon、layout 等编写问题
+- `pnpm lint:slides`，用于在构建前发现未知 theme、addon、layout 等编写问题
 
 ## Slides 编写方式
 
@@ -164,7 +164,7 @@ Slides 源文件位于 [`slides.mdx`](./slides.mdx)。
 - `clicks:` 可以显式声明这页的 reveal 步数，即使 `<Reveal />` 数量更少
 - `notes:` 已可在 presenter 模式中展示，推荐配合 YAML 多行字符串使用
 - `src:` 可按相对 `slides.mdx` 的路径载入单页外部文件
-- `theme:` 现在会从 `src/theme/themes/*/index.ts` 载入本地运行时主题，找不到时回退到默认主题
+- `theme:` 现在会从 `packages/client/src/theme/themes/*/index.ts` 载入本地运行时主题，找不到时回退到默认主题
 - 非法 frontmatter 现在会尽量报到字段级别；编译期也会对未知本地 theme/addon 给出 warning
 
 示例：
@@ -222,7 +222,7 @@ notes: |
 
 当使用 `src:` 时，同一个 slide block 里不要再写 inline 正文内容。
 
-当前如果要导出 slides，可以直接在 presenter 壳层里使用 `Print / PDF` 按钮、在当前 URL 后加上 `?export=print` 走浏览器打印，或者运行 `bun run export:slides`，由 Playwright 直接产出 PDF 和 PNG。
+当前如果要导出 slides，可以直接在 presenter 壳层里使用 `Print / PDF` 按钮、在当前 URL 后加上 `?export=print` 走浏览器打印，或者运行 `pnpm export:slides`，由 Playwright 直接产出 PDF 和 PNG。
 
 ## 本地主题
 
@@ -235,7 +235,7 @@ theme: paper
 ---
 ```
 
-本地主题放在 `src/theme/themes/<theme-id>/` 下，只要在 `index.ts` 里导出 `theme`，运行时就会自动发现。
+本地主题放在 `packages/client/src/theme/themes/<theme-id>/` 下，只要在 `index.ts` 里导出 `theme`，运行时就会自动发现。
 
 当前的主题 contract 包括：
 
@@ -244,7 +244,7 @@ theme: paper
 - `mdxComponents`：覆盖 `Badge` 这类 MDX helper
 - `provider`：在需要时注入主题级 React context
 
-放在 `src/theme/themes/<theme-id>/style.css` 的主题样式也会自动加载。如果请求的主题不存在，运行时会安全回退到默认主题。
+放在 `packages/client/src/theme/themes/<theme-id>/style.css` 的主题样式也会自动加载。如果请求的主题不存在，运行时会安全回退到默认主题。
 
 ## 本地 Addons
 
@@ -325,22 +325,22 @@ layout: spotlight
 - `ui/`：可复用展示组件和 MDX helper
 - `theme/`：布局与视觉 token
 
-更详细的内部结构说明见 [`src/README.md`](./src/README.md)。
+更详细的内部结构说明见 [`packages/client/README.md`](./packages/client/README.md) 和 [`packages/node/README.md`](./packages/node/README.md)。
 
 ## 脚本
 
-- `bun run clean`：清理 `dist/`、`.generated/`、`output/` 等生成产物
-- `bun run dev`：启动开发服务器
-- `bun run build`：构建应用
-- `bun run preview`：预览生产构建
-- `bun run presentation:server`：启动 WebSocket relay 服务
-- `bun run test`：运行 Vitest 测试
-- `bun run test:e2e`：运行 Playwright 端到端测试
-- `bun run test:e2e:headed`：以可见浏览器运行 Playwright 测试
-- `bun run test:e2e:install`：安装 Playwright 使用的 Chromium 浏览器
-- `bun run lint`：使用支持 type-aware 的 Oxlint 检查 `src/`
-- `bun run format`：使用 Oxfmt 格式化仓库
-- `bun run format:check`：使用 Oxfmt 检查仓库格式
+- `pnpm clean`：清理 `dist/`、`.generated/`、`output/` 等生成产物
+- `pnpm dev`：启动开发服务器
+- `pnpm build`：构建应用
+- `pnpm preview`：预览生产构建
+- `pnpm presentation:server`：启动 WebSocket relay 服务
+- `pnpm test`：运行 Vitest 测试
+- `pnpm test:e2e`：运行 Playwright 端到端测试
+- `pnpm test:e2e:headed`：以可见浏览器运行 Playwright 测试
+- `pnpm test:e2e:install`：安装 Playwright 使用的 Chromium 浏览器
+- `pnpm lint`：使用支持 type-aware 的 Oxlint 检查 `src/` 和 `packages/`
+- `pnpm format`：使用 Oxfmt 格式化仓库
+- `pnpm format:check`：使用 Oxfmt 检查仓库格式
 
 ## 构建产物管理
 
@@ -350,14 +350,14 @@ layout: spotlight
 - `.generated/`：编译期 slides 生成物
 - `output/`：运行时生成输出
 
-如果这些文件不是你改动的一部分，提交前请用 `bun run clean` 清掉。
+如果这些文件不是你改动的一部分，提交前请用 `pnpm clean` 清掉。
 
 ## 测试
 
 运行测试：
 
 ```bash
-bun run test
+pnpm test
 ```
 
 ## 致谢

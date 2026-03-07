@@ -1,0 +1,17 @@
+{
+  "name": "@slidev-react/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CLI entrypoint for slidev-react authoring and build workflows",
+  "license": "MIT",
+  "bin": {
+    "slidev-react": "./bin/slidev-react.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "@slidev-react/node": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

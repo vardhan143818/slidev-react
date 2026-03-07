@@ -1,65 +1,18 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { parseSlides } from "../src/slides/parsing/parseSlides";
-import { validateSlidesAuthoring } from "../src/slides/validation/validateSlidesAuthoring";
+import { runSlidesLint } from "../packages/node/src/index.js";
 
-function parseArgs(argv: string[]) {
-  let slidesFile = "slides.mdx";
-  let strict = false;
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const entry = argv[index];
-    if (entry === "--strict") {
-      strict = true;
-      continue;
-    }
-
-    if (entry === "--file" && argv[index + 1]) {
-      slidesFile = argv[index + 1];
-      index += 1;
-      continue;
-    }
-
-    if (!entry.startsWith("--")) {
-      slidesFile = entry;
-    }
-  }
-
-  return {
-    slidesFile,
-    strict,
-  };
-}
-
-async function main() {
-  const options = parseArgs(process.argv.slice(2));
-  const slidesSourceFile = path.resolve(options.slidesFile);
-  const source = await readFile(slidesSourceFile, "utf8");
-  const slides = parseSlides(source);
-  const warnings = await validateSlidesAuthoring({
+try {
+  const result = await runSlidesLint({
     appRoot: process.cwd(),
-    slides,
+    cliArgs: process.argv.slice(2),
   });
 
-  if (warnings.length === 0) {
-    console.log(
-      `Slides lint passed: no authoring warnings for ${path.relative(process.cwd(), slidesSourceFile)}`,
-    );
-    return;
+  if (result.signal) {
+    process.kill(process.pid, result.signal);
+  } else {
+    process.exitCode = result.code;
   }
-
-  console.warn(`Slides lint found ${warnings.length} warning${warnings.length === 1 ? "" : "s"}:`);
-  for (const warning of warnings) {
-    console.warn(`- ${warning}`);
-  }
-
-  if (options.strict) {
-    process.exitCode = 1;
-  }
-}
-
-main().catch((error) => {
+} catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`Slides lint failed: ${message}`);
   process.exitCode = 1;
-});
+}

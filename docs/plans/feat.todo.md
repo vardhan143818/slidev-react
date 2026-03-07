@@ -53,7 +53,7 @@ Completed:
 Partial:
 
 - first-batch metadata expansion is still missing `monaco`
-- diagnostics are better than the original MVP, with field-level frontmatter errors, deck lint warnings for unknown theme/addon/layout references, and a dedicated `bun run lint:slides` entry point, but not yet at "best-in-class authoring DX"
+- diagnostics are better than the original MVP, with field-level frontmatter errors, deck lint warnings for unknown theme/addon/layout references, and a dedicated `pnpm lint:slides` entry point, but not yet at "best-in-class authoring DX"
 - export architecture is in place, but not yet expanded to PPTX / Markdown or a richer UI
 - theme work currently focuses on local folders, not package-distributed themes yet
 - addon work currently focuses on local folders, not package-distributed addons yet
@@ -814,7 +814,7 @@ Current state:
 
 - parser errors now include the failing frontmatter field instead of only a generic schema dump
 - compile-time generation warns for unknown local themes, addons, and layouts before runtime fallback
-- `bun run lint:slides` gives authors a fast pre-build check, with optional `--strict` mode for CI
+- `pnpm lint:slides` gives authors a fast pre-build check, with optional `--strict` mode for CI
 - the remaining gap is richer deck linting and broader metadata diagnostics
 
 ### B007. Design Export Architecture
