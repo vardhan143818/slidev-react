@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import type { LayoutName } from "../../deck/model/layout";
 import type { TransitionName } from "../../deck/model/transition";
 import { DrawProvider, type DrawStroke } from "../draw/DrawProvider";
@@ -50,6 +58,12 @@ const PRESENTER_STAGE_SCALE_STORAGE_KEY = "slide-react:presenter-stage-scale";
 const PRESENTER_STAGE_SCALE_OPTIONS = new Set([0.9, 1, 1.08]);
 const PRESENTER_CURSOR_MODE_STORAGE_KEY = "slide-react:presenter-cursor-mode";
 const PRESENTER_CURSOR_MODE_OPTIONS = new Set(["always", "idle-hide"] as const);
+const PRESENTER_SIDEBAR_WIDTH_STORAGE_KEY = "slide-react:presenter-sidebar-width";
+const PRESENTER_SIDEBAR_WIDTH_MIN = 280;
+const PRESENTER_SIDEBAR_WIDTH_MAX = 420;
+const PRESENTER_STAGE_MIN_WIDTH = 720;
+const PRESENTER_DIVIDER_WIDTH = 12;
+const PRESENTER_DESKTOP_BREAKPOINT = 1024;
 
 type PresenterCursorMode = "always" | "idle-hide";
 
@@ -82,6 +96,35 @@ function readInitialCursorMode(): PresenterCursorMode {
   } catch {
     return "always";
   }
+}
+
+function clampPresenterSidebarWidth(value: number, containerWidth: number) {
+  const maxWidth = Math.min(
+    PRESENTER_SIDEBAR_WIDTH_MAX,
+    Math.max(
+      PRESENTER_SIDEBAR_WIDTH_MIN,
+      containerWidth - PRESENTER_STAGE_MIN_WIDTH - PRESENTER_DIVIDER_WIDTH,
+    ),
+  );
+
+  return Math.min(Math.max(Math.round(value), PRESENTER_SIDEBAR_WIDTH_MIN), maxWidth);
+}
+
+function readInitialSidebarWidth() {
+  if (typeof window === "undefined") return 300;
+
+  try {
+    const savedValue = window.localStorage.getItem(PRESENTER_SIDEBAR_WIDTH_STORAGE_KEY);
+    if (savedValue) {
+      const parsedValue = Number(savedValue);
+      if (Number.isFinite(parsedValue))
+        return clampPresenterSidebarWidth(parsedValue, window.innerWidth);
+    }
+  } catch {
+    // Ignore storage read failures.
+  }
+
+  return clampPresenterSidebarWidth(window.innerWidth * 0.23, window.innerWidth);
 }
 
 function resolveMaxCueStep(stepCounts: Map<number, number> | undefined) {
@@ -146,8 +189,14 @@ export function PresenterShell({
   const [clicksTotalBySlideId, setClicksTotalBySlideId] = useState<Record<string, number>>({});
   const [stageScale, setStageScale] = useState(readInitialStageScale);
   const [cursorMode, setCursorMode] = useState<PresenterCursorMode>(readInitialCursorMode);
+  const [sidebarWidth, setSidebarWidth] = useState(readInitialSidebarWidth);
+  const [isWidePresenterLayout, setIsWidePresenterLayout] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= PRESENTER_DESKTOP_BREAKPOINT : false,
+  );
+  const [isResizingSidebar, setIsResizingSidebar] = useState(false);
   const clicksBySlideIdRef = useRef(clicksBySlideId);
   const clicksTotalBySlideIdRef = useRef(clicksTotalBySlideId);
+  const presenterLayoutRef = useRef<HTMLDivElement | null>(null);
   const wakeLock = useWakeLock();
   const fullscreen = useFullscreen();
   const slideClicksConfig = useMemo(
@@ -197,6 +246,34 @@ export function PresenterShell({
       // Ignore storage write failures.
     }
   }, [cursorMode]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      window.localStorage.setItem(PRESENTER_SIDEBAR_WIDTH_STORAGE_KEY, String(sidebarWidth));
+    } catch {
+      // Ignore storage write failures.
+    }
+  }, [sidebarWidth]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updatePresenterLayoutMode = () => {
+      setIsWidePresenterLayout(window.innerWidth >= PRESENTER_DESKTOP_BREAKPOINT);
+
+      const containerWidth =
+        presenterLayoutRef.current?.getBoundingClientRect().width ?? window.innerWidth;
+      setSidebarWidth((currentWidth) =>
+        clampPresenterSidebarWidth(currentWidth, containerWidth),
+      );
+    };
+
+    updatePresenterLayoutMode();
+    window.addEventListener("resize", updatePresenterLayoutMode);
+    return () => window.removeEventListener("resize", updatePresenterLayoutMode);
+  }, []);
 
   const setSlideClicks = useCallback(
     (slideId: string, next: number) => {
@@ -563,6 +640,80 @@ export function PresenterShell({
     };
   }, []);
 
+  const setSidebarWidthFromPointer = useCallback((clientX: number) => {
+    const bounds = presenterLayoutRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+
+    const nextWidth = clampPresenterSidebarWidth(bounds.right - clientX, bounds.width);
+    setSidebarWidth((currentWidth) => (currentWidth === nextWidth ? currentWidth : nextWidth));
+  }, []);
+
+  useEffect(() => {
+    if (!isResizingSidebar) return;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      setSidebarWidthFromPointer(event.clientX);
+    };
+
+    const handlePointerUp = () => {
+      setIsResizingSidebar(false);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizingSidebar, setSidebarWidthFromPointer]);
+
+  const handleSidebarResizeStart = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (event.button !== 0) return;
+
+      event.preventDefault();
+      setSidebarWidthFromPointer(event.clientX);
+      setIsResizingSidebar(true);
+    },
+    [setSidebarWidthFromPointer],
+  );
+
+  const handleSidebarResizeKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (!isWidePresenterLayout) return;
+
+      let delta = 0;
+      if (event.key === "ArrowLeft") delta = 16;
+      if (event.key === "ArrowRight") delta = -16;
+      if (event.key === "Home") delta = PRESENTER_SIDEBAR_WIDTH_MIN - sidebarWidth;
+      if (event.key === "End") delta = PRESENTER_SIDEBAR_WIDTH_MAX - sidebarWidth;
+      if (!delta) return;
+
+      event.preventDefault();
+      const containerWidth =
+        presenterLayoutRef.current?.getBoundingClientRect().width ?? window.innerWidth;
+      setSidebarWidth((currentWidth) =>
+        clampPresenterSidebarWidth(currentWidth + delta, containerWidth),
+      );
+    },
+    [isWidePresenterLayout, sidebarWidth],
+  );
+
+  const presenterLayoutStyle = useMemo(
+    () =>
+      isWidePresenterLayout
+        ? {
+            gridTemplateColumns: `minmax(0, 1fr) ${PRESENTER_DIVIDER_WIDTH}px ${sidebarWidth}px`,
+          }
+        : undefined,
+    [isWidePresenterLayout, sidebarWidth],
+  );
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (isTypingElement(event.target)) return;
@@ -685,7 +836,11 @@ export function PresenterShell({
             className={`relative min-h-0 min-w-0 size-full ${isPresenterRole ? "px-0 pb-0 pt-0 lg:px-0" : ""}`}
           >
             {isPresenterRole ? (
-              <div className="grid h-full min-h-0 gap-0 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_390px]">
+              <div
+                ref={presenterLayoutRef}
+                style={presenterLayoutStyle}
+                className="grid h-full min-h-0 grid-cols-1 gap-0"
+              >
                 <section className="relative min-h-0 overflow-hidden rounded-[5px] border border-slate-200/75 bg-white/42 shadow-[0_24px_80px_rgba(148,163,184,0.22)] ring-1 ring-white/50">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),transparent_38%)]" />
                   <div className="relative z-0 h-full">
@@ -705,7 +860,32 @@ export function PresenterShell({
                     </RevealProvider>
                   </div>
                 </section>
-                <aside className="relative z-10 flex min-h-0 flex-col gap-0 text-slate-900">
+                <div
+                  role="separator"
+                  aria-label="Resize presenter sidebar"
+                  aria-orientation="vertical"
+                  tabIndex={0}
+                  onPointerDown={handleSidebarResizeStart}
+                  onKeyDown={handleSidebarResizeKeyDown}
+                  className={`group relative hidden lg:block ${
+                    isResizingSidebar ? "cursor-col-resize" : "cursor-col-resize"
+                  }`}
+                >
+                  <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-200/90" />
+                  <div
+                    className={`pointer-events-none absolute inset-y-0 left-1/2 w-3 -translate-x-1/2 transition-colors ${
+                      isResizingSidebar ? "bg-emerald-400/16" : "bg-transparent group-hover:bg-emerald-400/10"
+                    }`}
+                  />
+                  <div
+                    className={`pointer-events-none absolute left-1/2 top-1/2 h-14 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
+                      isResizingSidebar
+                        ? "bg-emerald-500/70"
+                        : "bg-slate-300/90 group-hover:bg-emerald-500/55"
+                    }`}
+                  />
+                </div>
+                <aside className="relative z-10 flex min-h-0 min-w-0 flex-col gap-0 text-slate-900">
                   <div className="grid min-h-0 flex-1 gap-0 lg:grid-rows-[minmax(220px,0.92fr)_minmax(0,1.08fr)]">
                     <PresenterSidePreview
                       title="Up Next"

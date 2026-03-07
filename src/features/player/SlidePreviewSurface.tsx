@@ -19,6 +19,7 @@ export function SlidePreviewSurface({
   shadowClass,
   overflowHidden = false,
   scaleMultiplier = 1,
+  alignment = "center",
   articleProps,
 }: {
   Slide: SlideComponent;
@@ -31,10 +32,11 @@ export function SlidePreviewSurface({
   shadowClass?: string;
   overflowHidden?: boolean;
   scaleMultiplier?: number;
+  alignment?: "center" | "top-left";
   articleProps?: HTMLAttributes<HTMLElement>;
 }) {
   const Layout = useResolvedLayout(meta.layout ?? deckLayout);
-  const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier);
+  const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier, alignment);
   const viewportStageStyle = useMemo(
     () => ({
       width: `${SLIDE_WIDTH}px`,

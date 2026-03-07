@@ -3,7 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 export const SLIDE_WIDTH = 1920
 export const SLIDE_HEIGHT = 1080
 
-export function useSlideScale(scaleMultiplier: number) {
+type SlideScaleAlignment = 'center' | 'top-left'
+
+export function useSlideScale(
+  scaleMultiplier: number,
+  alignment: SlideScaleAlignment = 'center',
+) {
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
@@ -22,8 +27,8 @@ export function useSlideScale(scaleMultiplier: number) {
 
       setScale(nextScale)
       setOffset({
-        x: (width - scaledWidth) / 2,
-        y: (height - scaledHeight) / 2,
+        x: alignment === 'top-left' ? 0 : (width - scaledWidth) / 2,
+        y: alignment === 'top-left' ? 0 : (height - scaledHeight) / 2,
       })
     }
 
@@ -35,7 +40,7 @@ export function useSlideScale(scaleMultiplier: number) {
     return () => {
       observer.disconnect()
     }
-  }, [scaleMultiplier])
+  }, [alignment, scaleMultiplier])
 
   return { viewportRef, scale, offset }
 }

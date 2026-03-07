@@ -40,7 +40,7 @@ export function chromePanelClassName({
   padding?: keyof typeof paddingClassNames;
 }) {
   return joinClassNames(
-    "min-h-0",
+    "min-h-0 min-w-0",
     toneClassNames[tone],
     radiusClassNames[radius],
     paddingClassNames[padding],
