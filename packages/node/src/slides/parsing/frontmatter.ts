@@ -1,4 +1,5 @@
 import YAML from "yaml";
+import { z } from "zod";
 
 export interface FrontmatterResult {
   data: Record<string, unknown>;
@@ -6,6 +7,7 @@ export interface FrontmatterResult {
 }
 
 const OPEN = "---";
+const frontmatterDataSchema = z.object({}).catchall(z.unknown());
 
 export function parseFrontmatter(source: string): FrontmatterResult {
   const normalized = source.replace(/\r\n/g, "\n");
@@ -32,16 +34,14 @@ export function parseFrontmatter(source: string): FrontmatterResult {
 
   const yamlSource = normalized.slice(OPEN.length + 1, endIndex);
   const raw = YAML.parse(yamlSource);
-
-  if (raw != null && typeof raw !== "object") {
-    throw new Error("Invalid frontmatter: expected an object");
-  }
+  const parsed = frontmatterDataSchema.safeParse(raw ?? {});
+  if (!parsed.success) throw new Error("Invalid frontmatter: expected an object");
 
   const contentStart =
     endIndex + (withNewlineIndex >= 0 ? closeMarkerWithNewline.length : closeMarkerAtEnd.length);
 
   return {
-    data: (raw ?? {}) as Record<string, unknown>,
+    data: parsed.data,
     content: normalized.slice(contentStart),
   };
 }

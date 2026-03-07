@@ -1,7 +1,7 @@
-import { useSlides } from "../../../app/providers/SlidesProvider";
+import { useSlidesState } from "../../../app/providers/SlidesNavigationProvider";
 
 export function useSlidesNavigation() {
-  const slides = useSlides();
+  const slides = useSlidesState();
 
   return {
     currentIndex: slides.currentIndex,

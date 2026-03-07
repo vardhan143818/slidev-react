@@ -18,6 +18,12 @@ describe("parseFrontmatter", () => {
     expect(parsed.data).toEqual({ title: "Deck" });
     expect(parsed.content).toBe("");
   });
+
+  it("rejects non-object yaml roots", () => {
+    expect(() => parseFrontmatter(`---\n- deck\n- title\n---\n# Hello`)).toThrowError(
+      "Invalid frontmatter: expected an object",
+    );
+  });
 });
 
 describe("parseSlides", () => {

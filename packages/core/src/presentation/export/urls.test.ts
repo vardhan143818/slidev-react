@@ -32,6 +32,8 @@ describe('presentation print export', () => {
 
   it('detects with-clicks from the search string', () => {
     expect(resolvePrintExportWithClicks('?export=print&with-clicks=1')).toBe(true)
+    expect(resolvePrintExportWithClicks('?export=print&with-clicks=true')).toBe(true)
+    expect(resolvePrintExportWithClicks('?export=print&with-clicks=yes')).toBe(false)
     expect(resolvePrintExportWithClicks('?export=print')).toBe(false)
   })
 

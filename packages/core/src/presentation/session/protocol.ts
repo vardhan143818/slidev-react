@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const PRESENTATION_PROTOCOL_VERSION = 1 as const;
 
 export type PresentationRole = "standalone" | "presenter" | "viewer";
@@ -85,172 +87,98 @@ export type PresentationEnvelope =
   | PresentationPatchEnvelope
   | PresentationHeartbeatEnvelope;
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
+const presentationCursorStateSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+});
 
-function isDrawPoint(value: unknown): value is PresentationDrawPoint {
-  return isRecord(value) && typeof value.x === "number" && typeof value.y === "number";
-}
+const presentationDrawPointSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+});
 
-function isDrawStroke(value: unknown): value is PresentationDrawStroke {
-  if (!isRecord(value)) return false;
+const presentationDrawStrokeSchema = z.object({
+  id: z.string(),
+  color: z.string(),
+  width: z.number(),
+  kind: z.enum(["pen", "circle", "rectangle"]).optional(),
+  points: z.array(presentationDrawPointSchema),
+});
 
-  if (
-    typeof value.id !== "string" ||
-    typeof value.color !== "string" ||
-    typeof value.width !== "number"
-  )
-    return false;
+const presentationDrawingsStateSchema = z.record(z.string(), z.array(presentationDrawStrokeSchema));
 
-  if (
-    "kind" in value &&
-    value.kind !== "pen" &&
-    value.kind !== "circle" &&
-    value.kind !== "rectangle"
-  )
-    return false;
+const presentationSharedStateSchema = z.object({
+  page: z.number(),
+  clicks: z.number(),
+  clicksTotal: z.number(),
+  timer: z.number(),
+  cursor: presentationCursorStateSchema.nullable(),
+  drawings: presentationDrawingsStateSchema,
+  drawingsRevision: z.number(),
+  lastUpdate: z.number(),
+});
 
-  if (!Array.isArray(value.points)) return false;
+const presentationSharedStatePatchSchema = presentationSharedStateSchema.partial();
 
-  return value.points.every(isDrawPoint);
-}
+const syncedPresentationRoleSchema = z.enum(["presenter", "viewer"]);
 
-function isDrawingsState(value: unknown): value is PresentationDrawingsState {
-  if (!isRecord(value)) return false;
+const presentationEnvelopeBaseSchema = z.object({
+  version: z.literal(PRESENTATION_PROTOCOL_VERSION),
+  sessionId: z.string(),
+  senderId: z.string(),
+  seq: z.number(),
+  timestamp: z.number(),
+});
 
-  for (const key of Object.keys(value)) {
-    const strokes = value[key];
-    if (!Array.isArray(strokes)) return false;
+const sessionJoinEnvelopeSchema = presentationEnvelopeBaseSchema.extend({
+  type: z.literal("session/join"),
+  payload: z.object({
+    role: syncedPresentationRoleSchema,
+  }),
+});
 
-    if (!strokes.every(isDrawStroke)) return false;
-  }
+const sessionLeaveEnvelopeSchema = presentationEnvelopeBaseSchema.extend({
+  type: z.literal("session/leave"),
+  payload: z.object({
+    role: syncedPresentationRoleSchema,
+  }),
+});
 
-  return true;
-}
+const heartbeatEnvelopeSchema = presentationEnvelopeBaseSchema.extend({
+  type: z.literal("heartbeat"),
+  payload: z.object({
+    role: syncedPresentationRoleSchema,
+  }),
+});
 
-function isStatePatchLike(value: unknown): value is Partial<PresentationSharedState> {
-  if (!isRecord(value)) return false;
+const snapshotEnvelopeSchema = presentationEnvelopeBaseSchema.extend({
+  type: z.literal("state/snapshot"),
+  payload: z.object({
+    state: presentationSharedStateSchema,
+  }),
+});
 
-  if ("page" in value && typeof value.page !== "number") return false;
+const patchEnvelopeSchema = presentationEnvelopeBaseSchema.extend({
+  type: z.literal("state/patch"),
+  payload: z.object({
+    state: presentationSharedStatePatchSchema,
+  }),
+});
 
-  if ("clicks" in value && typeof value.clicks !== "number") return false;
+const presentationEnvelopeSchema = z.discriminatedUnion("type", [
+  sessionJoinEnvelopeSchema,
+  sessionLeaveEnvelopeSchema,
+  heartbeatEnvelopeSchema,
+  snapshotEnvelopeSchema,
+  patchEnvelopeSchema,
+]);
 
-  if ("clicksTotal" in value && typeof value.clicksTotal !== "number") return false;
-
-  if ("timer" in value && typeof value.timer !== "number") return false;
-
-  if ("drawingsRevision" in value && typeof value.drawingsRevision !== "number") return false;
-
-  if ("drawings" in value && !isDrawingsState(value.drawings)) return false;
-
-  if ("lastUpdate" in value && typeof value.lastUpdate !== "number") return false;
-
-  if ("cursor" in value) {
-    if (value.cursor === null) return true;
-
-    if (!isRecord(value.cursor)) return false;
-
-    if (typeof value.cursor.x !== "number" || typeof value.cursor.y !== "number") return false;
-  }
-
-  return true;
+export function parsePresentationDrawingsState(value: unknown): PresentationDrawingsState | null {
+  const result = presentationDrawingsStateSchema.safeParse(value);
+  return result.success ? result.data : null;
 }
 
 export function parsePresentationEnvelope(value: unknown): PresentationEnvelope | null {
-  if (!isRecord(value)) return null;
-
-  const version = value.version;
-  const type = value.type;
-  const sessionId = value.sessionId;
-  const senderId = value.senderId;
-  const seq = value.seq;
-  const timestamp = value.timestamp;
-  const payload = value.payload;
-
-  if (
-    version !== PRESENTATION_PROTOCOL_VERSION ||
-    typeof type !== "string" ||
-    typeof sessionId !== "string" ||
-    typeof senderId !== "string" ||
-    typeof seq !== "number" ||
-    typeof timestamp !== "number" ||
-    !isRecord(payload)
-  ) {
-    return null;
-  }
-
-  if (type === "session/join" || type === "session/leave" || type === "heartbeat") {
-    const role = payload.role;
-    if (role !== "presenter" && role !== "viewer") return null;
-
-    return {
-      version,
-      type,
-      sessionId,
-      senderId,
-      seq,
-      timestamp,
-      payload: {
-        role,
-      },
-    };
-  }
-
-  if (type === "state/snapshot") {
-    if (!isStatePatchLike(payload.state)) return null;
-
-    const state = payload.state;
-    if (
-      typeof state.page !== "number" ||
-      typeof state.clicks !== "number" ||
-      typeof state.clicksTotal !== "number" ||
-      typeof state.timer !== "number" ||
-      !isDrawingsState(state.drawings) ||
-      typeof state.drawingsRevision !== "number" ||
-      typeof state.lastUpdate !== "number" ||
-      !("cursor" in state)
-    ) {
-      return null;
-    }
-
-    return {
-      version,
-      type,
-      sessionId,
-      senderId,
-      seq,
-      timestamp,
-      payload: {
-        state: {
-          page: state.page,
-          clicks: state.clicks,
-          clicksTotal: state.clicksTotal,
-          timer: state.timer,
-          cursor: state.cursor ?? null,
-          drawings: state.drawings,
-          drawingsRevision: state.drawingsRevision,
-          lastUpdate: state.lastUpdate,
-        },
-      },
-    };
-  }
-
-  if (type === "state/patch") {
-    if (!isStatePatchLike(payload.state)) return null;
-
-    return {
-      version,
-      type,
-      sessionId,
-      senderId,
-      seq,
-      timestamp,
-      payload: {
-        state: payload.state,
-      },
-    };
-  }
-
-  return null;
+  const result = presentationEnvelopeSchema.safeParse(value);
+  return result.success ? result.data : null;
 }

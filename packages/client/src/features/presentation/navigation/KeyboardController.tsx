@@ -2,21 +2,18 @@ import { useEffect } from "react";
 import { useReveal } from "../reveal/RevealContext";
 import { resolveNavigationShortcutAction } from "./keyboardShortcuts";
 import { useSlidesNavigation } from "./useSlidesNavigation";
-
-function isTypingElement(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-
-  return target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
-}
+import { isTypingElement } from "../browser";
 
 export function KeyboardController({
   enabled = true,
+  overlayOpen = false,
   onAdvance,
   onRetreat,
   onFirst,
   onLast,
 }: {
   enabled?: boolean;
+  overlayOpen?: boolean;
   onAdvance?: () => void;
   onRetreat?: () => void;
   onFirst?: () => void;
@@ -31,8 +28,7 @@ export function KeyboardController({
     const onKeyDown = (event: KeyboardEvent) => {
       if (isTypingElement(event.target)) return;
 
-      if (typeof document !== "undefined" && document.body.dataset.presenterOverlay === "open")
-        return;
+      if (overlayOpen) return;
 
       const action = resolveNavigationShortcutAction({
         key: event.key,
@@ -71,7 +67,7 @@ export function KeyboardController({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [enabled, navigation, onAdvance, onFirst, onLast, onRetreat, reveal]);
+  }, [enabled, navigation, onAdvance, onFirst, onLast, onRetreat, overlayOpen, reveal]);
 
   return null;
 }

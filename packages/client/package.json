@@ -9,7 +9,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@slidev-react/core": "workspace:*"
+    "@slidev-react/core": "workspace:*",
+    "zod": "4.3.6"
   },
   "engines": {
     "node": ">=22"

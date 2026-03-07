@@ -1,27 +1,41 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PresentationSession } from "./session";
 import {
-  PRESENTATION_PROTOCOL_VERSION,
   parsePresentationEnvelope,
-  type PresentationEnvelope,
-  type PresentationRole,
-  type PresentationSyncMode,
   type PresentationSharedState,
   type SyncedPresentationRole,
 } from "./types";
+import {
+  canAuthorState,
+  canReceive,
+  canSend,
+  createEnvelope,
+  createSnapshotState,
+  isCursorEqual,
+  type EnvelopeInput,
+} from "./sync/model/replication";
+import {
+  countPeers,
+  markPeerSeen,
+  removePeer,
+  resolveRemoteActive,
+  sweepStalePeers,
+} from "./sync/model/presence";
+import {
+  resolvePresentationSyncStatus,
+  type PresentationSyncStatus,
+  type PresentationTransportState,
+} from "./sync/model/status";
+import { createBroadcastChannelTransport } from "./sync/adapters/broadcastChannelTransport";
+import { createWebSocketTransport } from "./sync/adapters/websocketTransport";
 
 const BROADCAST_CHANNEL_PREFIX = "slide-react:presentation:session:";
 const HEARTBEAT_INTERVAL_MS = 5000;
-const MAX_RECONNECT_DELAY_MS = 5000;
-const BASE_RECONNECT_DELAY_MS = 800;
 const CURSOR_PATCH_INTERVAL_MS = 80;
 const PEER_STALE_AFTER_MS = HEARTBEAT_INTERVAL_MS * 3;
 const PEER_SWEEP_INTERVAL_MS = 2000;
 const REMOTE_ACTIVE_WINDOW_MS = HEARTBEAT_INTERVAL_MS * 2;
-
-type WsState = "disabled" | "connecting" | "connected" | "reconnecting";
-
-export type PresentationSyncStatus = "disabled" | "connecting" | "connected" | "degraded";
+export type { PresentationSyncStatus } from "./sync/model/status";
 
 export interface UsePresentationSyncResult {
   status: PresentationSyncStatus;
@@ -32,137 +46,8 @@ export interface UsePresentationSyncResult {
   remoteActive: boolean;
 }
 
-type EnvelopeInput = Omit<
-  PresentationEnvelope,
-  "version" | "sessionId" | "senderId" | "seq" | "timestamp"
->;
-
-function createEnvelope({
-  sessionId,
-  senderId,
-  seq,
-  timestamp,
-  message,
-}: {
-  sessionId: string;
-  senderId: string;
-  seq: number;
-  timestamp: number;
-  message: EnvelopeInput;
-}): PresentationEnvelope {
-  switch (message.type) {
-    case "session/join":
-    case "session/leave":
-    case "heartbeat": {
-      const { role } = message.payload as {
-        role: SyncedPresentationRole;
-      };
-
-      return {
-        version: PRESENTATION_PROTOCOL_VERSION,
-        sessionId,
-        senderId,
-        seq,
-        timestamp,
-        type: message.type,
-        payload: {
-          role,
-        },
-      };
-    }
-    case "state/snapshot": {
-      const { state } = message.payload as {
-        state: PresentationSharedState;
-      };
-
-      return {
-        version: PRESENTATION_PROTOCOL_VERSION,
-        sessionId,
-        senderId,
-        seq,
-        timestamp,
-        type: "state/snapshot",
-        payload: {
-          state,
-        },
-      };
-    }
-    case "state/patch": {
-      const { state } = message.payload as {
-        state: Partial<PresentationSharedState>;
-      };
-
-      return {
-        version: PRESENTATION_PROTOCOL_VERSION,
-        sessionId,
-        senderId,
-        seq,
-        timestamp,
-        type: "state/patch",
-        payload: {
-          state,
-        },
-      };
-    }
-  }
-}
-
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
-}
-
-function resolveStatus(
-  sessionEnabled: boolean,
-  syncMode: PresentationSyncMode,
-  sessionWsUrl: string | null,
-  wsState: WsState,
-  broadcastConnected: boolean,
-): PresentationSyncStatus {
-  if (!sessionEnabled) return "disabled";
-
-  if (syncMode === "off") return "disabled";
-
-  if (sessionWsUrl) {
-    if (wsState === "connected") return "connected";
-
-    if (broadcastConnected) return "degraded";
-
-    return "connecting";
-  }
-
-  if (broadcastConnected) return "connected";
-
-  return "degraded";
-}
-
-function canSend(syncMode: PresentationSyncMode) {
-  return syncMode === "send" || syncMode === "both";
-}
-
-function canReceive(syncMode: PresentationSyncMode) {
-  return syncMode === "receive" || syncMode === "both";
-}
-
-function canAuthorState(role: PresentationRole) {
-  return role === "presenter";
-}
-
-function isCursorEqual(
-  left: PresentationSharedState["cursor"],
-  right: PresentationSharedState["cursor"],
-) {
-  if (left === right) return true;
-
-  if (!left || !right) return false;
-
-  return left.x === right.x && left.y === right.y;
-}
-
-function createSnapshotState(localState: PresentationSharedState): PresentationSharedState {
-  return {
-    ...localState,
-    lastUpdate: Date.now(),
-  };
 }
 
 export function usePresentationSync({
@@ -183,7 +68,7 @@ export function usePresentationSync({
   onRemoteState: (patch: Partial<PresentationSharedState>, remotePage: number) => void;
 }): UsePresentationSyncResult {
   const [broadcastConnected, setBroadcastConnected] = useState(false);
-  const [wsState, setWsState] = useState<WsState>("disabled");
+  const [wsState, setWsState] = useState<PresentationTransportState>("disabled");
   const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(null);
   const [peerCount, setPeerCount] = useState(0);
   const [remoteActive, setRemoteActive] = useState(false);
@@ -239,38 +124,37 @@ export function usePresentationSync({
     const sessionId = session.sessionId;
     const senderId = session.senderId;
     const syncMode = session.syncMode;
-    const syncRole: SyncedPresentationRole = session.role;
+    const syncRole = session.role as SyncedPresentationRole;
     const sessionWsUrl = session.wsUrl;
     const channelName = `${BROADCAST_CHANNEL_PREFIX}${sessionId}`;
     let disposed = false;
-    let reconnectAttempt = 0;
-    let reconnectTimeoutId: number | null = null;
     let heartbeatIntervalId: number | null = null;
     let peerSweepIntervalId: number | null = null;
-    let ws: WebSocket | null = null;
-    let wsListeners: {
-      open: () => void;
-      message: (event: MessageEvent<unknown>) => void;
-      error: () => void;
-      close: () => void;
-    } | null = null;
-    let channel: BroadcastChannel | null = null;
 
     const refreshPeerCount = () => {
-      const size = peerLastSeenRef.current.size;
+      const size = countPeers(peerLastSeenRef.current);
       setPeerCount((previous) => (previous === size ? previous : size));
     };
 
-    const markPeerSeen = (senderId: string, activityAt: number) => {
-      peerLastSeenRef.current.set(senderId, activityAt);
+    const markPeerActivity = (peerId: string, activityAt: number) => {
+      markPeerSeen(peerLastSeenRef.current, peerId, activityAt);
       refreshPeerCount();
     };
 
-    const removePeer = (senderId: string) => {
-      if (!peerLastSeenRef.current.delete(senderId)) return;
+    const removePeerActivity = (peerId: string) => {
+      if (!removePeer(peerLastSeenRef.current, peerId)) return;
 
       refreshPeerCount();
     };
+
+    let websocketTransport: ReturnType<typeof createWebSocketTransport> | null = null;
+    const broadcastTransport = createBroadcastChannelTransport({
+      channelName,
+      onMessage: (incoming) => {
+        onIncomingEnvelope(incoming);
+      },
+      onConnectedChange: setBroadcastConnected,
+    });
 
     const sendEnvelope = (message: EnvelopeInput) => {
       if (disposed) return;
@@ -284,13 +168,12 @@ export function usePresentationSync({
         message,
       });
 
-      channel?.postMessage(envelope);
-
-      if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify(envelope));
+      broadcastTransport?.send(envelope);
+      websocketTransport?.send(JSON.stringify(envelope));
     };
 
     const sendSnapshot = () => {
-      if (!canSend(syncMode) || !canAuthorState(syncRole)) return;
+      if (!canSend(syncMode) || !canAuthorState(session.role)) return;
 
       const state = createSnapshotState(localStateRef.current);
       sendEnvelope({
@@ -305,26 +188,21 @@ export function usePresentationSync({
       const envelope = parsePresentationEnvelope(incoming);
       if (!envelope) return;
 
-      if (envelope.sessionId !== sessionId || envelope.senderId === senderId)
-        return;
+      if (envelope.sessionId !== sessionId || envelope.senderId === senderId) return;
 
       const observedAt = Date.now();
-      markPeerSeen(envelope.senderId, observedAt);
+      markPeerActivity(envelope.senderId, observedAt);
       lastRemoteActivityRef.current = observedAt;
       if (canReceive(syncMode)) setRemoteActive(true);
 
       if (envelope.type === "session/leave") {
-        removePeer(envelope.senderId);
+        removePeerActivity(envelope.senderId);
         return;
       }
 
       if (envelope.type === "heartbeat") return;
 
-      if (
-        envelope.type === "session/join" &&
-        canSend(syncMode) &&
-        canAuthorState(syncRole)
-      ) {
+      if (envelope.type === "session/join" && canSend(syncMode) && canAuthorState(syncRole)) {
         sendSnapshot();
         return;
       }
@@ -353,116 +231,32 @@ export function usePresentationSync({
       }
     };
 
-    const onBroadcastMessage = (event: MessageEvent<unknown>) => {
-      onIncomingEnvelope(event.data);
-    };
+    if (sessionWsUrl) {
+      websocketTransport = createWebSocketTransport({
+        sessionWsUrl,
+        sessionId,
+        senderId,
+        onMessage: onIncomingEnvelope,
+        onStateChange: setWsState,
+        onOpen: () => {
+          sendEnvelope({
+            type: "session/join",
+            payload: {
+              role: syncRole,
+            },
+          });
 
-    if (typeof BroadcastChannel !== "undefined") {
-      channel = new BroadcastChannel(channelName);
-      channel.addEventListener("message", onBroadcastMessage);
-      setBroadcastConnected(true);
-    } else {
-      setBroadcastConnected(false);
-    }
-
-    const closeWs = () => {
-      if (!ws) return;
-
-      if (wsListeners) {
-        ws.removeEventListener("open", wsListeners.open);
-        ws.removeEventListener("message", wsListeners.message);
-        ws.removeEventListener("error", wsListeners.error);
-        ws.removeEventListener("close", wsListeners.close);
-      }
-
-      ws.close();
-      ws = null;
-      wsListeners = null;
-    };
-
-    const scheduleReconnect = () => {
-      if (!sessionWsUrl || disposed) return;
-
-      setWsState("reconnecting");
-      const delay = Math.min(
-        BASE_RECONNECT_DELAY_MS * 2 ** reconnectAttempt,
-        MAX_RECONNECT_DELAY_MS,
-      );
-      reconnectAttempt += 1;
-      reconnectTimeoutId = window.setTimeout(() => {
-        reconnectTimeoutId = null;
-        connectWebSocket();
-      }, delay);
-    };
-
-    const connectWebSocket = () => {
-      if (!sessionWsUrl || disposed) return;
-
-      closeWs();
-      setWsState("connecting");
-
-      const connectionUrl = new URL(sessionWsUrl);
-      connectionUrl.searchParams.set("session", sessionId);
-      connectionUrl.searchParams.set("sender", senderId);
-
-      const socket = new WebSocket(connectionUrl.toString());
-      ws = socket;
-
-      const onOpen = () => {
-        reconnectAttempt = 0;
-        setWsState("connected");
-        sendEnvelope({
-          type: "session/join",
-          payload: {
-            role: syncRole,
-          },
-        });
-
-        if (canAuthorState(syncRole)) sendSnapshot();
-      };
-
-      const onMessage = (event: MessageEvent<unknown>) => {
-        if (typeof event.data !== "string") return;
-
-        try {
-          onIncomingEnvelope(JSON.parse(event.data));
-        } catch {
-          // Ignore malformed websocket payloads.
-        }
-      };
-
-      const onError = () => {
-        setWsState("reconnecting");
-      };
-
-      const onClose = () => {
-        if (disposed) return;
-
-        scheduleReconnect();
-      };
-
-      wsListeners = {
-        open: onOpen,
-        message: onMessage,
-        error: onError,
-        close: onClose,
-      };
-
-      socket.addEventListener("open", onOpen);
-      socket.addEventListener("message", onMessage);
-      socket.addEventListener("error", onError);
-      socket.addEventListener("close", onClose);
-    };
-
-    if (sessionWsUrl) connectWebSocket();
-    else setWsState("disabled");
-
-    sendEnvelope({
-        type: "session/join",
-        payload: {
-          role: syncRole,
+          if (canAuthorState(syncRole)) sendSnapshot();
         },
       });
+    } else setWsState("disabled");
+
+    sendEnvelope({
+      type: "session/join",
+      payload: {
+        role: syncRole,
+      },
+    });
 
     if (canAuthorState(syncRole)) sendSnapshot();
 
@@ -477,13 +271,12 @@ export function usePresentationSync({
 
     peerSweepIntervalId = window.setInterval(() => {
       const now = Date.now();
-      for (const [peerId, lastSeenAt] of peerLastSeenRef.current) {
-        if (now - lastSeenAt > PEER_STALE_AFTER_MS) peerLastSeenRef.current.delete(peerId);
-      }
-
+      sweepStalePeers(peerLastSeenRef.current, now, PEER_STALE_AFTER_MS);
       refreshPeerCount();
       if (canReceive(syncMode))
-        setRemoteActive(now - lastRemoteActivityRef.current <= REMOTE_ACTIVE_WINDOW_MS);
+        setRemoteActive(
+          resolveRemoteActive(lastRemoteActivityRef.current, now, REMOTE_ACTIVE_WINDOW_MS),
+        );
     }, PEER_SWEEP_INTERVAL_MS);
 
     sendEnvelopeRef.current = sendEnvelope;
@@ -498,21 +291,14 @@ export function usePresentationSync({
       });
       disposed = true;
 
-      if (reconnectTimeoutId !== null) window.clearTimeout(reconnectTimeoutId);
-
       if (heartbeatIntervalId !== null) window.clearInterval(heartbeatIntervalId);
 
       if (peerSweepIntervalId !== null) window.clearInterval(peerSweepIntervalId);
 
-      if (channel) {
-        channel.removeEventListener("message", onBroadcastMessage);
-        channel.close();
-      }
-
-      closeWs();
+      broadcastTransport?.dispose();
+      websocketTransport?.dispose();
       sendEnvelopeRef.current = null;
       sendSnapshotRef.current = null;
-      setBroadcastConnected(false);
       setWsState(sessionWsUrl ? "connecting" : "disabled");
       setPeerCount(0);
       setRemoteActive(!canReceive(syncMode));
@@ -616,7 +402,13 @@ export function usePresentationSync({
 
   const status = useMemo(
     () =>
-      resolveStatus(session.enabled, session.syncMode, session.wsUrl, wsState, broadcastConnected),
+      resolvePresentationSyncStatus({
+        sessionEnabled: session.enabled,
+        syncMode: session.syncMode,
+        sessionWsUrl: session.wsUrl,
+        transportState: wsState,
+        broadcastConnected,
+      }),
     [broadcastConnected, session.enabled, session.syncMode, session.wsUrl, wsState],
   );
 

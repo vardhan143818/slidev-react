@@ -1,10 +1,6 @@
 import type { PresentationRole, PresentationSyncMode } from "./types";
-import {
-  buildRolePathFromPathname,
-  buildStandalonePathFromPathname,
-  parsePresentationPath,
-  parseStandalonePath,
-} from "./path";
+import { buildRolePathFromPathname, buildStandalonePathFromPathname } from "./path";
+import { resolveSessionLocationState } from "./location";
 
 export interface PresentationSession {
   enabled: boolean;
@@ -15,30 +11,6 @@ export interface PresentationSession {
   wsUrl: string | null;
   presenterUrl: string | null;
   viewerUrl: string | null;
-}
-
-function parseRoleFromPath(pathname: string): "presenter" | null {
-  const parsed = parsePresentationPath(pathname);
-  if (!parsed) return null;
-
-  return parsed.role === "presenter" ? "presenter" : null;
-}
-
-function parseSlideNumberFromPath(pathname: string): number | null {
-  const liveSlide = parsePresentationPath(pathname)?.slideNumber;
-  if (typeof liveSlide === "number") return liveSlide;
-
-  return parseStandalonePath(pathname)?.slideNumber ?? null;
-}
-
-function parseSlideNumberFromHash(hash: string): number | null {
-  const match = hash.match(/^#\/(\d+)$/);
-  if (!match) return null;
-
-  const number = Number.parseInt(match[1], 10);
-  if (Number.isNaN(number) || number < 1) return null;
-
-  return number;
 }
 
 function defaultSyncModeForRole(role: PresentationRole): PresentationSyncMode {
@@ -102,15 +74,29 @@ export function updateSyncModeInUrl(mode: PresentationSyncMode) {
   void mode;
 }
 
+export function createDisabledPresentationSession(senderId: string): PresentationSession {
+  return {
+    enabled: false,
+    role: "standalone",
+    syncMode: "off",
+    sessionId: null,
+    senderId,
+    wsUrl: null,
+    presenterUrl: null,
+    viewerUrl: null,
+  };
+}
+
+export function createPrintExportSession(): PresentationSession {
+  return createDisabledPresentationSession("print-export");
+}
+
 export function buildPresentationEntryUrl(role: "presenter", deckKey: string) {
   if (typeof window === "undefined") return null;
 
   void deckKey;
 
-  const currentSlideNumber =
-    parseSlideNumberFromPath(window.location.pathname) ??
-    parseSlideNumberFromHash(window.location.hash) ??
-    1;
+  const currentSlideNumber = resolveSessionLocationState(window.location.pathname).currentSlideNumber;
 
   return buildUrl(role, currentSlideNumber);
 }
@@ -119,54 +105,24 @@ export function resolvePresentationSession(deckKey: string): PresentationSession
   const senderId = createSenderId();
 
   if (typeof window === "undefined") {
-    return {
-      enabled: false,
-      role: "standalone",
-      syncMode: "off",
-      sessionId: null,
-      senderId,
-      wsUrl: null,
-      presenterUrl: null,
-      viewerUrl: null,
-    };
+    return createDisabledPresentationSession(senderId);
   }
 
-  const roleFromPath = parseRoleFromPath(window.location.pathname);
-  const standalonePath = parseStandalonePath(window.location.pathname);
-  const liveEnabled = roleFromPath !== null || standalonePath !== null;
+  const locationState = resolveSessionLocationState(window.location.pathname);
+  if (!locationState.enabled) return createDisabledPresentationSession(senderId);
 
-  if (!liveEnabled) {
-    return {
-      enabled: false,
-      role: "standalone",
-      syncMode: "off",
-      sessionId: null,
-      senderId,
-      wsUrl: null,
-      presenterUrl: null,
-      viewerUrl: null,
-    };
-  }
-
-  const initialRole: PresentationRole = roleFromPath ?? "viewer";
+  const initialRole: PresentationRole = locationState.role;
   const parsedWsUrl = createDefaultWsUrl();
   const sessionId = createDefaultSessionId(deckKey);
   const syncMode = defaultSyncModeForRole(initialRole);
-  const currentSlideNumber =
-    parseSlideNumberFromPath(window.location.pathname) ??
-    parseSlideNumberFromHash(window.location.hash) ??
-    1;
-
-  const normalizedPath =
-    initialRole === "presenter"
-      ? buildRolePathFromPathname(window.location.pathname, initialRole, currentSlideNumber)
-      : buildStandalonePathFromPathname(window.location.pathname, currentSlideNumber);
+  const currentSlideNumber = locationState.currentSlideNumber;
+  const normalizedPath = locationState.normalizedPath;
   const shouldNormalizeUrl =
-    window.location.pathname !== normalizedPath ||
+    (!!normalizedPath && window.location.pathname !== normalizedPath) ||
     !!window.location.search ||
     !!window.location.hash;
 
-  if (shouldNormalizeUrl) {
+  if (shouldNormalizeUrl && normalizedPath) {
     window.history.replaceState(null, "", normalizedPath);
   }
 

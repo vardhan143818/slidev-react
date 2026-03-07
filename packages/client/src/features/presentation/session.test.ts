@@ -108,6 +108,14 @@ describe("presentation entry urls", () => {
     );
   });
 
+  it("ignores legacy hash routes when building presenter urls", () => {
+    installWindow("http://localhost:3000/#/5");
+
+    expect(buildPresentationEntryUrl("presenter", "deckhash")).toBe(
+      "http://localhost:3000/presenter/1",
+    );
+  });
+
   it("keeps sync mode changes out of the url", () => {
     const { location } = installWindow("http://localhost:3000/presenter/3");
 

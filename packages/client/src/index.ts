@@ -1,6 +1,6 @@
 export { default } from "./app/App";
 export { default as App } from "./app/App";
-export { SlidesProvider, useSlides } from "./app/providers/SlidesProvider";
+export { SlidesNavigationProvider, useSlidesState } from "./app/providers/SlidesNavigationProvider";
 export { AddonProvider, useSlideAddons } from "./addons/AddonProvider";
 export { ThemeProvider, useSlideTheme } from "./theme/ThemeProvider";
 export { PrintSlidesView } from "./features/presentation/PrintSlidesView";

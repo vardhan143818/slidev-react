@@ -1,18 +1,18 @@
+import { z } from 'zod'
+
 export type PresentationExportMode = 'print'
 
-function normalizeExportMode(value: string | null): PresentationExportMode | null {
-  if (!value) return null
-
-  return value === 'print' ? value : null
-}
+const presentationExportModeSchema = z.enum(['print'])
+const printExportWithClicksSchema = z.union([z.literal('1'), z.literal('true')])
 
 export function resolvePresentationExportMode(search: string): PresentationExportMode | null {
-  return normalizeExportMode(new URLSearchParams(search).get('export'))
+  const result = presentationExportModeSchema.safeParse(new URLSearchParams(search).get('export'))
+  return result.success ? result.data : null
 }
 
 export function resolvePrintExportWithClicks(search: string) {
-  const value = new URLSearchParams(search).get('with-clicks')
-  return value === '1' || value === 'true'
+  return printExportWithClicksSchema.safeParse(new URLSearchParams(search).get('with-clicks'))
+    .success
 }
 
 export function buildPrintExportUrl(

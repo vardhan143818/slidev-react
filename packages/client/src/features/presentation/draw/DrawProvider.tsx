@@ -7,6 +7,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { isTypingElement } from "../browser";
+import { createPersistedDrawState, parsePersistedDrawState } from "./persistence";
 
 export interface DrawPoint {
   x: number;
@@ -43,18 +45,6 @@ interface DrawContextValue {
 }
 
 const DrawContext = createContext<DrawContextValue | null>(null);
-const STORAGE_VERSION = 1;
-
-interface PersistedDrawState {
-  version: number;
-  strokesBySlideId: Record<string, DrawStroke[]>;
-}
-
-function isTypingElement(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-
-  return target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
-}
 
 function strokeContainsPoint(
   stroke: DrawStroke,
@@ -99,6 +89,7 @@ export function DrawProvider({
   currentSlideId,
   storageKey,
   readOnly = false,
+  overlayOpen = false,
   remoteStrokes,
   onStrokesChange,
   children,
@@ -106,6 +97,7 @@ export function DrawProvider({
   currentSlideId: string;
   storageKey: string;
   readOnly?: boolean;
+  overlayOpen?: boolean;
   remoteStrokes?: {
     revision: number;
     strokesBySlideId: Record<string, DrawStroke[]>;
@@ -252,8 +244,7 @@ export function DrawProvider({
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (isTypingElement(event.target)) return;
-      if (typeof document !== "undefined" && document.body.dataset.presenterOverlay === "open")
-        return;
+      if (overlayOpen) return;
 
       const key = event.key.toLowerCase();
       const hasModifier = event.metaKey || event.ctrlKey || event.altKey;
@@ -312,7 +303,7 @@ export function DrawProvider({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [currentSlideId, enabled, readOnly]);
+  }, [currentSlideId, enabled, overlayOpen, readOnly]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -324,13 +315,13 @@ export function DrawProvider({
         return;
       }
 
-      const parsed = JSON.parse(raw) as PersistedDrawState;
-      if (parsed?.version !== STORAGE_VERSION || typeof parsed.strokesBySlideId !== "object") {
+      const parsed = parsePersistedDrawState(raw);
+      if (!parsed) {
         setStrokesBySlideId({});
         return;
       }
 
-      setStrokesBySlideId(parsed.strokesBySlideId ?? {});
+      setStrokesBySlideId(parsed.strokesBySlideId);
     } catch {
       setStrokesBySlideId({});
     }
@@ -339,10 +330,7 @@ export function DrawProvider({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const payload: PersistedDrawState = {
-      version: STORAGE_VERSION,
-      strokesBySlideId,
-    };
+    const payload = createPersistedDrawState(strokesBySlideId);
 
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(payload));
