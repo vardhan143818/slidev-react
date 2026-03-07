@@ -210,4 +210,3 @@ Wait before migrating if:
 ## Related Docs
 
 - [README](../../README.md)
-- [Feature roadmap](../plans/feat.todo.md)
