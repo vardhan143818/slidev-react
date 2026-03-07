@@ -4,8 +4,11 @@ import {
   Copy,
   Eraser,
   Expand,
+  Keyboard,
+  LayoutGrid,
   List,
   Link2,
+  NotebookText,
   PenLine,
   Printer,
   Radio,
@@ -83,11 +86,18 @@ export function PresentationStatus({
   stageScale,
   cursorMode,
   timelinePreviewOpen,
+  overviewOpen,
+  notesOpen,
+  shortcutsOpen,
+  canOpenOverview,
   onStartRecording,
   onStopRecording,
   onToggleWakeLock,
   onToggleFullscreen,
   onToggleTimelinePreview,
+  onToggleOverview,
+  onToggleNotes,
+  onToggleShortcuts,
   onStageScaleChange,
   onCursorModeChange,
   onOpenMirrorStage,
@@ -116,11 +126,18 @@ export function PresentationStatus({
   stageScale: number;
   cursorMode: "always" | "idle-hide";
   timelinePreviewOpen: boolean;
+  overviewOpen: boolean;
+  notesOpen: boolean;
+  shortcutsOpen: boolean;
+  canOpenOverview: boolean;
   onStartRecording: () => void;
   onStopRecording: () => void;
   onToggleWakeLock: () => void;
   onToggleFullscreen: () => void;
   onToggleTimelinePreview: () => void;
+  onToggleOverview: () => void;
+  onToggleNotes: () => void;
+  onToggleShortcuts: () => void;
   onStageScaleChange: (value: number) => void;
   onCursorModeChange: (value: "always" | "idle-hide") => void;
   onOpenMirrorStage?: () => void;
@@ -415,7 +432,7 @@ export function PresentationStatus({
                 tone="defaultStrong"
                 size="md"
                 weight="semibold"
-                className="text-sm tabular-nums"
+                className="h-9 px-3.5 text-sm tabular-nums"
               >
                 <Radio size={13} />
                 {formatTimer(sessionTimerSeconds)}
@@ -442,6 +459,31 @@ export function PresentationStatus({
                   <Printer size={12} />
                 </ChromeIconButton>
               )}
+              <ChromeIconButton
+                onClick={onToggleNotes}
+                title="Notes Workspace (N)"
+                aria-label="Toggle notes workspace"
+                tone={notesOpen ? "active" : "default"}
+              >
+                <NotebookText size={13} />
+              </ChromeIconButton>
+              <ChromeIconButton
+                onClick={onToggleOverview}
+                disabled={!canOpenOverview}
+                title="Quick Overview (O)"
+                aria-label="Toggle quick overview"
+                tone={overviewOpen ? "active" : "default"}
+              >
+                <LayoutGrid size={13} />
+              </ChromeIconButton>
+              <ChromeIconButton
+                onClick={onToggleShortcuts}
+                title="Keyboard shortcuts (?)"
+                aria-label="Toggle keyboard shortcuts"
+                tone={shortcutsOpen ? "active" : "default"}
+              >
+                <Keyboard size={13} />
+              </ChromeIconButton>
               <ChromeIconButton
                 onClick={onToggleTimelinePreview}
                 title={timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}

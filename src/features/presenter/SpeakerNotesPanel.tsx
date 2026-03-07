@@ -1,4 +1,3 @@
-import { LayoutGrid, MousePointerClick, NotebookText, PenLine, X } from "lucide-react";
 import { ChromePanel } from "../../ui/primitives/ChromePanel";
 import { ChromeTag } from "../../ui/primitives/ChromeTag";
 
@@ -46,27 +45,6 @@ export function SpeakerNotesPanel({
             </p>
           </>
         )}
-        <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-          <ChromeTag tone="muted" className="gap-1.5">
-            <NotebookText size={13} />
-            <span>N</span>
-          </ChromeTag>
-          <ChromeTag tone="muted" className="gap-1.5">
-            <LayoutGrid size={13} />
-            <span>O</span>
-          </ChromeTag>
-          <ChromeTag tone="muted" className="gap-1.5">
-            <PenLine size={13} />
-            <span>D</span>
-          </ChromeTag>
-          <ChromeTag tone="muted" className="gap-1.5">
-            <MousePointerClick size={13} />
-          </ChromeTag>
-          <ChromeTag tone="muted" className="gap-1.5">
-            <X size={13} />
-            <span>Esc</span>
-          </ChromeTag>
-        </div>
       </ChromePanel>
     </ChromePanel>
   );

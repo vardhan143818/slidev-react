@@ -11,6 +11,14 @@ import type { LayoutName } from "../../deck/model/layout";
 import type { TransitionName } from "../../deck/model/transition";
 import { DrawProvider, type DrawStroke } from "../draw/DrawProvider";
 import { KeyboardController } from "../navigation/KeyboardController";
+import { ShortcutsHelpOverlay } from "../navigation/ShortcutsHelpOverlay";
+import {
+  buildShortcutHelpSections,
+  createShortcutHelpTriggerState,
+  isShortcutHelpOpenKey,
+  registerShortcutHelpKeyDown,
+  registerShortcutHelpKeyUp,
+} from "../navigation/keyboardShortcuts";
 import { NotesOverview } from "../overview/NotesOverview";
 import { PresentationNavbar } from "../navigation/PresentationNavbar";
 import { useDeckNavigation } from "../navigation/useDeckNavigation";
@@ -62,7 +70,8 @@ const PRESENTER_SIDEBAR_WIDTH_STORAGE_KEY = "slide-react:presenter-sidebar-width
 const PRESENTER_SIDEBAR_WIDTH_MIN = 280;
 const PRESENTER_SIDEBAR_WIDTH_MAX = 420;
 const PRESENTER_STAGE_MIN_WIDTH = 720;
-const PRESENTER_DIVIDER_WIDTH = 12;
+const PRESENTER_DIVIDER_WIDTH = 10;
+const PRESENTER_BOTTOM_BAR_CLEARANCE = 72;
 const PRESENTER_DESKTOP_BREAKPOINT = 1024;
 
 type PresenterCursorMode = "always" | "idle-hide";
@@ -138,7 +147,12 @@ function resolveMaxCueStep(stepCounts: Map<number, number> | undefined) {
   return max;
 }
 
-type PresenterOverlay = "quick-overview" | "notes-overview" | "timeline-preview" | null;
+type PresenterOverlay =
+  | "quick-overview"
+  | "notes-overview"
+  | "timeline-preview"
+  | "shortcuts-help"
+  | null;
 
 export function PresenterShell({
   slides,
@@ -196,6 +210,7 @@ export function PresenterShell({
   const [isResizingSidebar, setIsResizingSidebar] = useState(false);
   const clicksBySlideIdRef = useRef(clicksBySlideId);
   const clicksTotalBySlideIdRef = useRef(clicksTotalBySlideId);
+  const shortcutHelpTriggerRef = useRef(createShortcutHelpTriggerState());
   const presenterLayoutRef = useRef<HTMLDivElement | null>(null);
   const wakeLock = useWakeLock();
   const fullscreen = useFullscreen();
@@ -265,9 +280,7 @@ export function PresenterShell({
 
       const containerWidth =
         presenterLayoutRef.current?.getBoundingClientRect().width ?? window.innerWidth;
-      setSidebarWidth((currentWidth) =>
-        clampPresenterSidebarWidth(currentWidth, containerWidth),
-      );
+      setSidebarWidth((currentWidth) => clampPresenterSidebarWidth(currentWidth, containerWidth));
     };
 
     updatePresenterLayoutMode();
@@ -298,10 +311,10 @@ export function PresenterShell({
 
   const setSlideClicksTotal = useCallback(
     (slideId: string, nextTotal: number) => {
-        const safeTotal = resolveCueTotal({
-          configuredCues: slideClicksConfig[slideId],
-          detectedCues: nextTotal,
-        });
+      const safeTotal = resolveCueTotal({
+        configuredCues: slideClicksConfig[slideId],
+        detectedCues: nextTotal,
+      });
 
       setClicksTotalBySlideId((prev) => {
         if (prev[slideId] === safeTotal) return prev;
@@ -596,6 +609,15 @@ export function PresenterShell({
   const canOpenOverview = canControl || session.role === "viewer";
   const overviewOpen = activeOverlay === "quick-overview";
   const notesOverviewOpen = activeOverlay === "notes-overview";
+  const shortcutsHelpOpen = activeOverlay === "shortcuts-help";
+  const shortcutHelpSections = useMemo(
+    () =>
+      buildShortcutHelpSections({
+        canControl,
+        canOpenOverview,
+      }),
+    [canControl, canOpenOverview],
+  );
   const progressPercent =
     navigation.total > 0 ? ((navigation.currentIndex + 1) / navigation.total) * 100 : 0;
   useEffect(() => {
@@ -718,7 +740,28 @@ export function PresenterShell({
     const onKeyDown = (event: KeyboardEvent) => {
       if (isTypingElement(event.target)) return;
 
+      if (!event.repeat) {
+        shortcutHelpTriggerRef.current = registerShortcutHelpKeyDown(
+          shortcutHelpTriggerRef.current,
+          event.key,
+        );
+      }
+
       const key = event.key.toLowerCase();
+
+      if (
+        isShortcutHelpOpenKey({
+          key: event.key,
+          shiftKey: event.shiftKey,
+          metaKey: event.metaKey,
+          ctrlKey: event.ctrlKey,
+          altKey: event.altKey,
+        })
+      ) {
+        event.preventDefault();
+        setActiveOverlay((value) => (value === "shortcuts-help" ? null : "shortcuts-help"));
+        return;
+      }
 
       if (key === "o") {
         if (!canOpenOverview) return;
@@ -739,8 +782,33 @@ export function PresenterShell({
       if (key === "escape") setActiveOverlay(null);
     };
 
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (isTypingElement(event.target)) return;
+
+      const result = registerShortcutHelpKeyUp(
+        shortcutHelpTriggerRef.current,
+        event.key,
+        Date.now(),
+      );
+      shortcutHelpTriggerRef.current = result.nextState;
+
+      if (!result.shouldToggle) return;
+
+      setActiveOverlay((value) => (value === "shortcuts-help" ? null : "shortcuts-help"));
+    };
+
+    const onBlur = () => {
+      shortcutHelpTriggerRef.current = createShortcutHelpTriggerState();
+    };
+
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", onBlur);
+    };
   }, [canControl, canOpenOverview]);
 
   useEffect(() => {
@@ -778,10 +846,7 @@ export function PresenterShell({
           {isPresenterRole && (
             <>
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_26%),radial-gradient(circle_at_78%_16%,rgba(244,114,182,0.14),transparent_20%),linear-gradient(180deg,#f8fbff_0%,#e8f0fb_52%,#f3f7ff_100%)]" />
-              <PresenterTopProgress
-                total={navigation.total}
-                progressPercent={progressPercent}
-              />
+              <PresenterTopProgress total={navigation.total} progressPercent={progressPercent} />
             </>
           )}
           {isPresenterRole && (
@@ -808,6 +873,10 @@ export function PresenterShell({
               stageScale={stageScale}
               cursorMode={cursorMode}
               timelinePreviewOpen={activeOverlay === "timeline-preview"}
+              overviewOpen={overviewOpen}
+              notesOpen={notesOverviewOpen}
+              shortcutsOpen={shortcutsHelpOpen}
+              canOpenOverview={canOpenOverview}
               onStartRecording={() => {
                 void recorder.start();
               }}
@@ -823,7 +892,20 @@ export function PresenterShell({
               onToggleTimelinePreview={() => {
                 setActiveOverlay((value) =>
                   value === "timeline-preview" ? null : "timeline-preview",
-                )
+                );
+              }}
+              onToggleOverview={() => {
+                if (!canOpenOverview) return;
+
+                setActiveOverlay((value) => (value === "quick-overview" ? null : "quick-overview"));
+              }}
+              onToggleNotes={() => {
+                if (!canControl) return;
+
+                setActiveOverlay((value) => (value === "notes-overview" ? null : "notes-overview"));
+              }}
+              onToggleShortcuts={() => {
+                setActiveOverlay((value) => (value === "shortcuts-help" ? null : "shortcuts-help"));
               }}
               onStageScaleChange={handleStageScaleChange}
               onCursorModeChange={handleCursorModeChange}
@@ -833,6 +915,7 @@ export function PresenterShell({
             />
           )}
           <div
+            style={isPresenterRole ? { paddingBottom: `${PRESENTER_BOTTOM_BAR_CLEARANCE}px` } : undefined}
             className={`relative min-h-0 min-w-0 size-full ${isPresenterRole ? "px-0 pb-0 pt-0 lg:px-0" : ""}`}
           >
             {isPresenterRole ? (
@@ -873,12 +956,14 @@ export function PresenterShell({
                 >
                   <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-200/90" />
                   <div
-                    className={`pointer-events-none absolute inset-y-0 left-1/2 w-3 -translate-x-1/2 transition-colors ${
-                      isResizingSidebar ? "bg-emerald-400/16" : "bg-transparent group-hover:bg-emerald-400/10"
+                    className={`pointer-events-none absolute inset-y-0 left-1/2 w-2 -translate-x-1/2 transition-colors ${
+                      isResizingSidebar
+                        ? "bg-emerald-400/16"
+                        : "bg-transparent group-hover:bg-emerald-400/10"
                     }`}
                   />
                   <div
-                    className={`pointer-events-none absolute left-1/2 top-1/2 h-14 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
+                    className={`pointer-events-none absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
                       isResizingSidebar
                         ? "bg-emerald-500/70"
                         : "bg-slate-300/90 group-hover:bg-emerald-500/55"
@@ -886,7 +971,7 @@ export function PresenterShell({
                   />
                 </div>
                 <aside className="relative z-10 flex min-h-0 min-w-0 flex-col gap-0 text-slate-900">
-                  <div className="grid min-h-0 flex-1 gap-0 lg:grid-rows-[minmax(220px,0.92fr)_minmax(0,1.08fr)]">
+                  <div className="grid min-h-0 flex-1 gap-0 lg:grid-rows-[minmax(220px,0.92fr)_12px_minmax(0,1.08fr)]">
                     <PresenterSidePreview
                       title="Up Next"
                       indexLabel={nextSlide ? String(navigation.currentIndex + 2) : "--"}
@@ -894,6 +979,10 @@ export function PresenterShell({
                       deckLayout={deckLayout}
                       deckBackground={deckBackground}
                     />
+                    <div className="relative flex items-center justify-center px-2" aria-hidden>
+                      <div className="h-px w-full rounded-full bg-slate-200/85" />
+                      <div className="absolute h-2 w-10 rounded-full bg-[radial-gradient(circle,rgba(148,163,184,0.22),transparent_72%)]" />
+                    </div>
                     <SpeakerNotesPanel
                       currentClicks={currentClicks}
                       currentClicksTotal={currentClicksTotal}
@@ -918,7 +1007,10 @@ export function PresenterShell({
             )}
           </div>
           {isPresenterRole && activeOverlay === "timeline-preview" && (
-            <div className="absolute inset-x-4 bottom-20 z-30 flex justify-center">
+            <div
+              className="absolute inset-x-4 z-30 flex justify-center"
+              style={{ bottom: `${PRESENTER_BOTTOM_BAR_CLEARANCE + 16}px` }}
+            >
               <FlowTimelinePreview
                 slide={currentSlide}
                 currentClicks={currentClicks}
@@ -941,6 +1033,7 @@ export function PresenterShell({
               showPresenterModeButton={session.role !== "presenter"}
               overviewOpen={overviewOpen}
               notesOpen={notesOverviewOpen}
+              shortcutsOpen={shortcutsHelpOpen}
               canOpenOverview={canOpenOverview}
               onEnterPresenterMode={
                 session.role !== "presenter" ? handleEnterPresenterMode : undefined
@@ -948,16 +1041,15 @@ export function PresenterShell({
               onToggleOverview={() => {
                 if (!canOpenOverview) return;
 
-                setActiveOverlay((value) =>
-                  value === "quick-overview" ? null : "quick-overview",
-                );
+                setActiveOverlay((value) => (value === "quick-overview" ? null : "quick-overview"));
               }}
               onToggleNotes={() => {
                 if (!canControl) return;
 
-                setActiveOverlay((value) =>
-                  value === "notes-overview" ? null : "notes-overview",
-                );
+                setActiveOverlay((value) => (value === "notes-overview" ? null : "notes-overview"));
+              }}
+              onToggleShortcuts={() => {
+                setActiveOverlay((value) => (value === "shortcuts-help" ? null : "shortcuts-help"));
               }}
               onPrev={retreatReveal}
               onNext={advanceReveal}
@@ -986,6 +1078,11 @@ export function PresenterShell({
               goToSlideAtStart(index);
               setActiveOverlay(null);
             }}
+          />
+          <ShortcutsHelpOverlay
+            open={shortcutsHelpOpen}
+            sections={shortcutHelpSections}
+            onClose={() => setActiveOverlay(null)}
           />
         </div>
       </DrawProvider>

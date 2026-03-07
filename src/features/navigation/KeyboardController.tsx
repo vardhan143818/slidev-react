@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useReveal } from "../reveal/RevealContext";
+import { resolveNavigationShortcutAction } from "./keyboardShortcuts";
 import { useDeckNavigation } from "./useDeckNavigation";
 
 function isTypingElement(target: EventTarget | null): boolean {
@@ -33,30 +34,35 @@ export function KeyboardController({
       if (typeof document !== "undefined" && document.body.dataset.presenterOverlay === "open")
         return;
 
-      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
-        event.preventDefault();
+      const action = resolveNavigationShortcutAction({
+        key: event.key,
+        shiftKey: event.shiftKey,
+      });
+      if (!action) return;
+
+      event.preventDefault();
+
+      if (action === "advance") {
         if (onAdvance) onAdvance();
         else if (reveal) reveal.advance();
         else navigation.next();
         return;
       }
 
-      if (event.key === "ArrowLeft" || event.key === "PageUp") {
-        event.preventDefault();
+      if (action === "retreat") {
         if (onRetreat) onRetreat();
         else if (reveal) reveal.retreat();
         else navigation.prev();
         return;
       }
 
-      if (event.key === "Home") {
-        event.preventDefault();
+      if (action === "first") {
         if (onFirst) onFirst();
         else navigation.first();
         return;
       }
 
-      if (event.key === "End") {
+      if (action === "last") {
         event.preventDefault();
         if (onLast) onLast();
         else navigation.last();

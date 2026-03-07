@@ -2,6 +2,7 @@ import {
   BookOpenText,
   ChevronLeft,
   ChevronRight,
+  Keyboard,
   LayoutGrid,
   NotebookText,
   PenLine,
@@ -37,10 +38,12 @@ export function PresentationNavbar({
   showPresenterModeButton,
   overviewOpen,
   notesOpen,
+  shortcutsOpen,
   canOpenOverview,
   onEnterPresenterMode,
   onToggleOverview,
   onToggleNotes,
+  onToggleShortcuts,
   onPrev,
   onNext,
   canControl,
@@ -53,10 +56,12 @@ export function PresentationNavbar({
   showPresenterModeButton: boolean;
   overviewOpen: boolean;
   notesOpen: boolean;
+  shortcutsOpen: boolean;
   canOpenOverview: boolean;
   onEnterPresenterMode?: () => void;
   onToggleOverview: () => void;
   onToggleNotes: () => void;
+  onToggleShortcuts: () => void;
   onPrev: () => void;
   onNext: () => void;
   canControl: boolean;
@@ -81,6 +86,16 @@ export function PresentationNavbar({
           radius="soft"
         >
           <BookOpenText size={15} />
+        </ChromeIconButton>
+        <ChromeIconButton
+          onClick={onToggleShortcuts}
+          title="Keyboard shortcuts (?)"
+          aria-label="Toggle keyboard shortcuts"
+          tone={shortcutsOpen ? "active" : "default"}
+          size="sm"
+          radius="soft"
+        >
+          <Keyboard size={15} />
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleNotes}
