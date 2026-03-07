@@ -34,6 +34,27 @@ function resolveBackgroundStyle(background: string | undefined): CSSProperties {
   return style;
 }
 
+function resolveSurfacePaddingClass(layout: SlideMeta["layout"]) {
+  return layout === "immersive" ? "px-0 py-0" : "px-18 py-14";
+}
+
+export function resolveSlideSurfaceClassName({
+  layout,
+  shadowClass,
+  overflowHidden = false,
+}: {
+  layout: SlideMeta["layout"];
+  shadowClass?: string;
+  overflowHidden?: boolean;
+}) {
+  return joinClassNames(
+    "slide-prose relative box-border size-full",
+    overflowHidden ? "overflow-hidden" : undefined,
+    resolveSurfacePaddingClass(layout),
+    shadowClass,
+  );
+}
+
 export function resolveSlideSurface({
   meta,
   deckBackground,

@@ -93,7 +93,7 @@ export function MinimaxReactVisualizer() {
   const activeTheme = themeClassMap[active.theme];
 
   return (
-    <section className="relative -m-14 flex h-[calc(100%+7rem)] w-[calc(100%+9rem)] overflow-hidden bg-[#1c1c1c] text-white">
+    <section className="relative flex size-full overflow-hidden bg-[#1c1c1c] text-white">
       <div className="flex min-w-0 flex-[1.8] items-center justify-center overflow-hidden border-r border-[#333]">
         <div
           className="relative h-[520px] w-[420px]"

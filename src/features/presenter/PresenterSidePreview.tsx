@@ -1,5 +1,5 @@
 import type { LayoutName } from "../../deck/model/layout";
-import { resolveSlideSurface } from "../player/slideSurface";
+import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/slideSurface";
 import { OVERVIEW_STAGE_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from "./stage";
 import type { CompiledSlide } from "./types";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
@@ -40,7 +40,9 @@ export function PresenterSidePreview({
   const surface = resolveSlideSurface({
     meta: slide.meta,
     deckBackground,
-    className: "slide-prose box-border size-full px-18 py-14",
+    className: resolveSlideSurfaceClassName({
+      layout: slide.meta.layout ?? deckLayout,
+    }),
   });
 
   return (

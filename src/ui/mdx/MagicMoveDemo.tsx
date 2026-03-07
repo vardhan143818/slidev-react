@@ -4,9 +4,19 @@ import { createHighlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
 
 const STEPS = [
-  `const hello = 'world'`,
-  `let hi = 'hello'`,
-  `function greet(name: string) {\n  return \`Hi, ${"${name}"}!\`\n}`,
+  `const message = 'Hello'
+const target = 'world'
+
+console.log(message, target)`,
+  `const message = 'Hi'
+const target = user.name
+
+console.log(\`${"${message}"}, ${"${target}"}!\`)`,
+  `function greet(target: string) {
+  const message = 'Hi'
+
+  return \`${"${message}"}, ${"${target}"}!\`
+}`,
 ];
 
 let highlighterPromise: Promise<HighlighterCore> | null = null;
@@ -52,14 +62,28 @@ export function MagicMoveDemo() {
   }
 
   return (
-    <div className="grid gap-3">
-      <ShikiMagicMove
-        lang="ts"
-        theme="vitesse-light"
-        highlighter={highlighter}
-        code={code}
-        options={{ duration: 800, stagger: 0.3, lineNumbers: true }}
-      />
+    <div className="magic-move-demo grid gap-4">
+      <div className="magic-move-demo-shell overflow-hidden rounded-xl border border-slate-200/80 bg-white/85 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+        <ShikiMagicMove
+          lang="ts"
+          theme="vitesse-light"
+          highlighter={highlighter}
+          code={code}
+          className="magic-move-demo-pre"
+          options={{
+            duration: 750,
+            stagger: 3,
+            delayMove: 0,
+            delayEnter: 0,
+            delayLeave: 0,
+            lineNumbers: false,
+            splitTokens: false,
+            enhanceMatching: true,
+            animateContainer: false,
+            containerStyle: false,
+          }}
+        />
+      </div>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"

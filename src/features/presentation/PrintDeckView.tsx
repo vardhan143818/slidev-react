@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, Printer } from "lucide-react";
 import type { LayoutName } from "../../deck/model/layout";
-import { resolveSlideSurface } from "../player/slideSurface";
+import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/slideSurface";
 import type { CompiledSlide } from "../presenter/types";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
 import { resolveRevealTotal } from "../reveal/clicks";
@@ -89,8 +89,11 @@ function PrintSlideGroup({
   const surface = resolveSlideSurface({
     meta: slide.meta,
     deckBackground,
-    className:
-      "slide-prose relative box-border size-full overflow-hidden px-18 py-14 shadow-[0_24px_60px_rgba(15,23,42,0.1)]",
+    className: resolveSlideSurfaceClassName({
+      layout: slide.meta.layout ?? deckLayout,
+      overflowHidden: true,
+      shadowClass: "shadow-[0_24px_60px_rgba(15,23,42,0.1)]",
+    }),
   });
   const probeStepsRef = useRef(new Map<number, number>());
   const [detectedClicks, setDetectedClicks] = useState(0);

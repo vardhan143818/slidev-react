@@ -771,6 +771,7 @@ export function PresenterShell({
             open={overviewOpen && canControl}
             slides={slides}
             currentIndex={navigation.currentIndex}
+            deckLayout={deckLayout}
             deckBackground={deckBackground}
             onClose={() => setActiveOverlay(null)}
             onSelect={(index) => {

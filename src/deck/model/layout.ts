@@ -3,6 +3,7 @@ export const layoutNames = [
   "center",
   "cover",
   "section",
+  "immersive",
   "two-cols",
   "image-right",
   "statement",

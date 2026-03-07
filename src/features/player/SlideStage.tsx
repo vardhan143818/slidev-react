@@ -9,7 +9,7 @@ import type { SlideComponent, SlideMeta } from "../../deck/model/slide";
 import { DrawOverlay } from "../draw/DrawOverlay";
 import { useDraw } from "../draw/DrawProvider";
 import type { PresentationCursorState } from "../presentation/types";
-import { resolveSlideSurface } from "./slideSurface";
+import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import type { TransitionName } from "../../deck/model/transition";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
 
@@ -101,6 +101,10 @@ function toTransitionClassName(transition: TransitionName | undefined) {
   }
 }
 
+function resolveStageContentClassName(transitionClassName: string | undefined) {
+  return transitionClassName ? `size-full ${transitionClassName}` : "size-full";
+}
+
 export function SlideStage({
   Slide,
   slideId,
@@ -130,8 +134,10 @@ export function SlideStage({
   const surface = resolveSlideSurface({
     meta,
     deckBackground,
-    className:
-      "slide-prose relative box-border size-full px-18 py-14 shadow-[0_20px_60px_rgba(21,42,82,0.12)]",
+    className: resolveSlideSurfaceClassName({
+      layout: meta.layout ?? deckLayout,
+      shadowClass: "shadow-[0_20px_60px_rgba(21,42,82,0.12)]",
+    }),
   });
   const viewportStageStyle = useMemo(
     () => ({
@@ -143,6 +149,7 @@ export function SlideStage({
     [offset.x, offset.y, scale],
   );
   const transitionClassName = toTransitionClassName(meta.transition ?? deckTransition);
+  const stageContentClassName = resolveStageContentClassName(transitionClassName);
   const remoteCursorPosition = useMemo(() => {
     if (!remoteCursor) return null;
 
@@ -175,7 +182,7 @@ export function SlideStage({
           className={surface.className}
           style={surface.style}
         >
-          <div className={transitionClassName}>
+          <div className={stageContentClassName}>
             <Layout>
               <Slide />
             </Layout>

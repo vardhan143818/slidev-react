@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { resolveSlideSurface } from "../player/slideSurface";
+import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/slideSurface";
 import {
   OVERVIEW_STAGE_HEIGHT,
   OVERVIEW_STAGE_SCALE,
@@ -15,6 +15,7 @@ export function QuickOverview({
   open,
   slides,
   currentIndex,
+  deckLayout,
   deckBackground,
   onClose,
   onSelect,
@@ -22,6 +23,7 @@ export function QuickOverview({
   open: boolean;
   slides: CompiledSlide[];
   currentIndex: number;
+  deckLayout?: CompiledSlide["meta"]["layout"];
   deckBackground?: string;
   onClose: () => void;
   onSelect: (index: number) => void;
@@ -58,7 +60,9 @@ export function QuickOverview({
               const surface = resolveSlideSurface({
                 meta: slide.meta,
                 deckBackground,
-                className: "slide-prose box-border size-full px-18 py-14",
+                className: resolveSlideSurfaceClassName({
+                  layout: slide.meta.layout ?? deckLayout,
+                }),
               });
               return (
                 <button
