@@ -1,11 +1,11 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest";
 import {
   canAdvanceFlow,
   canRetreatFlow,
   clampCueIndex,
   resolveAdvanceFlow,
   resolveRetreatFlow,
-} from "./navigation"
+} from "./navigation";
 
 describe("presentation flow navigation", () => {
   it("advances cues before moving to the next page", () => {
@@ -19,8 +19,8 @@ describe("presentation flow navigation", () => {
     ).toEqual({
       pageIndex: 4,
       cueIndex: 2,
-    })
-  })
+    });
+  });
 
   it("moves to the next page and resets the cue index when the current page is exhausted", () => {
     expect(
@@ -33,8 +33,8 @@ describe("presentation flow navigation", () => {
     ).toEqual({
       pageIndex: 5,
       cueIndex: 0,
-    })
-  })
+    });
+  });
 
   it("does nothing when already at the end of the deck", () => {
     expect(
@@ -44,8 +44,8 @@ describe("presentation flow navigation", () => {
         currentPageIndex: 9,
         totalPages: 10,
       }),
-    ).toBeNull()
-  })
+    ).toBeNull();
+  });
 
   it("retreats cues before jumping to the previous page", () => {
     expect(
@@ -58,8 +58,8 @@ describe("presentation flow navigation", () => {
     ).toEqual({
       pageIndex: 5,
       cueIndex: 1,
-    })
-  })
+    });
+  });
 
   it("restores the previous page progression when returning to it", () => {
     expect(
@@ -72,8 +72,8 @@ describe("presentation flow navigation", () => {
     ).toEqual({
       pageIndex: 4,
       cueIndex: 2,
-    })
-  })
+    });
+  });
 
   it("falls back to the previous page total when no stored cue index exists", () => {
     expect(
@@ -85,8 +85,8 @@ describe("presentation flow navigation", () => {
     ).toEqual({
       pageIndex: 1,
       cueIndex: 3,
-    })
-  })
+    });
+  });
 
   it("computes availability correctly", () => {
     expect(
@@ -96,7 +96,7 @@ describe("presentation flow navigation", () => {
         currentPageIndex: 0,
         totalPages: 3,
       }),
-    ).toBe(true)
+    ).toBe(true);
     expect(
       canAdvanceFlow({
         currentCueIndex: 0,
@@ -104,24 +104,24 @@ describe("presentation flow navigation", () => {
         currentPageIndex: 2,
         totalPages: 3,
       }),
-    ).toBe(false)
+    ).toBe(false);
     expect(
       canRetreatFlow({
         currentCueIndex: 1,
         currentPageIndex: 0,
       }),
-    ).toBe(true)
+    ).toBe(true);
     expect(
       canRetreatFlow({
         currentCueIndex: 0,
         currentPageIndex: 0,
       }),
-    ).toBe(false)
-  })
+    ).toBe(false);
+  });
 
   it("clamps cue indices to non-negative totals", () => {
-    expect(clampCueIndex(-3, 4)).toBe(0)
-    expect(clampCueIndex(7, 4)).toBe(4)
-    expect(clampCueIndex(3)).toBe(3)
-  })
-})
+    expect(clampCueIndex(-3, 4)).toBe(0);
+    expect(clampCueIndex(7, 4)).toBe(4);
+    expect(clampCueIndex(3)).toBe(3);
+  });
+});

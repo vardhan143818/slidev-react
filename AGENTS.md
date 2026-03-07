@@ -8,9 +8,9 @@
 The app root is the repository root. Main source code lives in `src/`, organized by responsibility rather than framework layer:
 
 - `src/app/`: app assembly, providers, and entry wiring
-- `src/deck/`: deck parsing, frontmatter handling, MDX compilation, and generated deck artifacts
+- `src/slides/`: deck parsing, frontmatter handling, MDX compilation, and generated deck artifacts
 - `src/features/`: product features such as presenter mode, reveal flow, sync, draw, and navigation
-- `src/features/player/`: slide stage rendering and interaction
+- `src/features/presentation/stage/`: slide stage rendering and interaction
 - `src/ui/`: reusable UI and MDX helper components
 - `src/theme/`: layouts and visual tokens
 
@@ -46,17 +46,17 @@ Name components in PascalCase (`PresenterShell.tsx`), helpers in camelCase (`par
 
 ## Testing Guidelines
 
-Vitest is the test runner. Add or update tests when changing parsing, compilation, reveal navigation, or presentation session behavior. Prefer colocated tests such as `src/deck/parsing/parseDeck.test.ts`. Run `bun run test` before opening a PR.
+Vitest is the test runner. Add or update tests when changing parsing, compilation, reveal navigation, or presentation session behavior. Prefer colocated tests such as `src/slides/parsing/parseDeck.test.ts`. Run `bun run test` before opening a PR.
 
 ## Commit & Pull Request Guidelines
 
 This repository currently has no commit history, so no project-specific convention is established yet. Use short, imperative commit messages such as `Add reveal sync regression test`. Keep PRs focused and include:
 
 - a brief summary of the change
-- affected areas (for example `src/deck` or `slides.mdx`)
+- affected areas (for example `src/slides` or `slides.mdx`)
 - test results
 - screenshots or short recordings for UI or presentation-flow changes
 
 ## Contributor Notes
 
-Document only behavior that exists today. If you mention deck syntax in docs, verify it against `slides.mdx`, `src/deck/`, and the current runtime rather than legacy Slidev behavior.
+Document only behavior that exists today. If you mention deck syntax in docs, verify it against `slides.mdx`, `src/slides/`, and the current runtime rather than legacy Slidev behavior.

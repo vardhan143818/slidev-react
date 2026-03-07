@@ -19,18 +19,18 @@ function chooseMimeType(): string | null {
 function downloadBlob({
   blob,
   exportFilename,
-  deckTitle,
+  slidesTitle,
 }: {
   blob: Blob;
   exportFilename?: string;
-  deckTitle?: string;
+  slidesTitle?: string;
 }) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = createRecordingDownloadName({
     exportFilename,
-    deckTitle,
+    slidesTitle,
   });
   anchor.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -39,11 +39,11 @@ function downloadBlob({
 export function usePresentationRecorder({
   enabled,
   exportFilename,
-  deckTitle,
+  slidesTitle,
 }: {
   enabled: boolean;
   exportFilename?: string;
-  deckTitle?: string;
+  slidesTitle?: string;
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -135,7 +135,7 @@ export function usePresentationRecorder({
           downloadBlob({
             blob,
             exportFilename,
-            deckTitle,
+            slidesTitle,
           });
       });
 
@@ -179,7 +179,7 @@ export function usePresentationRecorder({
       clearElapsedTimer();
       stopStreamTracks();
     };
-  }, [deckTitle, exportFilename]);
+  }, [slidesTitle, exportFilename]);
 
   return {
     supported,

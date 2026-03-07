@@ -64,7 +64,7 @@ function createDefaultSessionId(seed: string) {
     seed
       .replace(/[^a-z0-9]/gi, "")
       .toLowerCase()
-      .slice(0, 12) || "deck";
+      .slice(0, 12) || "slides";
   return `${prefix}-default`;
 }
 

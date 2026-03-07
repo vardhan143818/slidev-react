@@ -1,12 +1,12 @@
 import { MDXProvider } from "@mdx-js/react";
-import compiledDeck from "@generated/deck";
+import compiledSlides from "@generated/slides";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DeckProvider } from "./providers/DeckProvider";
+import { SlidesProvider } from "./providers/SlidesProvider";
 import { AddonProvider, useSlideAddons } from "../addons/AddonProvider";
-import { PrintDeckView } from "../features/presentation/PrintDeckView";
-import { PresenterShell } from "../features/presenter/PresenterShell";
+import { PrintSlidesView } from "../features/presentation/PrintSlidesView";
+import { PresenterShell } from "../features/presentation/presenter/PresenterShell";
 import {
-  buildDeckUrl,
+  buildSlidesUrl,
   resolvePresentationExportMode,
   resolvePrintExportWithClicks,
 } from "../features/presentation/printExport";
@@ -23,7 +23,7 @@ function ThemeBoundApp({
   exportMode,
   exportWithClicks,
   exportBaseName,
-  deck,
+  slidesDocument,
   drawStorageKey,
   presentationSession,
   handleSyncModeChange,
@@ -31,7 +31,7 @@ function ThemeBoundApp({
   exportMode: "print" | null;
   exportWithClicks: boolean;
   exportBaseName: string;
-  deck: typeof compiledDeck;
+  slidesDocument: typeof compiledSlides;
   drawStorageKey: string;
   presentationSession: PresentationSession;
   handleSyncModeChange: (mode: PresentationSyncMode) => void;
@@ -55,32 +55,34 @@ function ThemeBoundApp({
 
   const content =
     exportMode === "print" ? (
-      <PrintDeckView
-        slides={deck.slides}
-        deckTitle={deck.meta.title}
-        deckLayout={deck.meta.layout}
-        deckBackground={deck.meta.background}
+      <PrintSlidesView
+        slides={slidesDocument.slides}
+        slidesTitle={slidesDocument.meta.title}
+        slidesViewport={slidesDocument.meta.viewport}
+        slidesLayout={slidesDocument.meta.layout}
+        slidesBackground={slidesDocument.meta.background}
         exportBaseName={exportBaseName}
         withClicks={exportWithClicks}
         onBack={() => {
-          window.location.assign(buildDeckUrl(window.location.href));
+          window.location.assign(buildSlidesUrl(window.location.href));
         }}
       />
     ) : (
-      <DeckProvider total={deck.slides.length}>
+      <SlidesProvider total={slidesDocument.slides.length}>
         <PresenterShell
-          slides={deck.slides}
-          deckTitle={deck.meta.title}
-          deckLayout={deck.meta.layout}
-          deckBackground={deck.meta.background}
-          deckTransition={deck.meta.transition}
-          deckExportFilename={deck.meta.exportFilename}
-          deckSessionSeed={deck.sourceHash}
+          slides={slidesDocument.slides}
+          slidesTitle={slidesDocument.meta.title}
+          slidesViewport={slidesDocument.meta.viewport}
+          slidesLayout={slidesDocument.meta.layout}
+          slidesBackground={slidesDocument.meta.background}
+          slidesTransition={slidesDocument.meta.transition}
+          slidesExportFilename={slidesDocument.meta.exportFilename}
+          slidesSessionSeed={slidesDocument.sourceHash}
           drawStorageKey={drawStorageKey}
           session={presentationSession}
           onSyncModeChange={handleSyncModeChange}
         />
-      </DeckProvider>
+      </SlidesProvider>
     );
 
   return (
@@ -96,7 +98,7 @@ function ThemeBoundApp({
 }
 
 export default function App() {
-  const deck = compiledDeck;
+  const slidesDocument = compiledSlides;
   const exportMode = useMemo(
     () =>
       typeof window === "undefined" ? null : resolvePresentationExportMode(window.location.search),
@@ -107,15 +109,15 @@ export default function App() {
       typeof window === "undefined" ? false : resolvePrintExportWithClicks(window.location.search),
     [],
   );
-  const deckHash = useMemo(() => deck.sourceHash, [deck.sourceHash]);
-  const drawStorageKey = useMemo(() => `slide-react:draw:${deckHash}`, [deckHash]);
+  const slidesHash = useMemo(() => slidesDocument.sourceHash, [slidesDocument.sourceHash]);
+  const drawStorageKey = useMemo(() => `slide-react:draw:${slidesHash}`, [slidesHash]);
   const exportBaseName = useMemo(
     () =>
       resolvePresentationFileNameBase({
-        exportFilename: deck.meta.exportFilename,
-        deckTitle: deck.meta.title,
+        exportFilename: slidesDocument.meta.exportFilename,
+        slidesTitle: slidesDocument.meta.title,
       }),
-    [deck.meta.exportFilename, deck.meta.title],
+    [slidesDocument.meta.exportFilename, slidesDocument.meta.title],
   );
   const sessionBase = useMemo<PresentationSession>(() => {
     if (exportMode === "print") {
@@ -131,8 +133,8 @@ export default function App() {
       };
     }
 
-    return resolvePresentationSession(deckHash);
-  }, [deckHash, exportMode]);
+    return resolvePresentationSession(slidesHash);
+  }, [slidesHash, exportMode]);
   const [syncMode, setSyncMode] = useState<PresentationSyncMode>(sessionBase.syncMode);
   const presentationSession = useMemo<PresentationSession>(
     () => ({
@@ -148,8 +150,10 @@ export default function App() {
 
   useEffect(() => {
     document.title =
-      exportMode === "print" ? `${exportBaseName}.pdf` : (deck.meta.title ?? "Slide React MVP");
-  }, [deck.meta.title, exportBaseName, exportMode]);
+      exportMode === "print"
+        ? `${exportBaseName}.pdf`
+        : (slidesDocument.meta.title ?? "Slide React MVP");
+  }, [slidesDocument.meta.title, exportBaseName, exportMode]);
 
   useEffect(() => {
     const mode = exportMode === "print" ? "print" : "live";
@@ -165,13 +169,13 @@ export default function App() {
   }, []);
 
   return (
-    <ThemeProvider themeId={deck.meta.theme}>
-      <AddonProvider addonIds={deck.meta.addons}>
+    <ThemeProvider themeId={slidesDocument.meta.theme}>
+      <AddonProvider addonIds={slidesDocument.meta.addons}>
         <ThemeBoundApp
           exportMode={exportMode}
           exportWithClicks={exportWithClicks}
           exportBaseName={exportBaseName}
-          deck={deck}
+          slidesDocument={slidesDocument}
           drawStorageKey={drawStorageKey}
           presentationSession={presentationSession}
           handleSyncModeChange={handleSyncModeChange}

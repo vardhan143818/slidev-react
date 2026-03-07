@@ -195,7 +195,7 @@ html[data-presentation-mode="print"] body {
 .print-slide-sheet {
   position: relative;
   width: 100%;
-  aspect-ratio: 297 / 210;
+  aspect-ratio: var(--print-page-aspect-ratio, 297 / 210);
   overflow: hidden;
 }
 
@@ -209,11 +209,6 @@ html[data-presentation-mode="print"] body {
 }
 
 @media print {
-  @page {
-    size: landscape;
-    margin: 0;
-  }
-
   html,
   body,
   #root {
@@ -229,16 +224,16 @@ html[data-presentation-mode="print"] body {
     -webkit-print-color-adjust: exact;
   }
 
-  .print-deck-toolbar {
+  .print-slides-toolbar {
     display: none;
   }
 
-  .print-deck-view {
+  .print-slides-view {
     min-height: auto;
     background: #fff;
   }
 
-  .print-deck-content {
+  .print-slides-content {
     align-items: center;
     width: 100%;
     max-width: none;
@@ -252,8 +247,8 @@ html[data-presentation-mode="print"] body {
     break-after: page;
     page-break-after: always;
     margin: 0;
-    width: 297mm;
-    height: 210mm;
+    width: var(--print-page-width, 297mm);
+    height: var(--print-page-height, 210mm);
   }
 
   .print-slide-meta {
@@ -266,8 +261,8 @@ html[data-presentation-mode="print"] body {
   }
 
   .print-slide-sheet {
-    width: 297mm;
-    height: 210mm;
+    width: var(--print-page-width, 297mm);
+    height: var(--print-page-height, 210mm);
     aspect-ratio: auto;
     border: none;
     border-radius: 0;
@@ -1202,8 +1197,16 @@ html[data-presentation-mode="print"] body {
 
 .course-cover[data-tone="light"] {
   background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--cc-accent) 14%, white) 0%, transparent 28%),
-    radial-gradient(circle at bottom left, color-mix(in srgb, var(--cc-accent) 10%, white) 0%, transparent 24%),
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--cc-accent) 14%, white) 0%,
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      color-mix(in srgb, var(--cc-accent) 10%, white) 0%,
+      transparent 24%
+    ),
     linear-gradient(180deg, #f8fdf8 0%, #f3f8f4 48%, #edf4ef 100%);
   color: #0f172a;
 }

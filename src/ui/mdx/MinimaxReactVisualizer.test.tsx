@@ -1,6 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { RevealProvider, type RevealContextValue } from "../../features/reveal/RevealContext";
+import {
+  RevealProvider,
+  type RevealContextValue,
+} from "../../features/presentation/reveal/RevealContext";
 import { MinimaxReactVisualizer } from "./MinimaxReactVisualizer";
 
 function createRevealValue(clicks: number): RevealContextValue {

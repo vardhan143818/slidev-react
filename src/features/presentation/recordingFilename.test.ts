@@ -10,7 +10,7 @@ describe("recording filename", () => {
     expect(
       resolveRecordingFileNameBase({
         exportFilename: "client-demo",
-        deckTitle: "Ignored Title",
+        slidesTitle: "Ignored Title",
       }),
     ).toBe("client-demo");
   });
@@ -26,13 +26,13 @@ describe("recording filename", () => {
   it("falls back to a slugified title", () => {
     expect(
       resolveRecordingFileNameBase({
-        deckTitle: "Q4 Review Deck",
+        slidesTitle: "Q4 Review Deck",
       }),
     ).toBe("q4-review-deck");
   });
 
   it("uses a configurable fallback for non-recording exports", () => {
-    expect(resolvePresentationFileNameBase({})).toBe("slide-react-deck");
+    expect(resolvePresentationFileNameBase({})).toBe("slide-react-slides");
   });
 
   it("creates a deterministic download name", () => {

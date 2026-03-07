@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createSlideImageFileName,
   createSlideSnapshotFileName,
-  resolveExportDeckBaseName,
+  resolveExportSlidesBaseName,
   trimPdfExtension,
 } from "./exportArtifacts";
 
@@ -11,12 +11,12 @@ describe("presentation export artifacts", () => {
     expect(trimPdfExtension("client-demo.pdf")).toBe("client-demo");
   });
 
-  it("resolves a stable deck base name", () => {
-    expect(resolveExportDeckBaseName("Q4 Review Deck.pdf")).toBe("q4-review-deck");
+  it("resolves a stable slides base name", () => {
+    expect(resolveExportSlidesBaseName("Q4 Review Deck.pdf")).toBe("q4-review-deck");
   });
 
   it("falls back when the document title is empty", () => {
-    expect(resolveExportDeckBaseName("   ")).toBe("slide-react-deck");
+    expect(resolveExportSlidesBaseName("   ")).toBe("slide-react-slides");
   });
 
   it("builds slide image names from the slide index and title", () => {

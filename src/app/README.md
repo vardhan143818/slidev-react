@@ -15,4 +15,4 @@
 
 - reveal、draw、presentation sync 这类明确 feature 语义
 - 纯展示组件
-- deck parsing / compiling 逻辑
+- slides parsing / compiling 逻辑

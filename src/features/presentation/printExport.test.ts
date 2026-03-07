@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildDeckUrl,
+  buildSlidesUrl,
   buildPrintExportUrl,
   resolvePresentationExportMode,
   resolvePrintExportWithClicks,
@@ -36,7 +36,7 @@ describe("presentation print export", () => {
   });
 
   it("removes export mode when returning to the live deck", () => {
-    expect(buildDeckUrl("http://localhost:5173/presenter/3?foo=bar&export=print")).toBe(
+    expect(buildSlidesUrl("http://localhost:5173/presenter/3?foo=bar&export=print")).toBe(
       "http://localhost:5173/presenter/3?foo=bar",
     );
   });

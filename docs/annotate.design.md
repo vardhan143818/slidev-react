@@ -12,12 +12,12 @@ It should help the presenter answer one question:
 
 ```tsx
 type AnnotateProps = {
-  children: ReactNode
-  type?: 'underline' | 'box' | 'circle' | 'highlight' | 'strike-through' | 'crossed-off'
-  step?: number
-  animate?: boolean
-  color?: string
-}
+  children: ReactNode;
+  type?: "underline" | "box" | "circle" | "highlight" | "strike-through" | "crossed-off";
+  step?: number;
+  animate?: boolean;
+  color?: string;
+};
 ```
 
 ## Design Rules

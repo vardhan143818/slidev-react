@@ -1,6 +1,6 @@
 # slidev-react
 
-一个以 React 为核心、使用 MDX 编写 deck 的演示文稿运行时，内置 presenter / viewer 模式，以及一套面向演示场景的交互能力。
+一个以 React 为核心、使用 MDX 编写 slides 的演示文稿运行时，内置 presenter / viewer 模式，以及一套面向演示场景的交互能力。
 
 [English README](./README.md)
 
@@ -11,15 +11,15 @@
 - React 19 渲染层
 - MDX 内容编写格式
 - Vite 应用运行时
-- 位于 `src/deck` 下的编译期 deck 处理链路
+- 位于 `src/slides` 下的编译期 slides 处理链路
 - 支持 presenter/viewer 同步、渐进揭示、涂鸦和录制的演示壳层
 
-这个仓库不是 Vue 版 Slidev 运行时，而是一套 React + MDX 的独立实现。它借鉴了一些开发者演示工具的思路，但使用的是自己的 deck 模型和渲染链路。
+这个仓库不是 Vue 版 Slidev 运行时，而是一套 React + MDX 的独立实现。它借鉴了一些开发者演示工具的思路，但使用的是自己的 slides 模型和渲染链路。
 
 ## 功能亮点
 
-- 使用 [`slides.mdx`](./slides.mdx) 作为 deck 源文件
-- 编译期解析 deck 并生成可运行的 deck artifact
+- 使用 [`slides.mdx`](./slides.mdx) 作为 slides 源文件
+- 编译期解析 slides 并生成可运行的 slides artifact
 - 内置多种布局：`default`、`center`、`cover`、`section`、`two-cols`、`image-right`、`statement`
 - 提供 React 风格的 MDX 组件：`Badge`、`Callout`、`AnnotationMark`、`Reveal`、`RevealGroup`
 - 原生支持 Mermaid 和 PlantUML 图表代码块
@@ -31,7 +31,7 @@
 
 ## 当前状态
 
-项目目前仍处于 MVP / playground 阶段，API、编写约定和 deck 能力都还有继续演进的空间。
+项目目前仍处于 MVP / playground 阶段，API、编写约定和 slides 能力都还有继续演进的空间。
 
 ## 发布定位
 
@@ -71,30 +71,30 @@ bun run preview
 ### 用 Playwright 导出演示产物
 
 ```bash
-bun run export:deck
+bun run export:slides
 ```
 
-### 检查 deck 编写问题
+### 检查 slides 编写问题
 
 ```bash
-bun run lint:deck
+bun run lint:slides
 ```
 
-如果你想在 CI 里把 warning 也当失败处理，可以用 `bun run lint:deck -- --strict`。
+如果你想在 CI 里把 warning 也当失败处理，可以用 `bun run lint:slides -- --strict`。
 
-它会把浏览器真实渲染后的产物写到 `output/export/<deck-name>/`：
+它会把浏览器真实渲染后的产物写到 `output/export/<slides-name>/`：
 
-- 整套 deck 的 `*.pdf`
+- 整套 slides 的 `*.pdf`
 - 每一页一张的 `png/*.png`
 
 常见变体：
 
 ```bash
-bun run export:deck:pdf
-bun run export:deck:png
-bun run export:deck -- --slides 3-7
-bun run export:deck -- --with-clicks
-bun run export:deck -- --base-url http://127.0.0.1:4173
+bun run export:slides:pdf
+bun run export:slides:png
+bun run export:slides -- --slides 3-7
+bun run export:slides -- --with-clicks
+bun run export:slides -- --base-url http://127.0.0.1:4173
 ```
 
 ### 清理生成产物
@@ -135,22 +135,22 @@ bun run presentation:server
 - 基于浏览器打印能力的 print / PDF 导出
 - 总览面板和 presenter 控制面板
 - presenter 模式下的 wake lock、mirror stage 打开能力、fullscreen 切换、stage scale 和空闲隐藏光标设置
-- `bun run lint:deck`，用于在构建前发现未知 theme、addon、layout 等编写问题
+- `bun run lint:slides`，用于在构建前发现未知 theme、addon、layout 等编写问题
 
-## Deck 编写方式
+## Slides 编写方式
 
-Deck 源文件位于 [`slides.mdx`](./slides.mdx)。
+Slides 源文件位于 [`slides.mdx`](./slides.mdx)。
 
 当前的核心编写规则：
 
 - 用 `---` 分隔页面
-- 用 frontmatter 描述 deck 或单页 metadata
+- 用 frontmatter 描述 slides 级或单页 metadata
 - 用 MDX 编写页面内容
 - 可以在 MDX 中直接使用仓库提供的 React 组件
 
 目前支持的 frontmatter：
 
-- Deck 级：`title`、`theme`、`addons`、`layout`、`background`、`transition`、`exportFilename`
+- Slides 级：`title`、`theme`、`addons`、`layout`、`background`、`transition`、`exportFilename`
 - Slide 级：`title`、`layout`、`class`、`background`、`transition`、`clicks`、`notes`、`src`
 
 补充说明：
@@ -171,7 +171,7 @@ Deck 源文件位于 [`slides.mdx`](./slides.mdx)。
 
 ```mdx
 ---
-title: Demo Deck
+title: Demo Slides
 theme: paper
 addons:
   - insight
@@ -222,7 +222,7 @@ notes: |
 
 当使用 `src:` 时，同一个 slide block 里不要再写 inline 正文内容。
 
-当前如果要导出 deck，可以直接在 presenter 壳层里使用 `Print / PDF` 按钮、在当前 URL 后加上 `?export=print` 走浏览器打印，或者运行 `bun run export:deck`，由 Playwright 直接产出 PDF 和 PNG。
+当前如果要导出 slides，可以直接在 presenter 壳层里使用 `Print / PDF` 按钮、在当前 URL 后加上 `?export=print` 走浏览器打印，或者运行 `bun run export:slides`，由 Playwright 直接产出 PDF 和 PNG。
 
 ## 本地主题
 
@@ -248,7 +248,7 @@ theme: paper
 
 ## 本地 Addons
 
-Deck 可以通过 frontmatter 启用本地 addon：
+Slides 可以通过 frontmatter 启用本地 addon：
 
 ```mdx
 ---
@@ -283,7 +283,7 @@ layout: spotlight
 </Insight>
 ```
 
-放在 `src/addons/<addon-id>/style.css` 的 addon 样式也会自动加载。当前如果 deck 请求了未知 addon，运行时会先忽略它，保证启动安全；这也意味着 addon API 现在仍属于早期实验态。
+放在 `src/addons/<addon-id>/style.css` 的 addon 样式也会自动加载。当前如果 slides 请求了未知 addon，运行时会先忽略它，保证启动安全；这也意味着 addon API 现在仍属于早期实验态。
 
 ## MDX 辅助组件
 
@@ -318,9 +318,9 @@ layout: spotlight
 [`src/`](./src) 下的主要目录分工如下：
 
 - `app/`：应用装配层、provider 组合、入口编排
-- `deck/`：deck 解析、frontmatter 处理、MDX 编译、生成物构建
+- `slides/`：slides 解析、frontmatter 处理、MDX 编译、生成物构建
 - `features/`：reveal、presenter、sync、draw、navigation 等产品能力
-- `features/player/`：舞台渲染和舞台交互
+- `features/presentation/stage/`：舞台渲染和舞台交互
 - `addons/`：本地运行时扩展层，可挂 layout、MDX helper 和 provider
 - `ui/`：可复用展示组件和 MDX helper
 - `theme/`：布局与视觉 token
@@ -347,7 +347,7 @@ layout: spotlight
 构建产物应视为一次性输出，不应提交进仓库。当前约定如下：
 
 - `dist/`：生产构建输出
-- `.generated/`：编译期 deck 生成物
+- `.generated/`：编译期 slides 生成物
 - `output/`：运行时生成输出
 
 如果这些文件不是你改动的一部分，提交前请用 `bun run clean` 清掉。

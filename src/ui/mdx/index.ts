@@ -6,7 +6,7 @@ import { Callout } from "../primitives/Callout";
 import { CourseCover } from "./CourseCover";
 import { MagicMoveDemo } from "./MagicMoveDemo";
 import { MinimaxReactVisualizer } from "./MinimaxReactVisualizer";
-import { Reveal, RevealGroup } from "../../features/reveal/Reveal";
+import { Reveal, RevealGroup } from "../../features/presentation/reveal/Reveal";
 
 export const mdxComponents = {
   Badge,

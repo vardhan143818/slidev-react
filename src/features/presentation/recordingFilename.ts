@@ -12,17 +12,17 @@ function trimKnownExtension(value: string) {
 
 export function resolvePresentationFileNameBase({
   exportFilename,
-  deckTitle,
-  fallback = "slide-react-deck",
+  slidesTitle,
+  fallback = "slide-react-slides",
 }: {
   exportFilename?: string;
-  deckTitle?: string;
+  slidesTitle?: string;
   fallback?: string;
 }) {
   const preferred = trimKnownExtension(exportFilename?.trim() ?? "");
   if (preferred) return preferred;
 
-  const titleSlug = slugifySegment(deckTitle ?? "");
+  const titleSlug = slugifySegment(slidesTitle ?? "");
   if (titleSlug) return titleSlug;
 
   return fallback;
@@ -30,21 +30,21 @@ export function resolvePresentationFileNameBase({
 
 export function resolveRecordingFileNameBase({
   exportFilename,
-  deckTitle,
+  slidesTitle,
 }: {
   exportFilename?: string;
-  deckTitle?: string;
+  slidesTitle?: string;
 }) {
   return resolvePresentationFileNameBase({
     exportFilename,
-    deckTitle,
+    slidesTitle,
     fallback: "slide-react-recording",
   });
 }
 
 export function createRecordingDownloadName(options: {
   exportFilename?: string;
-  deckTitle?: string;
+  slidesTitle?: string;
   recordedAt?: Date;
 }) {
   const stamp = (options.recordedAt ?? new Date())

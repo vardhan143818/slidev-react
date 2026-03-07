@@ -1,27 +1,28 @@
 import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { resolveSlidesSourceFile } from "./src/slides/build/slidesSourceFile";
 import {
-  generatedDeckAlias,
-  generatedDeckEntry,
-  pluginCompileTimeDeck,
-} from "./src/deck/build/generateCompiledDeck";
+  generatedSlidesAlias,
+  generatedSlidesEntry,
+  pluginCompileTimeSlides,
+} from "./src/slides/build/generateCompiledSlides";
 
 const appRoot = process.cwd();
-const deckSourceFile = path.resolve(appRoot, "./slides.mdx");
+const slidesSourceFile = resolveSlidesSourceFile(appRoot);
 
 export default defineConfig({
   plugins: [
-    pluginCompileTimeDeck({
+    pluginCompileTimeSlides({
       appRoot,
-      deckSourceFile,
+      slidesSourceFile,
     }),
     react(),
   ],
   resolve: {
     alias: {
       "@": path.resolve(appRoot, "./src"),
-      [generatedDeckAlias]: path.resolve(appRoot, generatedDeckEntry),
+      [generatedSlidesAlias]: path.resolve(appRoot, generatedSlidesEntry),
       react: path.resolve(appRoot, "./node_modules/react"),
       "react-dom": path.resolve(appRoot, "./node_modules/react-dom"),
       "react/jsx-runtime": path.resolve(appRoot, "./node_modules/react/jsx-runtime.js"),

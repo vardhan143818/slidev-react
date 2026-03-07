@@ -1,4 +1,4 @@
-import type { LayoutName } from "../../deck/model/layout";
+import type { LayoutName } from "@/slides/model/layout";
 import { defaultLayouts } from "./defaultLayouts";
 import type { LayoutRegistry } from "./types";
 

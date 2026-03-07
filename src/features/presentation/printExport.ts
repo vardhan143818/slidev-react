@@ -29,7 +29,7 @@ export function buildPrintExportUrl(
   return next.toString();
 }
 
-export function buildDeckUrl(url: string) {
+export function buildSlidesUrl(url: string) {
   const next = new URL(url);
   next.searchParams.delete("export");
   next.hash = "";

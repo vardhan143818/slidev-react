@@ -1,6 +1,6 @@
 export {
   createSlideImageFileName,
   createSlideSnapshotFileName,
-  resolveExportDeckBaseName,
+  resolveExportSlidesBaseName,
   trimPdfExtension,
-} from "../../core/presentation/export/fileNames"
+} from "../../core/presentation/export/fileNames";

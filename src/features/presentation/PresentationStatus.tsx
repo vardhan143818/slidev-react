@@ -21,7 +21,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useDraw } from "../draw/DrawProvider";
+import { useDraw } from "./draw/DrawProvider";
 import type { PresentationSession } from "./session";
 import type { PresentationSyncMode } from "./types";
 import type { PresentationSyncStatus } from "./usePresentationSync";

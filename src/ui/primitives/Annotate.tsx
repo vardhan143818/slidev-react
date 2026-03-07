@@ -1,5 +1,5 @@
 import { type CSSProperties, type ReactNode } from "react";
-import { useRevealStep } from "../../features/reveal/useRevealStep";
+import { useRevealStep } from "../../features/presentation/reveal/useRevealStep";
 
 type AnnotateType = "underline" | "box" | "circle" | "highlight" | "strike-through" | "crossed-off";
 

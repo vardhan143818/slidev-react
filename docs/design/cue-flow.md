@@ -55,9 +55,9 @@ Minimal shape:
 
 ```ts
 type FlowPosition = {
-  pageIndex: number
-  cueIndex: number
-}
+  pageIndex: number;
+  cueIndex: number;
+};
 ```
 
 ### `cue`
@@ -167,15 +167,15 @@ That means the shared state should evolve toward:
 
 ```ts
 type SharedPresentationState = {
-  page: number
-  cue: number
-  cueTotal: number
-  timer: number
-  cursor: PresentationCursorState | null
-  drawings: PresentationDrawingsState
-  drawingsRevision: number
-  lastUpdate: number
-}
+  page: number;
+  cue: number;
+  cueTotal: number;
+  timer: number;
+  cursor: PresentationCursorState | null;
+  drawings: PresentationDrawingsState;
+  drawingsRevision: number;
+  lastUpdate: number;
+};
 ```
 
 We do not need a big-bang rename immediately, but the runtime should start thinking in this shape.

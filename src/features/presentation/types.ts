@@ -1,1 +1,1 @@
-export * from "../../core/presentation/session/protocol"
+export * from "../../core/presentation/session/protocol";

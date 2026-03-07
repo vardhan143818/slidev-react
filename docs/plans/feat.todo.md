@@ -53,7 +53,7 @@ Completed:
 Partial:
 
 - first-batch metadata expansion is still missing `monaco`
-- diagnostics are better than the original MVP, with field-level frontmatter errors, deck lint warnings for unknown theme/addon/layout references, and a dedicated `bun run lint:deck` entry point, but not yet at "best-in-class authoring DX"
+- diagnostics are better than the original MVP, with field-level frontmatter errors, deck lint warnings for unknown theme/addon/layout references, and a dedicated `bun run lint:slides` entry point, but not yet at "best-in-class authoring DX"
 - export architecture is in place, but not yet expanded to PPTX / Markdown or a richer UI
 - theme work currently focuses on local folders, not package-distributed themes yet
 - addon work currently focuses on local folders, not package-distributed addons yet
@@ -73,11 +73,11 @@ Use this as the guiding rule for future feature decisions:
 
 ## Priority Plan
 
-| Phase | Theme                                                       | Why now                                               | Main areas                                                        |
-| ----- | ----------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
-| P0    | Notes, metadata model, export                               | These unlock real presentation and delivery workflows | `src/deck`, `src/features/presenter`, `src/features/presentation` |
-| P1    | Theme/addon architecture, presenter pro tools, authoring DX | These make the system scalable and more reusable      | `src/theme`, `src/app`, `src/ui`, `src/deck`                      |
-| P2    | Monaco/live coding, selective compatibility layer           | Valuable, but not as urgent as content and delivery   | `src/ui/mdx`, `src/deck`, `src/features/player`                   |
+| Phase | Theme                                                       | Why now                                               | Main areas                                                                       |
+| ----- | ----------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------- |
+| P0    | Notes, metadata model, export                               | These unlock real presentation and delivery workflows | `src/slides`, `src/features/presentation/presenter`, `src/features/presentation` |
+| P1    | Theme/addon architecture, presenter pro tools, authoring DX | These make the system scalable and more reusable      | `src/theme`, `src/app`, `src/ui`, `src/slides`                                   |
+| P2    | Monaco/live coding, selective compatibility layer           | Valuable, but not as urgent as content and delivery   | `src/ui/mdx`, `src/slides`, `src/features/presentation/stage`                    |
 
 ## P0
 
@@ -98,9 +98,9 @@ Scope:
 
 Implementation touchpoints:
 
-- `src/deck/parsing/`
-- `src/deck/model/`
-- `src/features/presenter/`
+- `src/slides/parsing/`
+- `src/slides/model/`
+- `src/features/presentation/presenter/`
 
 Done when:
 
@@ -134,10 +134,10 @@ Nice second batch:
 
 Implementation touchpoints:
 
-- `src/deck/parsing/parseDeck.ts`
-- `src/deck/model/`
+- `src/slides/parsing/parseDeck.ts`
+- `src/slides/model/`
 - `src/theme/layouts/`
-- `src/features/reveal/`
+- `src/features/presentation/reveal/`
 
 Done when:
 
@@ -193,7 +193,7 @@ Implementation touchpoints:
 - `src/theme/`
 - `src/app/providers/`
 - `src/ui/mdx/`
-- `src/deck/build/`
+- `src/slides/build/`
 
 Done when:
 
@@ -219,8 +219,8 @@ Recommended scope:
 
 Implementation touchpoints:
 
-- `src/features/presenter/`
-- `src/features/player/`
+- `src/features/presentation/presenter/`
+- `src/features/presentation/stage/`
 - `src/features/presentation/`
 
 Done when:
@@ -245,7 +245,7 @@ Scope:
 
 Implementation touchpoints:
 
-- `src/deck/`
+- `src/slides/`
 - `README.md`
 - editor or script tooling as needed
 
@@ -272,7 +272,7 @@ Scope:
 Implementation touchpoints:
 
 - `src/ui/mdx/`
-- `src/features/player/`
+- `src/features/presentation/stage/`
 - deck metadata if code playground behavior becomes configurable
 
 ### 8. Selective Compatibility Layer
@@ -814,7 +814,7 @@ Current state:
 
 - parser errors now include the failing frontmatter field instead of only a generic schema dump
 - compile-time generation warns for unknown local themes, addons, and layouts before runtime fallback
-- `bun run lint:deck` gives authors a fast pre-build check, with optional `--strict` mode for CI
+- `bun run lint:slides` gives authors a fast pre-build check, with optional `--strict` mode for CI
 - the remaining gap is richer deck linting and broader metadata diagnostics
 
 ### B007. Design Export Architecture

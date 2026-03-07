@@ -1,6 +1,6 @@
 # slidev-react
 
-React-first presentation runtime with an MDX deck pipeline, presenter/viewer modes, and built-in interactive slide features.
+React-first presentation runtime with an MDX slides pipeline, presenter/viewer modes, and built-in interactive slide features.
 
 [中文说明](./README.zh-CN.md)
 
@@ -13,15 +13,15 @@ https://github.com/user-attachments/assets/553392a4-36ae-4505-87c2-ca54e7e00f08
 - React 19 for rendering
 - MDX as the authoring format
 - Vite for the app runtime
-- a compile-time deck pipeline under `src/deck`
+- a compile-time slides pipeline under `src/slides`
 - a presentation shell with presenter/viewer sync, reveal flow, drawings, and recording
 
-This repo is not a Vue Slidev runtime. It is a React + MDX implementation that borrows some presentation ideas while using its own deck model and rendering pipeline.
+This repo is not a Vue Slidev runtime. It is a React + MDX implementation that borrows some presentation ideas while using its own slides model and rendering pipeline.
 
 ## Highlights
 
-- MDX-authored deck source in [`slides.mdx`](./slides.mdx)
-- Compile-time parsing and deck artifact generation
+- MDX-authored slides source in [`slides.mdx`](./slides.mdx)
+- Compile-time parsing and slides artifact generation
 - Built-in slide layouts such as `default`, `center`, `cover`, `section`, `two-cols`, `image-right`, and `statement`
 - React-native MDX helpers including `Badge`, `Callout`, `AnnotationMark`, `Reveal`, and `RevealGroup`
 - Diagram fences for Mermaid and PlantUML
@@ -33,7 +33,7 @@ This repo is not a Vue Slidev runtime. It is a React + MDX implementation that b
 
 ## Status
 
-The project is currently an MVP / playground. APIs, authoring conventions, and deck capabilities may still change.
+The project is currently an MVP / playground. APIs, authoring conventions, and slides capabilities may still change.
 
 ## Release Positioning
 
@@ -70,33 +70,33 @@ bun run build
 bun run preview
 ```
 
-### Export deck artifacts with Playwright
+### Export slides artifacts with Playwright
 
 ```bash
-bun run export:deck
+bun run export:slides
 ```
 
-### Lint deck authoring
+### Lint slides authoring
 
 ```bash
-bun run lint:deck
+bun run lint:slides
 ```
 
-Use `bun run lint:deck -- --strict` to fail on warnings in CI.
+Use `bun run lint:slides -- --strict` to fail on warnings in CI.
 
-This writes browser-rendered artifacts to `output/export/<deck-name>/`:
+This writes browser-rendered artifacts to `output/export/<slides-name>/`:
 
-- `*.pdf` for the whole deck
+- `*.pdf` for the whole slides document
 - `png/*.png` for one image per slide
 
 Useful variants:
 
 ```bash
-bun run export:deck:pdf
-bun run export:deck:png
-bun run export:deck -- --slides 3-7
-bun run export:deck -- --with-clicks
-bun run export:deck -- --base-url http://127.0.0.1:4173
+bun run export:slides:pdf
+bun run export:slides:png
+bun run export:slides -- --slides 3-7
+bun run export:slides -- --with-clicks
+bun run export:slides -- --base-url http://127.0.0.1:4173
 ```
 
 ### Clean generated output
@@ -134,25 +134,25 @@ The presenter shell currently includes:
 - cursor sync
 - drawing sync
 - browser recording via `MediaRecorder`
-- print-ready deck export via browser Print / Save as PDF
+- print-ready slides export via browser Print / Save as PDF
 - quick overview and presenter-side controls
 - wake lock, mirror-stage launch, fullscreen toggle, stage scale, and idle-cursor settings in presenter mode
-- `bun run lint:deck` for authoring warnings such as unknown themes, addons, or layouts
+- `bun run lint:slides` for authoring warnings such as unknown themes, addons, or layouts
 
-## Deck Authoring
+## Slides Authoring
 
-The deck source lives in [`slides.mdx`](./slides.mdx).
+The slides source lives in [`slides.mdx`](./slides.mdx).
 
 Core authoring rules:
 
 - Use `---` to split slides
-- Use frontmatter for deck or slide metadata
+- Use frontmatter for slides-level or slide-level metadata
 - Use MDX for slide content
 - Use repo-provided React components directly in MDX
 
 Supported frontmatter today:
 
-- Deck: `title`, `theme`, `addons`, `layout`, `background`, `transition`, `exportFilename`
+- Slides: `title`, `theme`, `addons`, `layout`, `background`, `transition`, `exportFilename`
 - Slide: `title`, `layout`, `class`, `background`, `transition`, `clicks`, `notes`, `src`
 
 Notes:
@@ -161,7 +161,7 @@ Notes:
 - `class:` is applied to the stage article element
 - `background:` accepts colors, gradients, CSS background values, or bare image URLs
 - `transition:` supports `fade`, `slide-left`, `slide-up`, and `zoom`
-- `exportFilename:` sets the preferred base name for deck exports and recording downloads
+- `exportFilename:` sets the preferred base name for slides exports and recording downloads
 - `addons:` enables locally registered addons from `src/addons/*/index.ts`
 - `clicks:` defines explicit reveal steps even when the slide has fewer `<Reveal />` blocks
 - `notes:` is available in presenter mode and works best with YAML block strings
@@ -173,7 +173,7 @@ Example:
 
 ```mdx
 ---
-title: Demo Deck
+title: Demo Slides
 theme: paper
 addons:
   - insight
@@ -224,7 +224,7 @@ notes: |
 
 When `src:` is present, do not also put inline slide body content in the same slide block.
 
-To export a deck as PDF today, open the presenter shell and use the `Print / PDF` button, visit the current deck URL with `?export=print`, or run `bun run export:deck` for Playwright-driven PDF and PNG artifacts.
+To export slides as PDF today, open the presenter shell and use the `Print / PDF` button, visit the current slides URL with `?export=print`, or run `bun run export:slides` for Playwright-driven PDF and PNG artifacts.
 
 ## Local Themes
 
@@ -250,7 +250,7 @@ Theme CSS files placed at `src/theme/themes/<theme-id>/style.css` are also auto-
 
 ## Local Addons
 
-Decks can opt into local addons with deck frontmatter:
+Slides can opt into local addons with slides frontmatter:
 
 ```mdx
 ---
@@ -265,7 +265,7 @@ Local addons live under `src/addons/<addon-id>/` and are discovered automaticall
 Current addon contract:
 
 - `layouts` to add or override layout names, including custom ones such as `spotlight`
-- `mdxComponents` to add deck-local helpers such as `Insight`
+- `mdxComponents` to add slides-local helpers such as `Insight`
 - `provider` to wrap the runtime tree with addon-specific React context or side effects
 
 The built-in example addon is `insight`, which contributes a `spotlight` layout and an `Insight` MDX component:
@@ -285,7 +285,7 @@ layout: spotlight
 </Insight>
 ```
 
-Addon CSS files placed at `src/addons/<addon-id>/style.css` are also auto-loaded. Unknown addon ids are ignored for now, which keeps deck startup safe while the addon API is still experimental.
+Addon CSS files placed at `src/addons/<addon-id>/style.css` are also auto-loaded. Unknown addon ids are ignored for now, which keeps slides startup safe while the addon API is still experimental.
 
 ## MDX Helpers
 
@@ -320,9 +320,9 @@ Common helpers exposed to MDX include:
 Top-level source areas under [`src/`](./src):
 
 - `app/`: application assembly, providers, entry wiring
-- `deck/`: deck parsing, frontmatter handling, MDX compilation, generated artifacts
+- `slides/`: slides parsing, frontmatter handling, MDX compilation, generated artifacts
 - `features/`: presentation capabilities such as reveal, presenter shell, sync, draw, and navigation
-- `features/player/`: stage rendering and stage interaction
+- `features/presentation/stage/`: stage rendering and stage interaction
 - `addons/`: local runtime extension points for layouts, MDX helpers, and providers
 - `ui/`: reusable presentation components and MDX helpers
 - `theme/`: layouts and visual tokens
@@ -349,7 +349,7 @@ For more internal structure guidance, see [`src/README.md`](./src/README.md).
 Build output is disposable and should not be committed. In this repository:
 
 - `dist/` is generated by production builds
-- `.generated/` is compile-time deck output
+- `.generated/` is compile-time slides output
 - `output/` is treated as generated runtime output
 
 Before opening a PR, remove generated files with `bun run clean` if they are unrelated to the change.
@@ -364,7 +364,7 @@ bun run test
 
 ## Acknowledgements
 
-This project is inspired by [Slidev](https://github.com/slidevjs/slidev), and some early deck content was migrated from the Slidev starter deck while adapting the authoring model to this React + MDX runtime.
+This project is inspired by [Slidev](https://github.com/slidevjs/slidev), and some early slides content was migrated from the Slidev starter deck while adapting the authoring model to this React + MDX runtime.
 
 ## License
 

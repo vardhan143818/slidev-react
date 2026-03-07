@@ -28,7 +28,7 @@ Weak fit today:
 
 | Slidev concept           | `slidev-react` status             | Notes                                                 |
 | ------------------------ | --------------------------------- | ----------------------------------------------------- |
-| Deck frontmatter         | supported                         | Use deck frontmatter in `slides.mdx`                  |
+| Slides frontmatter       | supported                         | Use slides frontmatter in `slides.mdx`                |
 | Slide frontmatter        | supported                         | Use `---` to start a slide, then slide frontmatter    |
 | Markdown slides          | supported                         | Markdown and MDX both work                            |
 | Vue components in slides | rewrite required                  | Replace with React components / MDX helpers           |
@@ -42,7 +42,7 @@ Weak fit today:
 
 ## Frontmatter Mapping
 
-Deck-level fields that map cleanly today:
+Slides-level fields that map cleanly today:
 
 - `title`
 - `theme`
@@ -188,7 +188,7 @@ Practical implication:
 ## Recommended Migration Flow
 
 1. Start with one representative Slidev deck, not the biggest one.
-2. Port only deck frontmatter, slide frontmatter, Markdown, code fences, and diagrams first.
+2. Port only slides frontmatter, slide frontmatter, Markdown, code fences, and diagrams first.
 3. Replace Vue directives with `Reveal`-based React syntax.
 4. Recreate theme behavior with a local theme under `src/theme/themes/`.
 5. Recreate custom extension behavior with local addons only when needed.
@@ -198,8 +198,8 @@ Practical implication:
 
 Choose `slidev-react` now if:
 
-- you want a React-native deck runtime
-- your deck logic is mostly content + layout + export, not Vue magic
+- you want a React-native slides runtime
+- your slides logic is mostly content + layout + export, not Vue magic
 - you are comfortable rewriting some interaction syntax
 
 Wait before migrating if:

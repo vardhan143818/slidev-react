@@ -55,9 +55,11 @@ Before `step`, the text is still visible. Only the mark is withheld.
 
 ```mdx
 Keep the copy visible, then
+
 <Annotate type="underline" step={1}>
   land the emphasis on cue
-</Annotate>.
+</Annotate>
+.
 ```
 
 Use `Reveal` when the content itself should appear later.
@@ -94,9 +96,11 @@ We should optimize for <Annotate>clarity at boundaries</Annotate>, not local cle
 
 ```mdx
 The system should stay understandable, then
+
 <Annotate type="underline" step={1}>
   highlight ownership boundaries
-</Annotate>.
+</Annotate>
+.
 ```
 
 ### Keep mark semantics consistent across a deck
@@ -127,12 +131,12 @@ If the sentence is confusing before the mark appears, improve the copy first.
 
 ```tsx
 type AnnotateProps = {
-  children: ReactNode
-  type?: 'underline' | 'box' | 'circle' | 'highlight' | 'strike-through' | 'crossed-off'
-  step?: number
-  animate?: boolean
-  color?: string
-}
+  children: ReactNode;
+  type?: "underline" | "box" | "circle" | "highlight" | "strike-through" | "crossed-off";
+  step?: number;
+  animate?: boolean;
+  color?: string;
+};
 ```
 
 ## Limitations

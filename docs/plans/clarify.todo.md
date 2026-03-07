@@ -34,16 +34,16 @@ This is not mainly:
 
 ### Areas That Are Relatively Healthy
 
-- `src/deck/` is mostly clean authoring/build pipeline code
+- `src/slides/` is mostly clean authoring/build pipeline code
 - `src/theme/` and `src/addons/` are reasonably clear assembly seams
 - small platform hooks like fullscreen and wake lock already behave like good adapters
 
 ### Areas Where Clarity Is Degrading
 
-- `src/app/providers/DeckProvider.tsx`
+- `src/app/providers/SlidesProvider.tsx`
 - `src/features/presentation/usePresentationSync.ts`
-- `src/features/draw/DrawProvider.tsx`
-- `src/features/presenter/PresenterShell.tsx`
+- `src/features/presentation/draw/DrawProvider.tsx`
+- `src/features/presentation/presenter/PresenterShell.tsx`
 - interaction rules currently split across `KeyboardController`, `SlideStage`, `PresenterShell`, and sync callbacks
 
 ## Higher-Order Judgment
@@ -65,14 +65,14 @@ That means changes are increasingly coordinated by convention, callbacks, refs, 
 
 These are directional, not scientific:
 
-| Area | Score | Read |
-| ----- | ----- | ---- |
-| Authoring/build pipeline | 4.5/5 | Clear enough and not urgent |
-| Theme/addon assembly | 4/5 | Reasonably well-shaped |
-| Navigation runtime | 2.5/5 | Ownership split across provider, shell, input, sync |
-| Draw runtime | 2.5/5 | Local draw and collaboration concerns are mixed |
-| Presentation session runtime | 2/5 | Transport, presence, replication, health mixed together |
-| Presenter surface/orchestration | 2/5 | Shell owns too many runtimes and side effects |
+| Area                            | Score | Read                                                    |
+| ------------------------------- | ----- | ------------------------------------------------------- |
+| Authoring/build pipeline        | 4.5/5 | Clear enough and not urgent                             |
+| Theme/addon assembly            | 4/5   | Reasonably well-shaped                                  |
+| Navigation runtime              | 2.5/5 | Ownership split across provider, shell, input, sync     |
+| Draw runtime                    | 2.5/5 | Local draw and collaboration concerns are mixed         |
+| Presentation session runtime    | 2/5   | Transport, presence, replication, health mixed together |
+| Presenter surface/orchestration | 2/5   | Shell owns too many runtimes and side effects           |
 
 ## Root Problem Map
 
@@ -80,7 +80,7 @@ These are directional, not scientific:
 
 What is happening today:
 
-- `DeckProvider` owns `currentIndex` plus URL/history syncing
+- `SlidesProvider` owns `currentIndex` plus URL/history syncing
 - `KeyboardController` translates input into navigation
 - `PresenterShell` decides reveal-aware advance/retreat and follow/detach behavior
 - `usePresentationSync` can apply remote page changes directly
@@ -196,11 +196,11 @@ Target shape:
 
 ## Priority Plan
 
-| Phase | Theme | Why now | Main areas |
-| ----- | ----- | ------- | ---------- |
-| P0 | Navigation and session ownership | Highest blast radius and clearest evolution risk | `src/app/providers`, `src/features/navigation`, `src/features/presentation`, `src/features/presenter` |
-| P1 | Draw/runtime separation and interaction policy cleanup | Reduces coupling and hidden behavior rules | `src/features/draw`, `src/features/player`, `src/features/presentation` |
-| P2 | Naming, directory clarity, debug visibility | Improves long-term maintainability after boundaries are real | `src/features/**`, docs, tests |
+| Phase | Theme                                                  | Why now                                                      | Main areas                                                                                                                      |
+| ----- | ------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| P0    | Navigation and session ownership                       | Highest blast radius and clearest evolution risk             | `src/app/providers`, `src/features/presentation/navigation`, `src/features/presentation`, `src/features/presentation/presenter` |
+| P1    | Draw/runtime separation and interaction policy cleanup | Reduces coupling and hidden behavior rules                   | `src/features/presentation/draw`, `src/features/presentation/stage`, `src/features/presentation`                                |
+| P2    | Naming, directory clarity, debug visibility            | Improves long-term maintainability after boundaries are real | `src/features/**`, docs, tests                                                                                                  |
 
 ## P0
 
@@ -219,11 +219,11 @@ Scope:
 
 Implementation touchpoints:
 
-- `src/app/providers/DeckProvider.tsx`
-- `src/features/navigation/useDeckNavigation.ts`
-- `src/features/navigation/KeyboardController.tsx`
-- `src/features/reveal/navigation.ts`
-- `src/features/presenter/PresenterShell.tsx`
+- `src/app/providers/SlidesProvider.tsx`
+- `src/features/presentation/navigation/useDeckNavigation.ts`
+- `src/features/presentation/navigation/KeyboardController.tsx`
+- `src/features/presentation/reveal/navigation.ts`
+- `src/features/presentation/presenter/PresenterShell.tsx`
 
 Done when:
 
@@ -249,7 +249,7 @@ Implementation touchpoints:
 - `src/features/presentation/session.ts`
 - `src/features/presentation/types.ts`
 - `src/features/presentation/PresentationStatus.tsx`
-- `src/features/presenter/PresenterShell.tsx`
+- `src/features/presentation/presenter/PresenterShell.tsx`
 
 Done when:
 
@@ -271,9 +271,9 @@ Scope:
 
 Implementation touchpoints:
 
-- `src/features/presenter/PresenterShell.tsx`
-- `src/features/presenter/PresenterSidePreview.tsx`
-- `src/features/presenter/PresenterTopProgress.tsx`
+- `src/features/presentation/presenter/PresenterShell.tsx`
+- `src/features/presentation/presenter/PresenterSidePreview.tsx`
+- `src/features/presentation/presenter/PresenterTopProgress.tsx`
 - `src/features/presentation/PresentationStatus.tsx`
 
 Done when:
@@ -298,10 +298,10 @@ Scope:
 
 Implementation touchpoints:
 
-- `src/features/draw/DrawProvider.tsx`
-- `src/features/draw/DrawOverlay.tsx`
+- `src/features/presentation/draw/DrawProvider.tsx`
+- `src/features/presentation/draw/DrawOverlay.tsx`
 - `src/features/presentation/usePresentationSync.ts`
-- `src/features/presenter/PresenterShell.tsx`
+- `src/features/presentation/presenter/PresenterShell.tsx`
 
 Done when:
 
@@ -321,9 +321,9 @@ Scope:
 
 Implementation touchpoints:
 
-- `src/features/navigation/KeyboardController.tsx`
-- `src/features/player/SlideStage.tsx`
-- `src/features/presenter/PresenterShell.tsx`
+- `src/features/presentation/navigation/KeyboardController.tsx`
+- `src/features/presentation/stage/SlideStage.tsx`
+- `src/features/presentation/presenter/PresenterShell.tsx`
 
 Done when:
 
@@ -345,10 +345,10 @@ Scope:
 
 Implementation touchpoints:
 
-- `src/features/navigation/`
+- `src/features/presentation/navigation/`
 - `src/features/presentation/`
-- `src/features/presenter/`
-- `src/features/draw/`
+- `src/features/presentation/presenter/`
+- `src/features/presentation/draw/`
 
 Done when:
 
@@ -360,7 +360,7 @@ Done when:
 
 Examples:
 
-- consider whether `DeckProvider` should become `NavigationProvider`
+- consider whether `SlidesProvider` should become `NavigationProvider`
 - avoid hook names that sound smaller than their real responsibility
 
 Rule:
