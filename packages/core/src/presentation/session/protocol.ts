@@ -1,6 +1,7 @@
 export const PRESENTATION_PROTOCOL_VERSION = 1 as const;
 
 export type PresentationRole = "standalone" | "presenter" | "viewer";
+export type SyncedPresentationRole = Exclude<PresentationRole, "standalone">;
 export type PresentationSyncMode = "send" | "receive" | "both" | "off";
 
 export interface PresentationCursorState {
@@ -45,14 +46,14 @@ interface PresentationEnvelopeBase {
 export interface PresentationJoinEnvelope extends PresentationEnvelopeBase {
   type: "session/join";
   payload: {
-    role: Exclude<PresentationRole, "standalone">;
+    role: SyncedPresentationRole;
   };
 }
 
 export interface PresentationLeaveEnvelope extends PresentationEnvelopeBase {
   type: "session/leave";
   payload: {
-    role: Exclude<PresentationRole, "standalone">;
+    role: SyncedPresentationRole;
   };
 }
 
@@ -73,7 +74,7 @@ export interface PresentationPatchEnvelope extends PresentationEnvelopeBase {
 export interface PresentationHeartbeatEnvelope extends PresentationEnvelopeBase {
   type: "heartbeat";
   payload: {
-    role: Exclude<PresentationRole, "standalone">;
+    role: SyncedPresentationRole;
   };
 }
 
@@ -183,7 +184,17 @@ export function parsePresentationEnvelope(value: unknown): PresentationEnvelope 
     const role = payload.role;
     if (role !== "presenter" && role !== "viewer") return null;
 
-    return value as PresentationEnvelope;
+    return {
+      version,
+      type,
+      sessionId,
+      senderId,
+      seq,
+      timestamp,
+      payload: {
+        role,
+      },
+    };
   }
 
   if (type === "state/snapshot") {
@@ -203,13 +214,42 @@ export function parsePresentationEnvelope(value: unknown): PresentationEnvelope 
       return null;
     }
 
-    return value as PresentationEnvelope;
+    return {
+      version,
+      type,
+      sessionId,
+      senderId,
+      seq,
+      timestamp,
+      payload: {
+        state: {
+          page: state.page,
+          clicks: state.clicks,
+          clicksTotal: state.clicksTotal,
+          timer: state.timer,
+          cursor: state.cursor ?? null,
+          drawings: state.drawings,
+          drawingsRevision: state.drawingsRevision,
+          lastUpdate: state.lastUpdate,
+        },
+      },
+    };
   }
 
   if (type === "state/patch") {
     if (!isStatePatchLike(payload.state)) return null;
 
-    return value as PresentationEnvelope;
+    return {
+      version,
+      type,
+      sessionId,
+      senderId,
+      seq,
+      timestamp,
+      payload: {
+        state: payload.state,
+      },
+    };
   }
 
   return null;

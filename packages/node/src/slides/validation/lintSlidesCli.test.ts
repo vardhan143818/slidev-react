@@ -30,10 +30,10 @@ function runLintSlides({ cwd, args = [] }: { cwd: string; args?: string[] }): Pr
   stdout: string;
   stderr: string;
 }> {
-  const scriptFile = path.resolve(process.cwd(), "scripts/lint-slides.ts");
+  const cliFile = path.resolve(process.cwd(), "packages/cli/bin/slidev-react.ts");
 
   return new Promise((resolve, reject) => {
-    const child = spawn("node", ["--import", tsxImport, scriptFile, ...args], {
+    const child = spawn("node", ["--import", tsxImport, cliFile, "lint", ...args], {
       cwd,
       stdio: "pipe",
     });
@@ -211,6 +211,6 @@ describe("lint-slides CLI", () => {
     });
 
     expect(result.code).toBe(1);
-    expect(result.stderr).toContain("Slides lint failed: Invalid slides frontmatter:");
+    expect(result.stderr).toContain("[slidev-react] Invalid slides frontmatter:");
   });
 });

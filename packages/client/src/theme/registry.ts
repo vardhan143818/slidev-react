@@ -1,4 +1,4 @@
-import type { MDXComponents } from "mdx/types";
+import type { MDXComponents } from "../types/mdx-components";
 import { mdxComponents as baseMdxComponents } from "../ui/mdx";
 import { defaultLayouts } from "./layouts/defaultLayouts";
 import type { ResolvedSlideTheme, SlideThemeDefinition } from "./types";

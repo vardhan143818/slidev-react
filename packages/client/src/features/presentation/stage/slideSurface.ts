@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { SlideMeta } from "@slidev-react/node/slides/model/slide";
+import type { SlideMeta } from "@slidev-react/core/slides/slide";
 
 function joinClassNames(...names: Array<string | undefined>) {
   return names.filter(Boolean).join(" ");

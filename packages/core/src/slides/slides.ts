@@ -1,7 +1,7 @@
-import type { LayoutName } from "./layout.ts";
-import type { SlideUnit } from "./slide.ts";
-import type { TransitionName } from "./transition.ts";
-import type { SlidesViewport } from "./viewport.ts";
+import type { LayoutName } from "./layout";
+import type { SlideUnit } from "./slide";
+import type { TransitionName } from "./transition";
+import type { SlidesViewport } from "./viewport";
 
 export interface SlidesMeta {
   title?: string;

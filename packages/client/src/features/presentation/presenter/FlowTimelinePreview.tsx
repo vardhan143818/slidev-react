@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../stage/slideSurface";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";

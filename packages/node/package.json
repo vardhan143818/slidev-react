@@ -1,13 +1,56 @@
 {
   "name": "@slidev-react/node",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "Node-side command APIs for slidev-react authoring and build workflows",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
+  },
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "exports": {
-    ".": "./src/index.js",
-    "./slides/*": "./src/slides/*.ts"
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./slides/build/createSlidesViteConfig": {
+      "types": "./dist/slides/build/createSlidesViteConfig.d.mts",
+      "import": "./dist/slides/build/createSlidesViteConfig.mjs"
+    }
+  },
+  "dependencies": {
+    "@mdx-js/mdx": "3.1.1",
+    "@mdx-js/react": "3.1.1",
+    "@playwright/test": "^1.58.2",
+    "@slidev-react/core": "workspace:*",
+    "@vitejs/plugin-react": "^5.1.4",
+    "react": "19.2.3",
+    "rehype-katex": "7.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-math": "6.0.0",
+    "shiki": "4.0.1",
+    "vite": "^7.3.1",
+    "yaml": "2.8.2",
+    "zod": "4.3.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hylarucoder/slidev-react.git",
+    "directory": "packages/node"
+  },
+  "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/node",
+  "bugs": {
+    "url": "https://github.com/hylarucoder/slidev-react/issues"
   },
   "engines": {
     "node": ">=22"

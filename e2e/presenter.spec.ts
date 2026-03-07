@@ -96,7 +96,7 @@ test.describe("presenter shell", () => {
     if (mirrorPage) {
       await mirrorPage.waitForLoadState("domcontentloaded");
       await expect(mirrorPage).toHaveURL(/\/2$/);
-      await expect(mirrorPage.url()).not.toContain("/presenter/");
+      expect(mirrorPage.url()).not.toContain("/presenter/");
       await expect(
         mirrorPage.getByRole("heading", { name: "Welcome to slidev-react" }),
       ).toBeVisible();
@@ -104,7 +104,7 @@ test.describe("presenter shell", () => {
     }
 
     await expect(page).toHaveURL(/\/2$/);
-    await expect(page.url()).not.toContain("/presenter/");
+    expect(page.url()).not.toContain("/presenter/");
     await expect(page.getByRole("heading", { name: "Welcome to slidev-react" })).toBeVisible();
   });
 });

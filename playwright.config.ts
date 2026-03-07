@@ -37,7 +37,7 @@ export default defineConfig({
       timeout: 30 * 1000,
     },
     {
-      command: `pnpm run dev -- --host ${host} --port ${port}`,
+      command: "pnpm run dev:e2e",
       url: baseURL,
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",

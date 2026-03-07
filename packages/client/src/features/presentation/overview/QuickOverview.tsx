@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from "react";
 import { X } from "lucide-react";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
-import { formatViewportAspectRatio } from "@slidev-react/node/slides/model/viewport";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
+import { formatViewportAspectRatio } from "@slidev-react/core/slides/viewport";
 import type { CompiledSlide } from "../presenter/types";
 import { ChromeIconButton } from "../../../ui/primitives/ChromeIconButton";
 import { ChromePanel } from "../../../ui/primitives/ChromePanel";
@@ -107,7 +107,9 @@ export function QuickOverview({
                   role="button"
                   tabIndex={0}
                   onClick={() => onSelect(index)}
-                  onKeyDown={(event) => handleSelectKeyDown(event, index)}
+                  onKeyDown={(event: KeyboardEvent<HTMLElement>) =>
+                    handleSelectKeyDown(event, index)
+                  }
                   className={`group cursor-pointer overflow-hidden p-0 text-left transition focus:outline-none focus:ring-2 focus:ring-emerald-300/70 ${active ? "bg-white/96 shadow-[0_24px_64px_rgba(34,197,94,0.16)] ring-1 ring-emerald-300/70" : "bg-white/78 shadow-[0_18px_46px_rgba(148,163,184,0.18)] ring-1 ring-transparent hover:bg-white/92 hover:shadow-[0_26px_68px_rgba(148,163,184,0.24)] hover:ring-slate-300/70"}`}
                   aria-label={`Go to slide ${index + 1}`}
                   tone="solid"

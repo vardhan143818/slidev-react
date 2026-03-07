@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
 function joinClassNames(...classNames: Array<string | false | null | undefined>) {
   return classNames.filter(Boolean).join(" ");
@@ -48,25 +48,31 @@ export function chromePanelClassName({
   );
 }
 
-export function ChromePanel({
+type ChromePanelProps<T extends ElementType> = {
+  as?: T;
+  children: ReactNode;
+  className?: string;
+  tone?: keyof typeof toneClassNames;
+  radius?: keyof typeof radiusClassNames;
+  padding?: keyof typeof paddingClassNames;
+} & Omit<ComponentPropsWithoutRef<T>, "as" | "children" | "className">;
+
+export function ChromePanel<T extends ElementType = "section">({
   as,
   children,
   className,
   tone = "glass",
   radius = "panel",
   padding = "md",
-}: {
-  as?: ElementType;
-  children: ReactNode;
-  className?: string;
-  tone?: keyof typeof toneClassNames;
-  radius?: keyof typeof radiusClassNames;
-  padding?: keyof typeof paddingClassNames;
-}) {
+  ...props
+}: ChromePanelProps<T>) {
   const Component = as ?? "section";
 
   return (
-    <Component className={chromePanelClassName({ className, tone, radius, padding })}>
+    <Component
+      {...props}
+      className={chromePanelClassName({ className, tone, radius, padding })}
+    >
       {children}
     </Component>
   );

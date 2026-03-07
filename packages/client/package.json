@@ -8,6 +8,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "dependencies": {
+    "@slidev-react/core": "workspace:*"
+  },
   "engines": {
     "node": ">=22"
   }

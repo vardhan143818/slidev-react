@@ -1,5 +1,5 @@
-import type { SlidesMeta } from "./slides.ts";
-import type { SlideComponent, SlideMeta } from "./slide.ts";
+import type { SlidesMeta } from "./slides";
+import type { SlideComponent, SlideMeta } from "./slide";
 
 export interface CompiledSlide {
   id: string;

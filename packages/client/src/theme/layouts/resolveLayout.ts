@@ -1,4 +1,4 @@
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
 import { defaultLayouts } from "./defaultLayouts";
 import type { LayoutRegistry } from "./types";
 

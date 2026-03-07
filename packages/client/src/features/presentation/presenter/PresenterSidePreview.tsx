@@ -1,5 +1,5 @@
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 import type { CompiledSlide } from "./types";
 import { ChromePanel, chromePanelClassName } from "../../../ui/primitives/ChromePanel";
 import { ChromeTag } from "../../../ui/primitives/ChromeTag";

@@ -1,50 +1,27 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { parseLintArgs } from "./cli/lintArgs.ts";
 import { parseSlides } from "./slides/parsing/parseSlides.ts";
 import { validateSlidesAuthoring } from "./slides/validation/validateSlidesAuthoring.ts";
 import {
   createFailureResult,
   createSuccessResult,
   resolveSlidesCommandContext,
-} from "./context.js";
+  type CommandResult,
+  type SlidesCommandOptions,
+} from "./context.ts";
 
-function parseLintArgs(argv) {
-  let slidesFile;
-  let strict = false;
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const entry = argv[index];
-    if (entry === "--strict") {
-      strict = true;
-      continue;
-    }
-
-    if (entry === "--file" && argv[index + 1]) {
-      slidesFile = argv[index + 1];
-      index += 1;
-      continue;
-    }
-
-    if (entry.startsWith("--file=")) {
-      slidesFile = entry.slice("--file=".length);
-      continue;
-    }
-
-    if (!entry.startsWith("--")) {
-      slidesFile = entry;
-      continue;
-    }
-
-    throw new Error(`Unknown lint option "${entry}".`);
-  }
-
-  return {
-    slidesFile,
-    strict,
-  };
+export interface LintSlidesOptions extends SlidesCommandOptions {
+  cliArgs?: string[];
 }
 
-export async function lintSlides(options = {}) {
+export interface LintSlidesResult {
+  strict: boolean;
+  warnings: string[];
+  slidesSourceFile: string;
+}
+
+export async function lintSlides(options: LintSlidesOptions = {}): Promise<LintSlidesResult> {
   const parsedArgs = parseLintArgs(options.cliArgs ?? []);
   const context = resolveSlidesCommandContext({
     ...options,
@@ -64,7 +41,7 @@ export async function lintSlides(options = {}) {
   };
 }
 
-export async function runSlidesLint(options = {}) {
+export async function runSlidesLint(options: LintSlidesOptions = {}): Promise<CommandResult> {
   const result = await lintSlides(options);
 
   if (result.warnings.length === 0) {

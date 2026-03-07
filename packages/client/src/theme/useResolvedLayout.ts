@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSlideAddons } from "../addons/AddonProvider";
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
 import { resolveLayout } from "./layouts/resolveLayout";
 import { useSlideTheme } from "./ThemeProvider";
 

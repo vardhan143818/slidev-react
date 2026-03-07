@@ -8,13 +8,13 @@ import {
   type ReactNode,
 } from "react";
 import { ArrowLeft, Printer } from "lucide-react";
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 import {
   formatViewportAspectRatio,
   isPortraitViewport,
   resolvePrintPageSize,
-} from "@slidev-react/node/slides/model/viewport";
+} from "@slidev-react/core/slides/viewport";
 import { resolveCueTotal } from "@slidev-react/core/presentation/flow/cue";
 import { SlidePreviewSurface } from "./stage/SlidePreviewSurface";
 import type { CompiledSlide } from "./presenter/types";

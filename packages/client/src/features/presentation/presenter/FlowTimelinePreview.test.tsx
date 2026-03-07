@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { AddonProvider } from "../../../addons/AddonProvider";
-import { DEFAULT_SLIDES_VIEWPORT } from "@slidev-react/node/slides/model/viewport";
+import { DEFAULT_SLIDES_VIEWPORT } from "@slidev-react/core/slides/viewport";
 import { ThemeProvider } from "../../../theme/ThemeProvider";
 import { FlowTimelinePreview } from "./FlowTimelinePreview";
 import type { CompiledSlide } from "./types";

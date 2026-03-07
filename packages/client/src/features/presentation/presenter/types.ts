@@ -1,6 +1,6 @@
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
-import type { SlideComponent } from "@slidev-react/node/slides/model/slide";
-import type { TransitionName } from "@slidev-react/node/slides/model/transition";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
+import type { SlideComponent } from "@slidev-react/core/slides/slide";
+import type { TransitionName } from "@slidev-react/core/slides/transition";
 
 export interface CompiledSlide {
   id: string;

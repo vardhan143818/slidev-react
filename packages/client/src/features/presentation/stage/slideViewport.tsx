@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 
 type SlideScaleAlignment = "center" | "top-left";
 

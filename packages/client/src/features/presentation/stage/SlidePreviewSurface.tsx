@@ -1,6 +1,6 @@
 import { useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
-import type { SlideMeta, SlideComponent } from "@slidev-react/node/slides/model/slide";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
+import type { SlideMeta, SlideComponent } from "@slidev-react/core/slides/slide";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import { useSlideScale } from "./slideViewport";
@@ -8,6 +8,10 @@ import { useSlideScale } from "./slideViewport";
 function joinClassNames(...classNames: Array<string | undefined>) {
   return classNames.filter(Boolean).join(" ");
 }
+
+type SlideArticleProps = HTMLAttributes<HTMLElement> & {
+  "data-export-surface"?: string;
+};
 
 export function SlidePreviewSurface({
   Slide,
@@ -38,7 +42,7 @@ export function SlidePreviewSurface({
   overflowHidden?: boolean;
   scaleMultiplier?: number;
   alignment?: "center" | "top-left";
-  articleProps?: HTMLAttributes<HTMLElement>;
+  articleProps?: SlideArticleProps;
 }) {
   const Layout = useResolvedLayout(meta.layout ?? slidesLayout);
   const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier, alignment, slidesViewport);

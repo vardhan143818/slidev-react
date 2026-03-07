@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
-import type { MDXComponents } from "mdx/types";
+import type { MDXComponents } from "../types/mdx-components";
 import type { LayoutRegistry } from "./layouts/types";
 
 export interface SlideThemeDefinition {

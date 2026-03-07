@@ -24,6 +24,16 @@ const preloadedLangs = [
 
 let highlighterPromise: Promise<HighlighterCore> | null = null;
 
+interface HastNode {
+  type?: string;
+  tagName?: string;
+  value?: string;
+  properties?: {
+    className?: unknown;
+  };
+  children?: HastNode[];
+}
+
 function getHighlighter() {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
@@ -38,29 +48,42 @@ function getHighlighter() {
 function asArray(value: unknown): string[] {
   if (!value) return [];
 
-  if (Array.isArray(value)) return value.map((item) => String(item));
+  if (Array.isArray(value))
+    return value.map((item) => {
+      if (typeof item === "string") return item;
 
-  return [String(value)];
+      try {
+        return JSON.stringify(item) ?? "";
+      } catch {
+        return "";
+      }
+    });
+
+  if (typeof value === "string") return [value];
+
+  try {
+    return [JSON.stringify(value) ?? ""];
+  } catch {
+    return [];
+  }
 }
 
-function isElement(node: any, tagName?: string): boolean {
+function isElement(node: HastNode | undefined, tagName?: string): node is HastNode {
   return node?.type === "element" && (!tagName || node.tagName === tagName);
 }
 
-function extractText(node: any): string {
+function extractText(node: HastNode | undefined): string {
   if (!node) return "";
 
   if (node.type === "text") return node.value ?? "";
 
-  if (!Array.isArray(node.children)) return "";
+  if (!node.children) return "";
 
-  return node.children.map((child: any) => extractText(child)).join("");
+  return node.children.map((child) => extractText(child)).join("");
 }
 
-function detectLanguage(preNode: any): string {
-  const codeNode = Array.isArray(preNode.children)
-    ? preNode.children.find((child: any) => isElement(child, "code"))
-    : null;
+function detectLanguage(preNode: HastNode): string {
+  const codeNode = preNode.children?.find((child) => isElement(child, "code")) ?? null;
 
   if (!codeNode) return PLAIN_TEXT_LANG;
 
@@ -80,16 +103,16 @@ async function highlight(code: string, lang: string) {
     return highlighter.codeToHast(code, {
       lang,
       theme: SHIKI_THEME,
-    }) as any;
+    }) as HastNode;
   } catch {
     return highlighter.codeToHast(code, {
       lang: PLAIN_TEXT_LANG,
       theme: SHIKI_THEME,
-    }) as any;
+    }) as HastNode;
   }
 }
 
-async function walk(node: any, parent: any | null, index: number | null) {
+async function walk(node: HastNode, parent: HastNode | null, index: number | null) {
   if (isElement(node, "pre") && parent && index !== null) {
     const code = extractText(node);
     const language = detectLanguage(node);
@@ -97,19 +120,19 @@ async function walk(node: any, parent: any | null, index: number | null) {
 
     const replacement = rendered?.type === "root" ? rendered.children?.[0] : rendered;
 
-    if (replacement) parent.children[index] = replacement;
+    if (replacement && parent.children) parent.children[index] = replacement;
 
     return;
   }
 
-  if (!Array.isArray(node?.children)) return;
+  if (!node.children) return;
 
   for (let childIndex = 0; childIndex < node.children.length; childIndex += 1)
     await walk(node.children[childIndex], node, childIndex);
 }
 
 export function rehypeShikiVitesse() {
-  return async (tree: any) => {
+  return async (tree: HastNode) => {
     await walk(tree, null, null);
   };
 }

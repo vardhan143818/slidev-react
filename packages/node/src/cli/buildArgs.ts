@@ -1,35 +1,24 @@
-import { build, mergeConfig } from "vite";
-import { createSlidesViteConfig } from "./slides/build/createSlidesViteConfig.ts";
-import { createSuccessResult, parseBooleanFlag, resolveSlidesCommandContext } from "./context.js";
+import { parseBooleanFlag } from "../context.ts";
+import { readOptionValue } from "./readOptionValue.ts";
 
-function readOptionValue(argv, index, optionName) {
-  const current = argv[index];
-  if (current.startsWith(`${optionName}=`)) {
-    return {
-      value: current.slice(optionName.length + 1),
-      nextIndex: index,
-    };
-  }
-
-  const nextValue = argv[index + 1];
-  if (!nextValue || nextValue.startsWith("--")) {
-    throw new Error(`Missing value for ${optionName}.`);
-  }
-
-  return {
-    value: nextValue,
-    nextIndex: index + 1,
-  };
+export interface BuildCliArgs {
+  slidesFile?: string;
+  outDir?: string;
+  base?: string;
+  mode?: string;
+  emptyOutDir?: boolean;
+  sourcemap?: boolean | "inline" | "hidden";
+  minify?: boolean | "esbuild" | "terser";
 }
 
-function parseBuildArgs(argv) {
+export function parseBuildArgs(argv: string[]): BuildCliArgs {
   let slidesFile;
   let outDir;
   let base;
   let mode;
   let emptyOutDir;
-  let sourcemap;
-  let minify;
+  let sourcemap: BuildCliArgs["sourcemap"];
+  let minify: BuildCliArgs["minify"];
 
   for (let index = 0; index < argv.length; index += 1) {
     const entry = argv[index];
@@ -85,13 +74,19 @@ function parseBuildArgs(argv) {
 
     if (entry.startsWith("--sourcemap=")) {
       const value = entry.slice("--sourcemap=".length);
-      sourcemap = value === "inline" || value === "hidden" ? value : parseBooleanFlag(value);
+      sourcemap =
+        value === "inline" || value === "hidden"
+          ? value
+          : parseBooleanFlag(value);
       continue;
     }
 
     if (entry.startsWith("--minify=")) {
       const value = entry.slice("--minify=".length);
-      minify = value === "esbuild" || value === "terser" ? value : parseBooleanFlag(value);
+      minify =
+        value === "esbuild" || value === "terser"
+          ? value
+          : parseBooleanFlag(value);
       continue;
     }
 
@@ -107,30 +102,4 @@ function parseBuildArgs(argv) {
     sourcemap,
     minify,
   };
-}
-
-export async function buildSlidesApp(options = {}) {
-  const parsedArgs = parseBuildArgs(options.viteArgs ?? []);
-  const context = resolveSlidesCommandContext({
-    ...options,
-    slidesFile: options.slidesFile ?? parsedArgs.slidesFile,
-  });
-  const buildConfig = mergeConfig(createSlidesViteConfig(context), {
-    configFile: false,
-    mode: parsedArgs.mode,
-    base: parsedArgs.base,
-    build: {
-      outDir: parsedArgs.outDir,
-      emptyOutDir: parsedArgs.emptyOutDir,
-      sourcemap: parsedArgs.sourcemap,
-      minify: parsedArgs.minify,
-    },
-  });
-
-  await build(buildConfig);
-}
-
-export async function runSlidesBuild(options = {}) {
-  await buildSlidesApp(options);
-  return createSuccessResult();
 }

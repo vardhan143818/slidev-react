@@ -1,13 +1,89 @@
 {
   "name": "@slidev-react/core",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "Pure presentation models, flow, and shared contracts for slidev-react",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./presentation/session/protocol": {
+      "types": "./dist/presentation/session/protocol.d.ts",
+      "import": "./dist/presentation/session/protocol.js"
+    },
+    "./presentation/flow/navigation": {
+      "types": "./dist/presentation/flow/navigation.d.ts",
+      "import": "./dist/presentation/flow/navigation.js"
+    },
+    "./presentation/flow/cue": {
+      "types": "./dist/presentation/flow/cue.d.ts",
+      "import": "./dist/presentation/flow/cue.js"
+    },
+    "./presentation/flow/step": {
+      "types": "./dist/presentation/flow/step.d.ts",
+      "import": "./dist/presentation/flow/step.js"
+    },
+    "./presentation/export/fileNames": {
+      "types": "./dist/presentation/export/fileNames.d.ts",
+      "import": "./dist/presentation/export/fileNames.js"
+    },
+    "./presentation/export/selection": {
+      "types": "./dist/presentation/export/selection.d.ts",
+      "import": "./dist/presentation/export/selection.js"
+    },
+    "./presentation/export/urls": {
+      "types": "./dist/presentation/export/urls.d.ts",
+      "import": "./dist/presentation/export/urls.js"
+    },
+    "./slides/layout": {
+      "types": "./dist/slides/layout.d.ts",
+      "import": "./dist/slides/layout.js"
+    },
+    "./slides/transition": {
+      "types": "./dist/slides/transition.d.ts",
+      "import": "./dist/slides/transition.js"
+    },
+    "./slides/viewport": {
+      "types": "./dist/slides/viewport.d.ts",
+      "import": "./dist/slides/viewport.js"
+    },
+    "./slides/slide": {
+      "types": "./dist/slides/slide.d.ts"
+    },
+    "./slides/slides": {
+      "types": "./dist/slides/slides.d.ts"
+    },
+    "./slides/compiled-slides": {
+      "types": "./dist/slides/compiled-slides.d.ts"
+    }
+  },
+  "dependencies": {
+    "react": "19.2.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hylarucoder/slidev-react.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/core",
+  "bugs": {
+    "url": "https://github.com/hylarucoder/slidev-react/issues"
   },
   "engines": {
     "node": ">=22"

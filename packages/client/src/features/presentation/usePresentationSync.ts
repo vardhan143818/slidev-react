@@ -7,6 +7,7 @@ import {
   type PresentationRole,
   type PresentationSyncMode,
   type PresentationSharedState,
+  type SyncedPresentationRole,
 } from "./types";
 
 const BROADCAST_CHANNEL_PREFIX = "slide-react:presentation:session:";
@@ -35,6 +36,76 @@ type EnvelopeInput = Omit<
   PresentationEnvelope,
   "version" | "sessionId" | "senderId" | "seq" | "timestamp"
 >;
+
+function createEnvelope({
+  sessionId,
+  senderId,
+  seq,
+  timestamp,
+  message,
+}: {
+  sessionId: string;
+  senderId: string;
+  seq: number;
+  timestamp: number;
+  message: EnvelopeInput;
+}): PresentationEnvelope {
+  switch (message.type) {
+    case "session/join":
+    case "session/leave":
+    case "heartbeat": {
+      const { role } = message.payload as {
+        role: SyncedPresentationRole;
+      };
+
+      return {
+        version: PRESENTATION_PROTOCOL_VERSION,
+        sessionId,
+        senderId,
+        seq,
+        timestamp,
+        type: message.type,
+        payload: {
+          role,
+        },
+      };
+    }
+    case "state/snapshot": {
+      const { state } = message.payload as {
+        state: PresentationSharedState;
+      };
+
+      return {
+        version: PRESENTATION_PROTOCOL_VERSION,
+        sessionId,
+        senderId,
+        seq,
+        timestamp,
+        type: "state/snapshot",
+        payload: {
+          state,
+        },
+      };
+    }
+    case "state/patch": {
+      const { state } = message.payload as {
+        state: Partial<PresentationSharedState>;
+      };
+
+      return {
+        version: PRESENTATION_PROTOCOL_VERSION,
+        sessionId,
+        senderId,
+        seq,
+        timestamp,
+        type: "state/patch",
+        payload: {
+          state,
+        },
+      };
+    }
+  }
+}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -165,7 +236,12 @@ export function usePresentationSync({
 
     if (!canSend(session.syncMode) && !canReceive(session.syncMode)) return;
 
-    const channelName = `${BROADCAST_CHANNEL_PREFIX}${session.sessionId}`;
+    const sessionId = session.sessionId;
+    const senderId = session.senderId;
+    const syncMode = session.syncMode;
+    const syncRole: SyncedPresentationRole = session.role;
+    const sessionWsUrl = session.wsUrl;
+    const channelName = `${BROADCAST_CHANNEL_PREFIX}${sessionId}`;
     let disposed = false;
     let reconnectAttempt = 0;
     let reconnectTimeoutId: number | null = null;
@@ -200,14 +276,13 @@ export function usePresentationSync({
       if (disposed) return;
 
       seqRef.current += 1;
-      const envelope: PresentationEnvelope = {
-        version: PRESENTATION_PROTOCOL_VERSION,
-        sessionId: session.sessionId,
-        senderId: session.senderId,
+      const envelope = createEnvelope({
+        sessionId,
+        senderId,
         seq: seqRef.current,
         timestamp: Date.now(),
-        ...message,
-      };
+        message,
+      });
 
       channel?.postMessage(envelope);
 
@@ -215,7 +290,7 @@ export function usePresentationSync({
     };
 
     const sendSnapshot = () => {
-      if (!canSend(session.syncMode) || !canAuthorState(session.role)) return;
+      if (!canSend(syncMode) || !canAuthorState(syncRole)) return;
 
       const state = createSnapshotState(localStateRef.current);
       sendEnvelope({
@@ -230,13 +305,13 @@ export function usePresentationSync({
       const envelope = parsePresentationEnvelope(incoming);
       if (!envelope) return;
 
-      if (envelope.sessionId !== session.sessionId || envelope.senderId === session.senderId)
+      if (envelope.sessionId !== sessionId || envelope.senderId === senderId)
         return;
 
       const observedAt = Date.now();
       markPeerSeen(envelope.senderId, observedAt);
       lastRemoteActivityRef.current = observedAt;
-      if (canReceive(session.syncMode)) setRemoteActive(true);
+      if (canReceive(syncMode)) setRemoteActive(true);
 
       if (envelope.type === "session/leave") {
         removePeer(envelope.senderId);
@@ -247,15 +322,15 @@ export function usePresentationSync({
 
       if (
         envelope.type === "session/join" &&
-        canSend(session.syncMode) &&
-        canAuthorState(session.role)
+        canSend(syncMode) &&
+        canAuthorState(syncRole)
       ) {
         sendSnapshot();
         return;
       }
 
       if (envelope.type === "state/snapshot" || envelope.type === "state/patch") {
-        if (!canReceive(session.syncMode)) return;
+        if (!canReceive(syncMode)) return;
 
         const patchState = envelope.payload.state;
         const updateAt = patchState.lastUpdate ?? envelope.timestamp;
@@ -306,7 +381,7 @@ export function usePresentationSync({
     };
 
     const scheduleReconnect = () => {
-      if (!session.wsUrl || disposed) return;
+      if (!sessionWsUrl || disposed) return;
 
       setWsState("reconnecting");
       const delay = Math.min(
@@ -321,14 +396,14 @@ export function usePresentationSync({
     };
 
     const connectWebSocket = () => {
-      if (!session.wsUrl || disposed) return;
+      if (!sessionWsUrl || disposed) return;
 
       closeWs();
       setWsState("connecting");
 
-      const connectionUrl = new URL(session.wsUrl);
-      connectionUrl.searchParams.set("session", session.sessionId);
-      connectionUrl.searchParams.set("sender", session.senderId);
+      const connectionUrl = new URL(sessionWsUrl);
+      connectionUrl.searchParams.set("session", sessionId);
+      connectionUrl.searchParams.set("sender", senderId);
 
       const socket = new WebSocket(connectionUrl.toString());
       ws = socket;
@@ -339,11 +414,11 @@ export function usePresentationSync({
         sendEnvelope({
           type: "session/join",
           payload: {
-            role: session.role,
+            role: syncRole,
           },
         });
 
-        if (canAuthorState(session.role)) sendSnapshot();
+        if (canAuthorState(syncRole)) sendSnapshot();
       };
 
       const onMessage = (event: MessageEvent<unknown>) => {
@@ -379,23 +454,23 @@ export function usePresentationSync({
       socket.addEventListener("close", onClose);
     };
 
-    if (session.wsUrl) connectWebSocket();
+    if (sessionWsUrl) connectWebSocket();
     else setWsState("disabled");
 
     sendEnvelope({
-      type: "session/join",
-      payload: {
-        role: session.role,
-      },
-    });
+        type: "session/join",
+        payload: {
+          role: syncRole,
+        },
+      });
 
-    if (canAuthorState(session.role)) sendSnapshot();
+    if (canAuthorState(syncRole)) sendSnapshot();
 
     heartbeatIntervalId = window.setInterval(() => {
       sendEnvelope({
         type: "heartbeat",
         payload: {
-          role: session.role,
+          role: syncRole,
         },
       });
     }, HEARTBEAT_INTERVAL_MS);
@@ -407,7 +482,7 @@ export function usePresentationSync({
       }
 
       refreshPeerCount();
-      if (canReceive(session.syncMode))
+      if (canReceive(syncMode))
         setRemoteActive(now - lastRemoteActivityRef.current <= REMOTE_ACTIVE_WINDOW_MS);
     }, PEER_SWEEP_INTERVAL_MS);
 
@@ -418,7 +493,7 @@ export function usePresentationSync({
       sendEnvelope({
         type: "session/leave",
         payload: {
-          role: session.role,
+          role: syncRole,
         },
       });
       disposed = true;
@@ -438,9 +513,9 @@ export function usePresentationSync({
       sendEnvelopeRef.current = null;
       sendSnapshotRef.current = null;
       setBroadcastConnected(false);
-      setWsState(session.wsUrl ? "connecting" : "disabled");
+      setWsState(sessionWsUrl ? "connecting" : "disabled");
       setPeerCount(0);
-      setRemoteActive(!canReceive(session.syncMode));
+      setRemoteActive(!canReceive(syncMode));
     };
   }, [
     session.enabled,

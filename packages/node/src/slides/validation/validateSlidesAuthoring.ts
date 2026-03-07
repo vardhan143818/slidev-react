@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import type { SlidesDocument } from "../model/slides.ts";
-import { layoutNames } from "../model/layout.ts";
+import type { SlidesDocument } from "@slidev-react/core/slides/slides";
+import { layoutNames } from "@slidev-react/core/slides/layout";
 
 const CLIENT_THEME_THEMES_DIR = "packages/client/src/theme/themes";
 const CLIENT_ADDONS_DIR = "packages/client/src/addons";

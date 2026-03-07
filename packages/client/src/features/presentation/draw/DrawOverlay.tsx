@@ -1,5 +1,5 @@
 import { useMemo, useRef, type PointerEvent as ReactPointerEvent } from "react";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 import { useDraw, type DrawPoint, type DrawStroke } from "./DrawProvider";
 
 function clamp(value: number, min: number, max: number) {

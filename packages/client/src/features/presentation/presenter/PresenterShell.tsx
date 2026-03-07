@@ -7,9 +7,9 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
-import type { TransitionName } from "@slidev-react/node/slides/model/transition";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
+import type { TransitionName } from "@slidev-react/core/slides/transition";
 import { DrawProvider, type DrawStroke } from "../draw/DrawProvider";
 import { KeyboardController } from "../navigation/KeyboardController";
 import { ShortcutsHelpOverlay } from "../navigation/ShortcutsHelpOverlay";
@@ -26,7 +26,7 @@ import { useSlidesNavigation } from "../navigation/useSlidesNavigation";
 import { QuickOverview } from "../overview/QuickOverview";
 import { SlideStage } from "../stage/SlideStage";
 import { PresentationStatus } from "../PresentationStatus";
-import { buildPrintExportUrl } from "../printExport";
+import { buildPrintExportUrl } from "@slidev-react/core/presentation/export/urls";
 import { buildPresentationEntryUrl, type PresentationSession } from "../session";
 import { usePresentationRecorder } from "../usePresentationRecorder";
 import { usePresentationSync } from "../usePresentationSync";

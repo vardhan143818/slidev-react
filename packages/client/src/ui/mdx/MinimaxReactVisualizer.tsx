@@ -1,5 +1,5 @@
 import { Code, Database, Layers, Maximize, MousePointer2, Terminal, ThumbsUp } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRevealProgress } from "../../features/presentation/reveal/useRevealStep";
 
 type StepTheme = "default" | "blue" | "purple" | "green";
@@ -64,7 +64,9 @@ const themeClassMap: Record<StepTheme, string> = {
 };
 
 export function MinimaxReactVisualizer() {
-  const { step } = useRevealProgress(steps.length - 1);
+  const { reveal, step: revealStep } = useRevealProgress(steps.length - 1);
+  const [manualStep, setManualStep] = useState(0);
+  const step = reveal ? revealStep : manualStep;
 
   const likes = 42 + (step >= 3 ? 1 : 0) + (step >= 4 ? 1 : 0);
 
@@ -236,7 +238,7 @@ export function MinimaxReactVisualizer() {
             <button
               key={item.id}
               type="button"
-              onClick={() => setStep(item.id)}
+              onClick={() => setManualStep(item.id)}
               className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left transition ${item.id === step ? "border-blue-400 bg-blue-500/10" : "border-[#333] bg-[#202020] hover:border-[#4b4b4b]"}`}
             >
               <span className="font-mono text-lg text-gray-300">

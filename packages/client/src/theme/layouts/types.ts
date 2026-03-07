@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
-import type { LayoutName } from "@slidev-react/node/slides/model/layout";
+import type { LayoutName } from "@slidev-react/core/slides/layout";
 
 export type LayoutComponent = ComponentType<{ children: ReactNode }>;
 

@@ -1,26 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-interface WakeLockSentinelLike extends EventTarget {
-  released: boolean;
-  release: () => Promise<void>;
-}
-
-interface WakeLockManagerLike {
-  request: (type: "screen") => Promise<WakeLockSentinelLike>;
-}
-
-declare global {
-  interface Navigator {
-    wakeLock?: WakeLockManagerLike;
-  }
-}
-
 function isWakeLockSupported() {
-  return typeof navigator !== "undefined" && typeof navigator.wakeLock?.request === "function";
+  return (
+    typeof navigator !== "undefined" &&
+    "wakeLock" in navigator &&
+    typeof navigator.wakeLock?.request === "function"
+  );
 }
 
 export function useWakeLock() {
-  const sentinelRef = useRef<WakeLockSentinelLike | null>(null);
+  const sentinelRef = useRef<WakeLockSentinel | null>(null);
   const [requested, setRequested] = useState(false);
   const [active, setActive] = useState(false);
   const [error, setError] = useState<string | null>(null);

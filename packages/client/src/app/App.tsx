@@ -9,7 +9,7 @@ import {
   buildSlidesUrl,
   resolvePresentationExportMode,
   resolvePrintExportWithClicks,
-} from "../features/presentation/printExport";
+} from "@slidev-react/core/presentation/export/urls";
 import { resolvePresentationFileNameBase } from "../features/presentation/recordingFilename";
 import {
   resolvePresentationSession,
@@ -18,6 +18,7 @@ import {
 } from "../features/presentation/session";
 import type { PresentationSyncMode } from "../features/presentation/types";
 import { ThemeProvider, useSlideTheme } from "../theme/ThemeProvider";
+import type { MDXComponents } from "../types/mdx-components";
 
 function ThemeBoundApp({
   exportMode,
@@ -38,7 +39,7 @@ function ThemeBoundApp({
 }) {
   const theme = useSlideTheme();
   const addons = useSlideAddons();
-  const mdxComponents = useMemo(
+  const mdxComponents = useMemo<MDXComponents>(
     () => ({
       ...theme.mdxComponents,
       ...addons.mdxComponents,

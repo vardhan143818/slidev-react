@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
-import type { LayoutName } from "./layout.ts";
-import type { TransitionName } from "./transition.ts";
+import type { LayoutName } from "./layout";
+import type { TransitionName } from "./transition";
 
 export interface SlideMeta {
   title?: string;

@@ -1,12 +1,12 @@
 import { useMemo, type PointerEvent as ReactPointerEvent } from "react";
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
-import type { SlideComponent, SlideMeta } from "@slidev-react/node/slides/model/slide";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
+import type { SlideComponent, SlideMeta } from "@slidev-react/core/slides/slide";
 import { DrawOverlay } from "../draw/DrawOverlay";
 import { useDraw } from "../draw/DrawProvider";
 import type { PresentationCursorState } from "../types";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import { useSlideScale } from "./slideViewport";
-import type { TransitionName } from "@slidev-react/node/slides/model/transition";
+import type { TransitionName } from "@slidev-react/core/slides/transition";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
 
 function clamp(value: number, min: number, max: number) {

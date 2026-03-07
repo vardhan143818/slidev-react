@@ -1,4 +1,4 @@
-import type { SlideComponent } from "../model/slide.ts";
+import type { SlideComponent } from "@slidev-react/core/slides/slide";
 import { evaluate } from "@mdx-js/mdx";
 import { useMDXComponents } from "@mdx-js/react";
 import * as jsxRuntime from "react/jsx-runtime";

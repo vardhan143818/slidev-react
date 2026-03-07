@@ -1,8 +1,8 @@
-import type { SlidesMeta, SlidesDocument } from "../model/slides.ts";
-import type { SlideMeta, SlideUnit } from "../model/slide.ts";
-import { resolveSlidesViewportMeta } from "../model/viewport.ts";
+import type { SlidesMeta, SlidesDocument } from "@slidev-react/core/slides/slides";
+import type { SlideMeta, SlideUnit } from "@slidev-react/core/slides/slide";
+import { resolveSlidesViewportMeta } from "@slidev-react/core/slides/viewport";
 import { z, type ZodError } from "zod";
-import { transitionNames } from "../model/transition.ts";
+import { transitionNames } from "@slidev-react/core/slides/transition";
 import { parseFrontmatter } from "./frontmatter.ts";
 
 const layoutSchema = z.string().trim().min(1, "Layout name cannot be empty");

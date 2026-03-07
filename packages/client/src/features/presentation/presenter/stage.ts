@@ -1,4 +1,4 @@
-import type { SlidesViewport } from "@slidev-react/node/slides/model/viewport";
+import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 
 export const OVERVIEW_STAGE_WIDTH = 320;
 
