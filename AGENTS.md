@@ -1,5 +1,8 @@
 # Repository Guidelines
 
+1. 尽量用中文回复
+2. 如果没有显式要求, 尽量不要写兼容代码.
+
 ## Project Structure & Module Organization
 
 The app root is the repository root. Main source code lives in `src/`, organized by responsibility rather than framework layer:
