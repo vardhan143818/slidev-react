@@ -1,6 +1,7 @@
+import { useMemo } from "react";
 import type { LayoutName } from "../../deck/model/layout";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/slideSurface";
-import { OVERVIEW_STAGE_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from "./stage";
+import { SLIDE_HEIGHT, SLIDE_WIDTH, useSlideScale } from "../player/slideViewport";
 import type { CompiledSlide } from "./types";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
 
@@ -44,6 +45,16 @@ export function PresenterSidePreview({
       layout: slide.meta.layout ?? deckLayout,
     }),
   });
+  const { viewportRef, scale, offset } = useSlideScale(1);
+  const viewportStageStyle = useMemo(
+    () => ({
+      width: `${SLIDE_WIDTH}px`,
+      height: `${SLIDE_HEIGHT}px`,
+      transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+      transformOrigin: "top left",
+    }),
+    [offset.x, offset.y, scale],
+  );
 
   return (
     <section className="flex h-full min-h-0 flex-col rounded-[8px] border border-slate-200/70 bg-white/72 p-4 text-slate-900 shadow-[0_18px_44px_rgba(148,163,184,0.18)] backdrop-blur-md">
@@ -55,17 +66,19 @@ export function PresenterSidePreview({
           {indexLabel}
         </span>
       </div>
-      <div className="min-h-0 flex-1 overflow-hidden rounded-[5px] border border-slate-200/80 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
-        <div
-          className="origin-top-left text-black"
-          style={{
-            width: `${STAGE_WIDTH}px`,
-            height: `${STAGE_HEIGHT}px`,
-            transform: `scale(${OVERVIEW_STAGE_SCALE})`,
-            transformOrigin: "top left",
-          }}
-        >
-          <article className={surface.className} style={surface.style}>
+      <div
+        ref={viewportRef}
+        className="relative min-h-0 flex-1 overflow-hidden rounded-[5px] border border-slate-200/80 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
+      >
+        <div className="text-black" style={viewportStageStyle}>
+          <article
+            className={surface.className}
+            style={{
+              ...surface.style,
+              width: `${SLIDE_WIDTH}px`,
+              height: `${SLIDE_HEIGHT}px`,
+            }}
+          >
             <Layout>
               <Slide />
             </Layout>
@@ -74,9 +87,6 @@ export function PresenterSidePreview({
       </div>
       <p className="mt-3 truncate text-base font-semibold text-slate-900">
         {slide.meta.title ?? "Untitled"}
-      </p>
-      <p className="mt-1 text-sm text-slate-500">
-        Keep this in peripheral view so the next transition never feels reactive.
       </p>
     </section>
   );

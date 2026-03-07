@@ -1,18 +1,21 @@
-export function normalizeConfiguredClicks(clicks: number | undefined) {
-  if (typeof clicks !== "number" || !Number.isFinite(clicks)) return 0;
+import {
+  normalizeConfiguredCueCount,
+  resolveCueTotal,
+} from "../../core/presentation/flow/cue"
 
-  return Math.max(Math.floor(clicks), 0);
+export function normalizeConfiguredClicks(clicks: number | undefined) {
+  return normalizeConfiguredCueCount(clicks)
 }
 
 export function resolveRevealTotal({
   configuredClicks,
   detectedClicks,
 }: {
-  configuredClicks?: number;
-  detectedClicks?: number;
+  configuredClicks?: number
+  detectedClicks?: number
 }) {
-  return Math.max(
-    normalizeConfiguredClicks(configuredClicks),
-    normalizeConfiguredClicks(detectedClicks),
-  );
+  return resolveCueTotal({
+    configuredCues: configuredClicks,
+    detectedCues: detectedClicks,
+  })
 }

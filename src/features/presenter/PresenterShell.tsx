@@ -18,19 +18,20 @@ import type {
   PresentationSharedState,
   PresentationSyncMode,
 } from "../presentation/types";
-import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
+import { resolveCueTotal } from "../../core/presentation/flow/cue";
 import {
-  canAdvanceReveal,
-  canRetreatReveal,
-  clampRevealCount,
-  resolveAdvanceReveal,
-  resolveRetreatReveal,
-} from "../reveal/navigation";
+  canAdvanceFlow,
+  canRetreatFlow,
+  clampCueIndex,
+  resolveAdvanceFlow,
+  resolveRetreatFlow,
+} from "../../core/presentation/flow/navigation";
+import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
 import { SpeakerNotesPanel } from "./SpeakerNotesPanel";
+import { FlowTimelinePreview } from "./FlowTimelinePreview";
 import { PresenterSidePreview } from "./PresenterSidePreview";
 import { PresenterTopProgress } from "./PresenterTopProgress";
 import type { CompiledSlide } from "./types";
-import { resolveRevealTotal } from "../reveal/clicks";
 import { useWakeLock } from "./useWakeLock";
 import { useFullscreen } from "./useFullscreen";
 import { useIdleCursor } from "./useIdleCursor";
@@ -39,12 +40,6 @@ function isTypingElement(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
 
   return target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
-}
-
-function formatSpeakerTime(seconds: number) {
-  const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const restSeconds = String(seconds % 60).padStart(2, "0");
-  return `${minutes}:${restSeconds}`;
 }
 
 function canControlNavigation(session: PresentationSession) {
@@ -89,7 +84,7 @@ function readInitialCursorMode(): PresenterCursorMode {
   }
 }
 
-function resolveMaxRevealStep(stepCounts: Map<number, number> | undefined) {
+function resolveMaxCueStep(stepCounts: Map<number, number> | undefined) {
   if (!stepCounts || stepCounts.size === 0) return 0;
 
   let max = 0;
@@ -100,7 +95,7 @@ function resolveMaxRevealStep(stepCounts: Map<number, number> | undefined) {
   return max;
 }
 
-type PresenterOverlay = "quick-overview" | "notes-overview" | null;
+type PresenterOverlay = "quick-overview" | "notes-overview" | "timeline-preview" | null;
 
 export function PresenterShell({
   slides,
@@ -206,11 +201,11 @@ export function PresenterShell({
   const setSlideClicks = useCallback(
     (slideId: string, next: number) => {
       setClicksBySlideId((prev) => {
-        const total = resolveRevealTotal({
-          configuredClicks: slideClicksConfig[slideId],
-          detectedClicks: clicksTotalBySlideIdRef.current[slideId],
+        const total = resolveCueTotal({
+          configuredCues: slideClicksConfig[slideId],
+          detectedCues: clicksTotalBySlideIdRef.current[slideId],
         });
-        const clamped = clampRevealCount(next, total);
+        const clamped = clampCueIndex(next, total);
         if ((prev[slideId] ?? 0) === clamped) return prev;
 
         const updated = {
@@ -226,10 +221,10 @@ export function PresenterShell({
 
   const setSlideClicksTotal = useCallback(
     (slideId: string, nextTotal: number) => {
-      const safeTotal = resolveRevealTotal({
-        configuredClicks: slideClicksConfig[slideId],
-        detectedClicks: nextTotal,
-      });
+        const safeTotal = resolveCueTotal({
+          configuredCues: slideClicksConfig[slideId],
+          detectedCues: nextTotal,
+        });
 
       setClicksTotalBySlideId((prev) => {
         if (prev[slideId] === safeTotal) return prev;
@@ -243,7 +238,7 @@ export function PresenterShell({
       });
 
       setClicksBySlideId((prev) => {
-        const clamped = clampRevealCount(prev[slideId] ?? 0, safeTotal);
+        const clamped = clampCueIndex(prev[slideId] ?? 0, safeTotal);
         if ((prev[slideId] ?? 0) === clamped) return prev;
 
         const updated = {
@@ -264,7 +259,7 @@ export function PresenterShell({
       const slideSteps = revealStepCountsRef.current[slideId] ?? new Map<number, number>();
       revealStepCountsRef.current[slideId] = slideSteps;
       slideSteps.set(normalizedStep, (slideSteps.get(normalizedStep) ?? 0) + 1);
-      setSlideClicksTotal(slideId, resolveMaxRevealStep(slideSteps));
+      setSlideClicksTotal(slideId, resolveMaxCueStep(slideSteps));
 
       return () => {
         const steps = revealStepCountsRef.current[slideId];
@@ -276,16 +271,16 @@ export function PresenterShell({
 
         if (steps.size === 0) delete revealStepCountsRef.current[slideId];
 
-        setSlideClicksTotal(slideId, resolveMaxRevealStep(steps));
+        setSlideClicksTotal(slideId, resolveMaxCueStep(steps));
       };
     },
     [currentSlide.id, setSlideClicksTotal],
   );
 
   const currentClicks = clicksBySlideId[currentSlide.id] ?? 0;
-  const currentClicksTotal = resolveRevealTotal({
-    configuredClicks: currentSlide.meta.clicks,
-    detectedClicks: clicksTotalBySlideId[currentSlide.id],
+  const currentClicksTotal = resolveCueTotal({
+    configuredCues: currentSlide.meta.clicks,
+    detectedCues: clicksTotalBySlideId[currentSlide.id],
   });
 
   const goToSlideAtStart = useCallback(
@@ -300,39 +295,39 @@ export function PresenterShell({
   );
 
   const advanceReveal = useCallback(() => {
-    const nextState = resolveAdvanceReveal({
-      currentClicks,
-      currentClicksTotal,
-      currentIndex: navigation.currentIndex,
-      totalSlides: navigation.total,
+    const nextState = resolveAdvanceFlow({
+      currentCueIndex: currentClicks,
+      currentCueTotal: currentClicksTotal,
+      currentPageIndex: navigation.currentIndex,
+      totalPages: navigation.total,
     });
     if (!nextState) return;
 
-    const targetSlide = slides[nextState.page];
+    const targetSlide = slides[nextState.pageIndex];
     if (!targetSlide) return;
 
-    setSlideClicks(targetSlide.id, nextState.clicks);
-    if (nextState.page !== navigation.currentIndex) navigation.goTo(nextState.page);
+    setSlideClicks(targetSlide.id, nextState.cueIndex);
+    if (nextState.pageIndex !== navigation.currentIndex) navigation.goTo(nextState.pageIndex);
   }, [currentClicks, currentClicksTotal, navigation, setSlideClicks, slides]);
 
   const retreatReveal = useCallback(() => {
     const previousSlideId = slides[navigation.currentIndex - 1]?.id ?? "";
-    const nextState = resolveRetreatReveal({
-      currentClicks,
-      currentIndex: navigation.currentIndex,
-      previousClicks: clicksBySlideIdRef.current[previousSlideId],
-      previousClicksTotal: resolveRevealTotal({
-        configuredClicks: slideClicksConfig[previousSlideId],
-        detectedClicks: clicksTotalBySlideIdRef.current[previousSlideId],
+    const nextState = resolveRetreatFlow({
+      currentCueIndex: currentClicks,
+      currentPageIndex: navigation.currentIndex,
+      previousCueIndex: clicksBySlideIdRef.current[previousSlideId],
+      previousCueTotal: resolveCueTotal({
+        configuredCues: slideClicksConfig[previousSlideId],
+        detectedCues: clicksTotalBySlideIdRef.current[previousSlideId],
       }),
     });
     if (!nextState) return;
 
-    const targetSlide = slides[nextState.page];
+    const targetSlide = slides[nextState.pageIndex];
     if (!targetSlide) return;
 
-    setSlideClicks(targetSlide.id, nextState.clicks);
-    if (nextState.page !== navigation.currentIndex) navigation.goTo(nextState.page);
+    setSlideClicks(targetSlide.id, nextState.cueIndex);
+    if (nextState.pageIndex !== navigation.currentIndex) navigation.goTo(nextState.pageIndex);
   }, [currentClicks, navigation, setSlideClicks, slides]);
 
   const revealContextValue = useMemo<RevealContextValue>(
@@ -344,15 +339,15 @@ export function PresenterShell({
       registerStep: registerRevealStep,
       advance: advanceReveal,
       retreat: retreatReveal,
-      canAdvance: canAdvanceReveal({
-        currentClicks,
-        currentClicksTotal,
-        currentIndex: navigation.currentIndex,
-        totalSlides: navigation.total,
+      canAdvance: canAdvanceFlow({
+        currentCueIndex: currentClicks,
+        currentCueTotal: currentClicksTotal,
+        currentPageIndex: navigation.currentIndex,
+        totalPages: navigation.total,
       }),
-      canRetreat: canRetreatReveal({
-        currentClicks,
-        currentIndex: navigation.currentIndex,
+      canRetreat: canRetreatFlow({
+        currentCueIndex: currentClicks,
+        currentPageIndex: navigation.currentIndex,
       }),
     }),
     [
@@ -521,6 +516,7 @@ export function PresenterShell({
 
   const canPrev = revealContextValue.canRetreat;
   const canNext = revealContextValue.canAdvance;
+  const canOpenOverview = canControl || session.role === "viewer";
   const overviewOpen = activeOverlay === "quick-overview";
   const notesOverviewOpen = activeOverlay === "notes-overview";
   const progressPercent =
@@ -574,7 +570,7 @@ export function PresenterShell({
       const key = event.key.toLowerCase();
 
       if (key === "o") {
-        if (!canControl) return;
+        if (!canOpenOverview) return;
 
         event.preventDefault();
         setActiveOverlay((value) => (value === "quick-overview" ? null : "quick-overview"));
@@ -594,7 +590,7 @@ export function PresenterShell({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [canControl]);
+  }, [canControl, canOpenOverview]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -632,13 +628,8 @@ export function PresenterShell({
             <>
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_26%),radial-gradient(circle_at_78%_16%,rgba(244,114,182,0.14),transparent_20%),linear-gradient(180deg,#f8fbff_0%,#e8f0fb_52%,#f3f7ff_100%)]" />
               <PresenterTopProgress
-                currentIndex={navigation.currentIndex}
                 total={navigation.total}
                 progressPercent={progressPercent}
-                revealClicks={currentClicks}
-                revealClicksTotal={currentClicksTotal}
-                elapsedLabel={formatSpeakerTime(localTimer)}
-                remoteActive={sync.remoteActive}
               />
             </>
           )}
@@ -656,7 +647,6 @@ export function PresenterShell({
               canRecord={canControl}
               recordingSupported={recorder.supported}
               isRecording={recorder.isRecording}
-              recordingElapsedMs={recorder.elapsedMs}
               recordingError={recorder.error}
               wakeLockSupported={wakeLock.supported}
               wakeLockRequested={wakeLock.requested}
@@ -666,6 +656,7 @@ export function PresenterShell({
               fullscreenActive={fullscreen.active}
               stageScale={stageScale}
               cursorMode={cursorMode}
+              timelinePreviewOpen={activeOverlay === "timeline-preview"}
               onStartRecording={() => {
                 void recorder.start();
               }}
@@ -677,6 +668,11 @@ export function PresenterShell({
               }}
               onToggleFullscreen={() => {
                 void fullscreen.toggle();
+              }}
+              onToggleTimelinePreview={() => {
+                setActiveOverlay((value) =>
+                  value === "timeline-preview" ? null : "timeline-preview",
+                )
               }}
               onStageScaleChange={handleStageScaleChange}
               onCursorModeChange={handleCursorModeChange}
@@ -709,8 +705,8 @@ export function PresenterShell({
                     </RevealProvider>
                   </div>
                 </section>
-                <aside className="relative z-10 flex min-h-0 flex-col gap-4 text-slate-900">
-                  <div className="grid min-h-0 flex-1 gap-4 lg:grid-rows-[minmax(0,1fr)_minmax(0,0.88fr)]">
+                <aside className="relative z-10 flex min-h-0 flex-col gap-0 text-slate-900">
+                  <div className="grid min-h-0 flex-1 gap-0 lg:grid-rows-[minmax(220px,0.92fr)_minmax(0,1.08fr)]">
                     <PresenterSidePreview
                       title="Up Next"
                       indexLabel={nextSlide ? String(navigation.currentIndex + 2) : "--"}
@@ -741,40 +737,62 @@ export function PresenterShell({
               </RevealProvider>
             )}
           </div>
-          <PresentationNavbar
-            slideTitle={currentSlide.meta.title}
-            currentIndex={navigation.currentIndex}
-            total={navigation.total}
-            canPrev={canPrev}
-            canNext={canNext}
-            showPresenterModeButton={session.role !== "presenter"}
-            overviewOpen={overviewOpen}
-            notesOpen={notesOverviewOpen}
-            onEnterPresenterMode={
-              session.role !== "presenter" ? handleEnterPresenterMode : undefined
-            }
-            onToggleOverview={() => {
-              if (!canControl) return;
+          {isPresenterRole && activeOverlay === "timeline-preview" && (
+            <div className="absolute inset-x-4 bottom-20 z-30 flex justify-center">
+              <FlowTimelinePreview
+                slide={currentSlide}
+                currentClicks={currentClicks}
+                currentClicksTotal={currentClicksTotal}
+                deckLayout={deckLayout}
+                deckBackground={deckBackground}
+                onJumpToCue={(cueIndex) => setSlideClicks(currentSlide.id, cueIndex)}
+                onClose={() => setActiveOverlay(null)}
+                className="w-full max-w-[min(920px,calc(100vw-2rem))] max-h-[min(60vh,700px)]"
+              />
+            </div>
+          )}
+          {!isPresenterRole && (
+            <PresentationNavbar
+              slideTitle={currentSlide.meta.title}
+              currentIndex={navigation.currentIndex}
+              total={navigation.total}
+              canPrev={canPrev}
+              canNext={canNext}
+              showPresenterModeButton={session.role !== "presenter"}
+              overviewOpen={overviewOpen}
+              notesOpen={notesOverviewOpen}
+              canOpenOverview={canOpenOverview}
+              onEnterPresenterMode={
+                session.role !== "presenter" ? handleEnterPresenterMode : undefined
+              }
+              onToggleOverview={() => {
+                if (!canOpenOverview) return;
 
-              setActiveOverlay((value) => (value === "quick-overview" ? null : "quick-overview"));
-            }}
-            onToggleNotes={() => {
-              if (!canControl) return;
+                setActiveOverlay((value) =>
+                  value === "quick-overview" ? null : "quick-overview",
+                );
+              }}
+              onToggleNotes={() => {
+                if (!canControl) return;
 
-              setActiveOverlay((value) => (value === "notes-overview" ? null : "notes-overview"));
-            }}
-            onPrev={retreatReveal}
-            onNext={advanceReveal}
-            canControl={canControl}
-          />
+                setActiveOverlay((value) =>
+                  value === "notes-overview" ? null : "notes-overview",
+                );
+              }}
+              onPrev={retreatReveal}
+              onNext={advanceReveal}
+              canControl={canControl}
+            />
+          )}
           <QuickOverview
-            open={overviewOpen && canControl}
+            open={overviewOpen && canOpenOverview}
             slides={slides}
             currentIndex={navigation.currentIndex}
             deckLayout={deckLayout}
             deckBackground={deckBackground}
             onClose={() => setActiveOverlay(null)}
             onSelect={(index) => {
+              if (!canControl) detachFromPresenter();
               goToSlideAtStart(index);
               setActiveOverlay(null);
             }}

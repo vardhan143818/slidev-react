@@ -1,6 +1,6 @@
 export const STAGE_WIDTH = 1920;
 export const STAGE_HEIGHT = 1080;
-export const OVERVIEW_STAGE_WIDTH = 280;
+export const OVERVIEW_STAGE_WIDTH = 320;
 export const OVERVIEW_STAGE_HEIGHT = Math.round(
   (OVERVIEW_STAGE_WIDTH * STAGE_HEIGHT) / STAGE_WIDTH,
 );

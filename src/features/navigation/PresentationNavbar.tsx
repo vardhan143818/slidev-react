@@ -12,10 +12,10 @@ import { useDraw } from "../draw/DrawProvider";
 
 function iconButtonClassName(active?: boolean) {
   if (active) {
-    return "inline-flex size-9 items-center justify-center rounded-lg border border-blue-300 bg-blue-100 text-blue-800 transition-colors";
+    return "inline-flex size-8 items-center justify-center rounded-md border border-blue-300 bg-blue-100 text-blue-800 transition-colors";
   }
 
-  return "inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50/95 text-slate-700 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-45";
+  return "inline-flex size-8 items-center justify-center rounded-md border border-slate-200 bg-slate-50/95 text-slate-700 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-45";
 }
 
 function DrawControls() {
@@ -43,6 +43,7 @@ export function PresentationNavbar({
   showPresenterModeButton,
   overviewOpen,
   notesOpen,
+  canOpenOverview,
   onEnterPresenterMode,
   onToggleOverview,
   onToggleNotes,
@@ -58,6 +59,7 @@ export function PresentationNavbar({
   showPresenterModeButton: boolean;
   overviewOpen: boolean;
   notesOpen: boolean;
+  canOpenOverview: boolean;
   onEnterPresenterMode?: () => void;
   onToggleOverview: () => void;
   onToggleNotes: () => void;
@@ -69,13 +71,13 @@ export function PresentationNavbar({
 
   return (
     <div
-      className="absolute bottom-5 left-5 z-40"
+      className="absolute bottom-0 left-4 z-40"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <div aria-hidden className="size-20 rounded-full" />
+      <div aria-hidden className="h-14 w-20 rounded-t-2xl" />
       <nav
-        className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/95 p-2 text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.14)] ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
+        className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-t-xl border border-b-0 border-slate-200 bg-white/95 px-2 py-1.5 text-slate-800 shadow-[0_-8px_20px_rgba(15,23,42,0.08)] ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
         aria-label="Presentation navbar"
       >
         <button
@@ -102,7 +104,7 @@ export function PresentationNavbar({
           title="Quick Overview (O)"
           aria-label="Toggle quick overview"
           className={iconButtonClassName(overviewOpen)}
-          disabled={!canControl}
+          disabled={!canOpenOverview}
         >
           <LayoutGrid size={16} />
         </button>
@@ -139,7 +141,7 @@ export function PresentationNavbar({
             >
               <ChevronRight size={16} />
             </button>
-            <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
+            <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
             <DrawControls />
           </>
         )}

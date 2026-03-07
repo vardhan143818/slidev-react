@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { ArrowLeft, Printer } from "lucide-react";
 import type { LayoutName } from "../../deck/model/layout";
+import { resolveCueTotal } from "../../core/presentation/flow/cue";
+import { SLIDE_HEIGHT, SLIDE_WIDTH, useSlideScale } from "../player/slideViewport";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/slideSurface";
 import type { CompiledSlide } from "../presenter/types";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
-import { resolveRevealTotal } from "../reveal/clicks";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
-
-const PRINT_SLIDE_WIDTH = 1920;
-const PRINT_SLIDE_HEIGHT = 1080;
 
 function noopCleanup() {}
 
@@ -69,6 +67,43 @@ function PrintSlideSnapshot({
   return <RevealProvider value={revealContextValue}>{children(<Slide />)}</RevealProvider>;
 }
 
+function PrintSlideSurface({
+  surface,
+  children,
+}: {
+  surface: { className: string; style: CSSProperties };
+  children: ReactNode;
+}) {
+  const { viewportRef, scale, offset } = useSlideScale(1);
+  const viewportStageStyle = useMemo(
+    () => ({
+      width: `${SLIDE_WIDTH}px`,
+      height: `${SLIDE_HEIGHT}px`,
+      transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+      transformOrigin: "top left",
+    }),
+    [offset.x, offset.y, scale],
+  );
+
+  return (
+    <div ref={viewportRef} className="print-slide-viewport relative aspect-[16/9] w-full overflow-hidden">
+      <div style={viewportStageStyle}>
+        <article
+          data-export-surface="slide"
+          className={surface.className}
+          style={{
+            ...surface.style,
+            width: `${SLIDE_WIDTH}px`,
+            height: `${SLIDE_HEIGHT}px`,
+          }}
+        >
+          {children}
+        </article>
+      </div>
+    </div>
+  );
+}
+
 function PrintSlideGroup({
   slide,
   slideNumber,
@@ -98,9 +133,9 @@ function PrintSlideGroup({
   const probeStepsRef = useRef(new Map<number, number>());
   const [detectedClicks, setDetectedClicks] = useState(0);
   const [measurementReady, setMeasurementReady] = useState(!withClicks);
-  const clicksTotal = resolveRevealTotal({
-    configuredClicks: slide.meta.clicks,
-    detectedClicks,
+  const clicksTotal = resolveCueTotal({
+    configuredCues: slide.meta.clicks,
+    detectedCues: detectedClicks,
   });
   const clickSteps = useMemo(() => {
     if (!withClicks) return [null];
@@ -173,7 +208,7 @@ function PrintSlideGroup({
             data-export-slide-ready={measurementReady ? "true" : "false"}
             className="print-slide-shell"
           >
-            <div className="mb-3 flex items-center justify-between px-1 text-xs font-medium tracking-[0.18em] text-slate-500 uppercase">
+            <div className="print-slide-meta mb-3 flex items-center justify-between px-1 text-xs font-medium tracking-[0.18em] text-slate-500 uppercase">
               <span>{slide.meta.title ?? `Slide ${slideNumber}`}</span>
               <span>
                 {withClicks
@@ -181,42 +216,30 @@ function PrintSlideGroup({
                   : `${slideNumber} / ${totalSlides}`}
               </span>
             </div>
-            <div className="print-slide-frame rounded-[20px] border border-slate-200/80 bg-white/72 p-3 shadow-[0_30px_80px_rgba(148,163,184,0.22)]">
-              {withClicks && typeof clickStep === "number" ? (
-                <PrintSlideSnapshot
-                  Slide={Slide}
-                  slideId={`${slide.id}:${clickStep}`}
-                  clicks={clickStep}
-                  clicksTotal={clicksTotal}
-                  registerStep={noopRegisterStep}
-                >
-                  {(content) => (
-                    <article
-                      data-export-surface="slide"
-                      className={surface.className}
-                      style={{
-                        ...surface.style,
-                        aspectRatio: `${PRINT_SLIDE_WIDTH} / ${PRINT_SLIDE_HEIGHT}`,
-                      }}
-                    >
-                      <Layout>{content}</Layout>
-                    </article>
-                  )}
-                </PrintSlideSnapshot>
-              ) : (
-                <article
-                  data-export-surface="slide"
-                  className={surface.className}
-                  style={{
-                    ...surface.style,
-                    aspectRatio: `${PRINT_SLIDE_WIDTH} / ${PRINT_SLIDE_HEIGHT}`,
-                  }}
-                >
-                  <Layout>
-                    <Slide />
-                  </Layout>
-                </article>
-              )}
+            <div className="print-slide-sheet rounded-[24px] border border-slate-200/80 bg-white shadow-[0_30px_80px_rgba(148,163,184,0.22)]">
+              <div className="print-slide-frame p-3">
+                {withClicks && typeof clickStep === "number" ? (
+                  <PrintSlideSnapshot
+                    Slide={Slide}
+                    slideId={`${slide.id}:${clickStep}`}
+                    clicks={clickStep}
+                    clicksTotal={clicksTotal}
+                    registerStep={noopRegisterStep}
+                  >
+                    {(content) => (
+                      <PrintSlideSurface surface={surface}>
+                        <Layout>{content}</Layout>
+                      </PrintSlideSurface>
+                    )}
+                  </PrintSlideSnapshot>
+                ) : (
+                  <PrintSlideSurface surface={surface}>
+                    <Layout>
+                      <Slide />
+                    </Layout>
+                  </PrintSlideSurface>
+                )}
+              </div>
             </div>
           </section>
         );
@@ -283,7 +306,7 @@ export function PrintDeckView({
           </div>
         </div>
       </header>
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
+      <main className="print-deck-content mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 md:px-6 md:py-10">
         {slides.map((slide, index) => (
           <PrintSlideGroup
             key={slide.id}

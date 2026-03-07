@@ -1,26 +1,32 @@
+import {
+  canAdvanceFlow,
+  canRetreatFlow,
+  clampCueIndex,
+  resolveAdvanceFlow,
+  resolveRetreatFlow,
+} from "../../core/presentation/flow/navigation"
+
 export interface AdvanceRevealInput {
-  currentClicks: number;
-  currentClicksTotal: number;
-  currentIndex: number;
-  totalSlides: number;
+  currentClicks: number
+  currentClicksTotal: number
+  currentIndex: number
+  totalSlides: number
 }
 
 export interface RetreatRevealInput {
-  currentClicks: number;
-  currentIndex: number;
-  previousClicks?: number;
-  previousClicksTotal?: number;
+  currentClicks: number
+  currentIndex: number
+  previousClicks?: number
+  previousClicksTotal?: number
 }
 
 export interface RevealNavigationResult {
-  page: number;
-  clicks: number;
+  page: number
+  clicks: number
 }
 
 export function clampRevealCount(next: number, total?: number) {
-  if (total === undefined) return Math.max(next, 0);
-
-  return Math.min(Math.max(next, 0), Math.max(total, 0));
+  return clampCueIndex(next, total)
 }
 
 export function canAdvanceReveal({
@@ -29,14 +35,22 @@ export function canAdvanceReveal({
   currentIndex,
   totalSlides,
 }: AdvanceRevealInput) {
-  return currentClicks < currentClicksTotal || currentIndex < totalSlides - 1;
+  return canAdvanceFlow({
+    currentCueIndex: currentClicks,
+    currentCueTotal: currentClicksTotal,
+    currentPageIndex: currentIndex,
+    totalPages: totalSlides,
+  })
 }
 
 export function canRetreatReveal({
   currentClicks,
   currentIndex,
 }: Pick<RetreatRevealInput, "currentClicks" | "currentIndex">) {
-  return currentClicks > 0 || currentIndex > 0;
+  return canRetreatFlow({
+    currentCueIndex: currentClicks,
+    currentPageIndex: currentIndex,
+  })
 }
 
 export function resolveAdvanceReveal({
@@ -45,19 +59,19 @@ export function resolveAdvanceReveal({
   currentIndex,
   totalSlides,
 }: AdvanceRevealInput): RevealNavigationResult | null {
-  if (currentClicks < currentClicksTotal) {
-    return {
-      page: currentIndex,
-      clicks: currentClicks + 1,
-    };
-  }
+  const next = resolveAdvanceFlow({
+    currentCueIndex: currentClicks,
+    currentCueTotal: currentClicksTotal,
+    currentPageIndex: currentIndex,
+    totalPages: totalSlides,
+  })
 
-  if (currentIndex >= totalSlides - 1) return null;
+  if (!next) return null
 
   return {
-    page: currentIndex + 1,
-    clicks: 0,
-  };
+    page: next.pageIndex,
+    clicks: next.cueIndex,
+  }
 }
 
 export function resolveRetreatReveal({
@@ -66,17 +80,17 @@ export function resolveRetreatReveal({
   previousClicks,
   previousClicksTotal,
 }: RetreatRevealInput): RevealNavigationResult | null {
-  if (currentClicks > 0) {
-    return {
-      page: currentIndex,
-      clicks: currentClicks - 1,
-    };
-  }
+  const next = resolveRetreatFlow({
+    currentCueIndex: currentClicks,
+    currentPageIndex: currentIndex,
+    previousCueIndex: previousClicks,
+    previousCueTotal: previousClicksTotal,
+  })
 
-  if (currentIndex <= 0) return null;
+  if (!next) return null
 
   return {
-    page: currentIndex - 1,
-    clicks: previousClicks ?? previousClicksTotal ?? 0,
-  };
+    page: next.pageIndex,
+    clicks: next.cueIndex,
+  }
 }

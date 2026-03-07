@@ -1,3 +1,5 @@
+import { LayoutGrid, MousePointerClick, NotebookText, PenLine, X } from "lucide-react";
+
 function renderNotes(notes: string) {
   const sections = notes
     .split(/\n\s*\n/g)
@@ -20,36 +22,15 @@ export function SpeakerNotesPanel({
   currentClicksTotal: number;
   notes?: string;
 }) {
-  const revealProgressPercent =
-    currentClicksTotal > 0 ? (currentClicks / currentClicksTotal) * 100 : 0;
-
   return (
     <section className="flex min-h-0 flex-col rounded-[8px] border border-slate-200/70 bg-white/72 p-4 shadow-[0_18px_44px_rgba(148,163,184,0.18)] backdrop-blur-md">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
-          Speaker Notes
+          Notes
         </p>
         <span className="rounded-[5px] border border-slate-200 bg-white/88 px-2.5 py-1 text-[11px] font-medium text-slate-500">
           {currentClicksTotal > 0 ? `Clicks ${currentClicks}/${currentClicksTotal}` : "Slide cue"}
         </span>
-      </div>
-      <div className="mb-4 rounded-[6px] border border-slate-200/80 bg-white/75 p-3">
-        <div className="mb-2 flex items-center justify-between gap-3 text-[11px] font-medium text-slate-500">
-          <span>Reveal progress</span>
-          <span>
-            {currentClicksTotal > 0
-              ? `${Math.max(currentClicksTotal - currentClicks, 0)} left`
-              : "No click builds"}
-          </span>
-        </div>
-        <div className="h-2 overflow-hidden rounded-full bg-slate-200/80">
-          <div
-            className="h-full rounded-full bg-[linear-gradient(90deg,#38bdf8_0%,#60a5fa_55%,#a78bfa_100%)] transition-[width] duration-200 ease-out"
-            style={{
-              width: `${currentClicksTotal > 0 ? revealProgressPercent : 0}%`,
-            }}
-          />
-        </div>
       </div>
       <div className="min-h-0 flex-1 rounded-[5px] border border-slate-200/80 bg-slate-50/78 p-4 text-sm leading-7 text-slate-600">
         {notes ? (
@@ -64,20 +45,24 @@ export function SpeakerNotesPanel({
           </>
         )}
         <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-          <span className="rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
-            N notes
+          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+            <NotebookText size={13} />
+            <span>N</span>
           </span>
-          <span className="rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
-            O overview
+          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+            <LayoutGrid size={13} />
+            <span>O</span>
           </span>
-          <span className="rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
-            D draw
+          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+            <PenLine size={13} />
+            <span>D</span>
           </span>
-          <span className="rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
-            Click stage advance
+          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+            <MousePointerClick size={13} />
           </span>
-          <span className="rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
-            Esc close panels
+          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+            <X size={13} />
+            <span>Esc</span>
           </span>
         </div>
       </div>

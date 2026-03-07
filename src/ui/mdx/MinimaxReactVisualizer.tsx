@@ -1,5 +1,6 @@
 import { Code, Database, Layers, Maximize, MousePointer2, Terminal, ThumbsUp } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useRevealProgress } from "../../features/reveal/useRevealStep";
 
 type StepTheme = "default" | "blue" | "purple" | "green";
 
@@ -63,14 +64,7 @@ const themeClassMap: Record<StepTheme, string> = {
 };
 
 export function MinimaxReactVisualizer() {
-  const [step, setStep] = useState(0);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setStep((prev) => (prev + 1) % steps.length);
-    }, 2200);
-    return () => window.clearInterval(timer);
-  }, []);
+  const { step } = useRevealProgress(steps.length - 1);
 
   const likes = 42 + (step >= 3 ? 1 : 0) + (step >= 4 ? 1 : 0);
 

@@ -1,20 +1,12 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
+import { useMemo, type PointerEvent as ReactPointerEvent } from "react";
 import type { SlideComponent, SlideMeta } from "../../deck/model/slide";
 import { DrawOverlay } from "../draw/DrawOverlay";
 import { useDraw } from "../draw/DrawProvider";
 import type { PresentationCursorState } from "../presentation/types";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
+import { SLIDE_HEIGHT, SLIDE_WIDTH, useSlideScale } from "./slideViewport";
 import type { TransitionName } from "../../deck/model/transition";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
-
-const SLIDE_WIDTH = 1920;
-const SLIDE_HEIGHT = 1080;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -24,43 +16,6 @@ function shouldIgnoreStageAdvance(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
 
   return !!target.closest('a, button, input, textarea, select, [contenteditable="true"]');
-}
-
-function useSlideScale(scaleMultiplier: number) {
-  const viewportRef = useRef<HTMLDivElement | null>(null);
-  const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const element = viewportRef.current;
-    if (!element || typeof ResizeObserver === "undefined") return;
-
-    const updateScale = () => {
-      const { width, height } = element.getBoundingClientRect();
-      if (!width || !height) return;
-
-      const nextScale = Math.min(width / SLIDE_WIDTH, height / SLIDE_HEIGHT) * scaleMultiplier;
-      const scaledWidth = SLIDE_WIDTH * nextScale;
-      const scaledHeight = SLIDE_HEIGHT * nextScale;
-
-      setScale(nextScale);
-      setOffset({
-        x: (width - scaledWidth) / 2,
-        y: (height - scaledHeight) / 2,
-      });
-    };
-
-    updateScale();
-
-    const observer = new ResizeObserver(updateScale);
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [scaleMultiplier]);
-
-  return { viewportRef, scale, offset };
 }
 
 function toSlidePoint(

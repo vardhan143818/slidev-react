@@ -1,11 +1,10 @@
 import {
-  ChevronDown,
-  ChevronUp,
   Circle,
   CircleDot,
   Copy,
   Eraser,
   Expand,
+  List,
   Link2,
   PenLine,
   Printer,
@@ -13,6 +12,7 @@ import {
   RectangleHorizontal,
   RotateCcw,
   Square,
+  SunMedium,
   Trash2,
   Wifi,
   WifiOff,
@@ -31,6 +31,21 @@ function dockButtonClassName(active?: boolean) {
     return "inline-flex size-9 items-center justify-center rounded-[5px] border border-sky-200 bg-sky-50 text-sky-700 transition-colors";
 
   return "inline-flex size-9 items-center justify-center rounded-[5px] border border-slate-200 bg-white/88 text-slate-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-45";
+}
+
+function dockActionButtonClassName(variant?: "danger" | "violet" | "success" | "info") {
+  switch (variant) {
+    case "danger":
+      return "inline-flex size-9 shrink-0 items-center justify-center rounded-[5px] border border-rose-300 bg-rose-50 text-rose-700 transition hover:bg-rose-100"
+    case "violet":
+      return "inline-flex size-9 shrink-0 items-center justify-center rounded-[5px] border border-violet-300 bg-violet-50 text-violet-700 transition hover:bg-violet-100"
+    case "success":
+      return "inline-flex size-9 shrink-0 items-center justify-center rounded-[5px] border border-emerald-300 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-45"
+    case "info":
+      return "inline-flex size-9 shrink-0 items-center justify-center rounded-[5px] border border-blue-300 bg-blue-50 text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-45"
+    default:
+      return "inline-flex size-9 shrink-0 items-center justify-center rounded-[5px] border border-slate-200 bg-white/88 text-slate-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
+  }
 }
 
 function badgeClassName(status: PresentationSyncStatus) {
@@ -59,13 +74,6 @@ function statusDotClassName(status: PresentationSyncStatus) {
   }
 }
 
-function formatElapsed(ms: number) {
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
-  const seconds = String(totalSeconds % 60).padStart(2, "0");
-  return `${minutes}:${seconds}`;
-}
-
 function formatTimer(seconds: number) {
   const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
   const restSeconds = String(seconds % 60).padStart(2, "0");
@@ -85,7 +93,6 @@ export function PresentationStatus({
   canRecord,
   recordingSupported,
   isRecording,
-  recordingElapsedMs,
   recordingError,
   wakeLockSupported,
   wakeLockRequested,
@@ -95,10 +102,12 @@ export function PresentationStatus({
   fullscreenActive,
   stageScale,
   cursorMode,
+  timelinePreviewOpen,
   onStartRecording,
   onStopRecording,
   onToggleWakeLock,
   onToggleFullscreen,
+  onToggleTimelinePreview,
   onStageScaleChange,
   onCursorModeChange,
   onOpenMirrorStage,
@@ -117,7 +126,6 @@ export function PresentationStatus({
   canRecord: boolean;
   recordingSupported: boolean;
   isRecording: boolean;
-  recordingElapsedMs: number;
   recordingError: string | null;
   wakeLockSupported: boolean;
   wakeLockRequested: boolean;
@@ -127,10 +135,12 @@ export function PresentationStatus({
   fullscreenActive: boolean;
   stageScale: number;
   cursorMode: "always" | "idle-hide";
+  timelinePreviewOpen: boolean;
   onStartRecording: () => void;
   onStopRecording: () => void;
   onToggleWakeLock: () => void;
   onToggleFullscreen: () => void;
+  onToggleTimelinePreview: () => void;
   onStageScaleChange: (value: number) => void;
   onCursorModeChange: (value: "always" | "idle-hide") => void;
   onOpenMirrorStage?: () => void;
@@ -161,193 +171,10 @@ export function PresentationStatus({
   const canCopyViewerLink = session.role === "presenter" && !!session.viewerUrl;
 
   return (
-    <aside className="pointer-events-none absolute inset-x-0 bottom-4 z-40 flex justify-center px-4">
-      <div className="pointer-events-auto w-full max-w-[min(1120px,calc(100vw-2rem))] overflow-hidden rounded-[8px] border border-slate-200/80 bg-white/82 text-slate-800 shadow-[0_24px_70px_rgba(148,163,184,0.24)] ring-1 ring-white/45 backdrop-blur-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-3">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            {canRecord && (
-              <>
-                <button
-                  type="button"
-                  onClick={draw.toggleEnabled}
-                  title="Toggle draw (D)"
-                  aria-label="Toggle draw mode"
-                  className={dockButtonClassName(draw.enabled)}
-                >
-                  <PenLine size={16} />
-                </button>
-                {draw.enabled && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => draw.setTool("pen")}
-                      title="Pen (P)"
-                      aria-label="Use pen tool"
-                      className={dockButtonClassName(draw.tool === "pen")}
-                    >
-                      <PenLine size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => draw.setTool("circle")}
-                      title="Circle (B)"
-                      aria-label="Use circle tool"
-                      className={dockButtonClassName(draw.tool === "circle")}
-                    >
-                      <Circle size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => draw.setTool("rectangle")}
-                      title="Rectangle (R)"
-                      aria-label="Use rectangle tool"
-                      className={dockButtonClassName(draw.tool === "rectangle")}
-                    >
-                      <RectangleHorizontal size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => draw.setTool("eraser")}
-                      title="Eraser (E)"
-                      aria-label="Use eraser tool"
-                      className={dockButtonClassName(draw.tool === "eraser")}
-                    >
-                      <Eraser size={15} />
-                    </button>
-                    <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
-                    {DRAW_COLORS.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => {
-                          draw.setColor(color);
-                          draw.setTool("pen");
-                        }}
-                        title={`Set draw color ${color}`}
-                        aria-label={`Set draw color ${color}`}
-                        className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? "border-slate-700 ring-2 ring-sky-300" : "border-slate-300 opacity-90 hover:opacity-100"}`}
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
-                    <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
-                    {DRAW_WIDTHS.map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => {
-                          draw.setWidth(value);
-                          draw.setTool("pen");
-                        }}
-                        title={`Set brush size ${value}`}
-                        aria-label={`Set brush size ${value}`}
-                        className={dockButtonClassName(draw.width === value)}
-                      >
-                        <span
-                          className="rounded-full bg-current"
-                          style={{
-                            width: `${Math.max(value + 2, 6)}px`,
-                            height: `${Math.max(value + 2, 6)}px`,
-                          }}
-                        />
-                      </button>
-                    ))}
-                    <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
-                    <button
-                      type="button"
-                      onClick={() => draw.undo(slideId)}
-                      disabled={!hasStrokes}
-                      title="Undo last stroke (Cmd/Ctrl+Z)"
-                      aria-label="Undo last stroke"
-                      className={dockButtonClassName()}
-                    >
-                      <RotateCcw size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => draw.clear(slideId)}
-                      disabled={!hasStrokes}
-                      title="Clear page strokes (C)"
-                      aria-label="Clear page strokes"
-                      className={dockButtonClassName()}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <span className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-sm font-semibold text-slate-800">
-              <Radio size={13} />
-              {formatTimer(sessionTimerSeconds)}
-            </span>
-            {canRecord && recordingSupported && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (isRecording) onStopRecording();
-                  else onStartRecording();
-                }}
-                className={`inline-flex items-center justify-center gap-1.5 rounded-[5px] border px-3 py-1.5 text-xs font-semibold transition ${isRecording ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100" : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white"}`}
-              >
-                {isRecording ? <Square size={12} /> : <CircleDot size={12} />}
-                {isRecording ? formatElapsed(recordingElapsedMs) : "Record"}
-              </button>
-            )}
-            {canRecord && onOpenPrintExport && (
-              <button
-                type="button"
-                onClick={onOpenPrintExport}
-                className="inline-flex items-center justify-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
-              >
-                <Printer size={12} />
-                Print / PDF
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={onToggleWakeLock}
-              disabled={!wakeLockSupported}
-              className={`inline-flex items-center justify-center gap-1.5 rounded-[5px] border px-3 py-1.5 text-xs font-medium transition ${
-                wakeLockActive
-                  ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                  : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
-              }`}
-            >
-              {wakeLockActive ? "Wake lock on" : "Wake lock"}
-            </button>
-            <button
-              type="button"
-              onClick={onToggleFullscreen}
-              disabled={!fullscreenSupported}
-              className={`inline-flex items-center justify-center gap-1.5 rounded-[5px] border px-3 py-1.5 text-xs font-medium transition ${
-                fullscreenActive
-                  ? "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
-                  : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
-              }`}
-            >
-              <Expand size={12} />
-              {fullscreenActive ? "Fullscreen on" : "Fullscreen"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setDetailsOpen((value) => !value)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
-            >
-              <span className={`size-2 rounded-full ${statusDotClassName(status)}`} />
-              {detailsOpen ? "Hide" : "Live"}
-              {detailsOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-            </button>
-          </div>
-          {canRecord && !recordingSupported && (
-            <span className="text-xs text-amber-700">Recording unsupported in this browser.</span>
-          )}
-          {recordingError && <span className="text-xs text-rose-700">{recordingError}</span>}
-          {wakeLockError && <span className="text-xs text-amber-700">{wakeLockError}</span>}
-        </div>
+    <aside className="pointer-events-none absolute inset-x-0 bottom-0 z-40">
+      <div className="relative">
         {detailsOpen && (
-          <div className="border-t border-slate-200/80 bg-slate-50/72 px-3 py-3">
+          <div className="pointer-events-auto absolute inset-x-0 bottom-full mb-2 border-t border-slate-200/80 bg-slate-50/72 px-3 py-3 text-slate-800 shadow-[0_-12px_36px_rgba(148,163,184,0.12)] ring-1 ring-white/45 backdrop-blur-xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
                 <span className={`size-2.5 rounded-full ${statusDotClassName(status)}`} />
@@ -474,7 +301,7 @@ export function PresentationStatus({
               <span className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/82 px-3 py-2 text-xs text-slate-600">
                 ws: {wsConnected ? "connected" : "idle"}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/82 px-3 py-2 text-xs text-slate-600">
+              <span className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/82 px-3 py-2 text-xs tabular-nums text-slate-600">
                 peers: {peerCount}
               </span>
               <span
@@ -496,6 +323,230 @@ export function PresentationStatus({
             )}
           </div>
         )}
+        <div className="pointer-events-auto w-full overflow-hidden rounded-t-[8px] border border-b-0 border-slate-200/80 bg-white/82 text-slate-800 shadow-[0_-12px_36px_rgba(148,163,184,0.16)] ring-1 ring-white/45 backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+            {canRecord && (
+              <>
+                <button
+                  type="button"
+                  onClick={draw.toggleEnabled}
+                  title="Toggle draw (D)"
+                  aria-label="Toggle draw mode"
+                  className={dockButtonClassName(draw.enabled)}
+                >
+                  <PenLine size={16} />
+                </button>
+                {draw.enabled && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => draw.setTool("pen")}
+                      title="Pen (P)"
+                      aria-label="Use pen tool"
+                      className={dockButtonClassName(draw.tool === "pen")}
+                    >
+                      <PenLine size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => draw.setTool("circle")}
+                      title="Circle (B)"
+                      aria-label="Use circle tool"
+                      className={dockButtonClassName(draw.tool === "circle")}
+                    >
+                      <Circle size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => draw.setTool("rectangle")}
+                      title="Rectangle (R)"
+                      aria-label="Use rectangle tool"
+                      className={dockButtonClassName(draw.tool === "rectangle")}
+                    >
+                      <RectangleHorizontal size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => draw.setTool("eraser")}
+                      title="Eraser (E)"
+                      aria-label="Use eraser tool"
+                      className={dockButtonClassName(draw.tool === "eraser")}
+                    >
+                      <Eraser size={15} />
+                    </button>
+                    <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
+                    {DRAW_COLORS.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => {
+                          draw.setColor(color);
+                          draw.setTool("pen");
+                        }}
+                        title={`Set draw color ${color}`}
+                        aria-label={`Set draw color ${color}`}
+                        className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? "border-slate-700 ring-2 ring-sky-300" : "border-slate-300 opacity-90 hover:opacity-100"}`}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                    <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
+                    {DRAW_WIDTHS.map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          draw.setWidth(value);
+                          draw.setTool("pen");
+                        }}
+                        title={`Set brush size ${value}`}
+                        aria-label={`Set brush size ${value}`}
+                        className={dockButtonClassName(draw.width === value)}
+                      >
+                        <span
+                          className="rounded-full bg-current"
+                          style={{
+                            width: `${Math.max(value + 2, 6)}px`,
+                            height: `${Math.max(value + 2, 6)}px`,
+                          }}
+                        />
+                      </button>
+                    ))}
+                    <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
+                    <button
+                      type="button"
+                      onClick={() => draw.undo(slideId)}
+                      disabled={!hasStrokes}
+                      title="Undo last stroke (Cmd/Ctrl+Z)"
+                      aria-label="Undo last stroke"
+                      className={dockButtonClassName()}
+                    >
+                      <RotateCcw size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => draw.clear(slideId)}
+                      disabled={!hasStrokes}
+                      title="Clear page strokes (C)"
+                      aria-label="Clear page strokes"
+                      className={dockButtonClassName()}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <span className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-sm font-semibold tabular-nums text-slate-800">
+              <Radio size={13} />
+              {formatTimer(sessionTimerSeconds)}
+            </span>
+            {canRecord && recordingSupported && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (isRecording) onStopRecording();
+                  else onStartRecording();
+                }}
+                title={isRecording ? "Stop recording" : "Start recording"}
+                aria-label={isRecording ? "Stop recording" : "Start recording"}
+                className={
+                  isRecording
+                    ? dockActionButtonClassName("danger")
+                    : dockActionButtonClassName()
+                }
+              >
+                {isRecording ? <Square size={12} /> : <CircleDot size={12} />}
+              </button>
+            )}
+            {canRecord && onOpenPrintExport && (
+              <button
+                type="button"
+                onClick={onOpenPrintExport}
+                title="Print / PDF"
+                aria-label="Print / PDF"
+                className={dockActionButtonClassName()}
+              >
+                <Printer size={12} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onToggleTimelinePreview}
+              title={timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
+              aria-label={timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
+              className={
+                timelinePreviewOpen
+                  ? dockActionButtonClassName("violet")
+                  : dockActionButtonClassName()
+              }
+            >
+              <List size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={onToggleWakeLock}
+              disabled={!wakeLockSupported}
+              title={
+                wakeLockSupported
+                  ? wakeLockActive
+                    ? "Wake lock on"
+                    : "Turn on wake lock"
+                  : "Wake lock unsupported"
+              }
+              aria-label={
+                wakeLockSupported
+                  ? wakeLockActive
+                    ? "Wake lock on"
+                    : "Turn on wake lock"
+                  : "Wake lock unsupported"
+              }
+              className={
+                wakeLockActive
+                  ? dockActionButtonClassName("success")
+                  : dockActionButtonClassName()
+              }
+            >
+              <SunMedium size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={onToggleFullscreen}
+              disabled={!fullscreenSupported}
+              title={fullscreenActive ? "Fullscreen on" : "Fullscreen"}
+              aria-label={fullscreenActive ? "Fullscreen on" : "Fullscreen"}
+              className={
+                fullscreenActive
+                  ? dockActionButtonClassName("info")
+                  : dockActionButtonClassName()
+              }
+            >
+              <Expand size={12} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setDetailsOpen((value) => !value)}
+              title={detailsOpen ? "Hide live details" : "Show live details"}
+              aria-label={detailsOpen ? "Hide live details" : "Show live details"}
+              className={dockActionButtonClassName()}
+            >
+              <span className="relative inline-flex items-center justify-center">
+                <Radio size={13} />
+                <span
+                  className={`absolute right-0 bottom-0 size-2 rounded-full ring-2 ring-white ${statusDotClassName(status)}`}
+                />
+              </span>
+            </button>
+          </div>
+          {canRecord && !recordingSupported && (
+            <span className="text-xs text-amber-700">Recording unsupported in this browser.</span>
+          )}
+          {recordingError && <span className="text-xs text-rose-700">{recordingError}</span>}
+          {wakeLockError && <span className="text-xs text-amber-700">{wakeLockError}</span>}
+        </div>
+        </div>
       </div>
     </aside>
   );

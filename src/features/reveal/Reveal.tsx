@@ -2,23 +2,17 @@ import {
   Children,
   cloneElement,
   isValidElement,
-  useLayoutEffect,
   type ReactNode,
   type CSSProperties,
   type ReactElement,
 } from "react";
-import { useReveal } from "./RevealContext";
+import { normalizeRevealStep } from "./step";
+import { useRevealStep } from "./useRevealStep";
 
 export type RevealPreset = "fade" | "fade-up" | "scale-in";
 
 function joinClassNames(...names: Array<string | undefined>) {
   return names.filter(Boolean).join(" ");
-}
-
-function normalizeStep(step: number) {
-  if (!Number.isFinite(step)) return 1;
-
-  return Math.max(1, Math.floor(step));
 }
 
 function toRevealClassName(preset: RevealPreset) {
@@ -54,20 +48,10 @@ export function Reveal({
   reserveSpace?: boolean;
   children: ReactNode;
 }) {
-  const reveal = useReveal();
-  const normalizedStep = normalizeStep(step);
-  const registerStep = reveal?.registerStep;
-  const slideId = reveal?.slideId;
-
-  useLayoutEffect(() => {
-    if (!registerStep) return;
-
-    return registerStep(normalizedStep);
-  }, [normalizedStep, registerStep, slideId]);
+  const { reveal, isVisible } = useRevealStep(step);
 
   if (!reveal) return <>{children}</>;
 
-  const isVisible = reveal.clicks >= normalizedStep;
   const className = isVisible ? toRevealClassName(preset) : "slide-reveal slide-reveal--reserve";
 
   if (!isVisible && !reserveSpace) return null;
@@ -107,7 +91,7 @@ export function RevealGroup({
       {Children.map(children, (child) => {
         if (child === null || child === undefined || typeof child === "boolean") return child;
 
-        const step = normalizeStep(start + index * increment);
+        const step = normalizeRevealStep(start + index * increment) ?? 1;
         index += 1;
 
         if (isValidElement(child)) {

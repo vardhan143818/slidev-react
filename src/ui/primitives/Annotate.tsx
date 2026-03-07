@@ -1,13 +1,7 @@
-import { useLayoutEffect, type CSSProperties, type ReactNode } from "react";
-import { useReveal } from "../../features/reveal/RevealContext";
+import { type CSSProperties, type ReactNode } from "react";
+import { useRevealStep } from "../../features/reveal/useRevealStep";
 
-type AnnotateType =
-  | "underline"
-  | "box"
-  | "circle"
-  | "highlight"
-  | "strike-through"
-  | "crossed-off";
+type AnnotateType = "underline" | "box" | "circle" | "highlight" | "strike-through" | "crossed-off";
 
 export type AnnotateProps = {
   children: ReactNode;
@@ -46,13 +40,6 @@ const defaultStrokeWidthByType: Record<AnnotateType, number> = {
   "crossed-off": 2.2,
 };
 
-const normalizeStep = (step: number | undefined) => {
-  if (step === undefined) return undefined;
-  if (!Number.isFinite(step)) return 1;
-
-  return Math.max(1, Math.floor(step));
-};
-
 const joinClassNames = (...names: Array<string | false>) => {
   return names.filter(Boolean).join(" ");
 };
@@ -64,19 +51,9 @@ export function Annotate({
   animate = step !== undefined,
   color,
 }: AnnotateProps) {
-  const reveal = useReveal();
-  const normalizedStep = normalizeStep(step);
-  const registerStep = reveal?.registerStep;
-  const slideId = reveal?.slideId;
-
-  useLayoutEffect(() => {
-    if (!registerStep || normalizedStep === undefined) return;
-
-    return registerStep(normalizedStep);
-  }, [normalizedStep, registerStep, slideId]);
+  const { isVisible } = useRevealStep(step);
 
   const [padTop, padRight, padBottom, padLeft] = defaultPaddingByType[type];
-  const isVisible = normalizedStep === undefined || !reveal || reveal.clicks >= normalizedStep;
   const shouldRenderMark = isVisible;
   const style = {
     "--mark-color": color ?? defaultColorByType[type],
