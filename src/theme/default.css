@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -1301,7 +1300,7 @@ html[data-presentation-mode="print"] body {
 }
 
 .course-cover .badge-current {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--cc-accent);
 }
@@ -1309,7 +1308,7 @@ html[data-presentation-mode="print"] body {
 .course-cover .badge-divider,
 .course-cover .badge-total {
   color: #999;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .course-cover .cover-content {
@@ -1327,7 +1326,7 @@ html[data-presentation-mode="print"] body {
 .course-cover h1 {
   margin: 0 0 1rem;
   color: #ededed;
-  font-size: clamp(3rem, 5.2vw, 5rem);
+  font-size: clamp(3.35rem, 5.7vw, 5.45rem);
   line-height: 1.08;
   letter-spacing: -0.03em;
   font-weight: 700;
@@ -1337,8 +1336,8 @@ html[data-presentation-mode="print"] body {
   max-width: 600px;
   margin: 0;
   color: #d4d4d4;
-  font-size: clamp(1.2rem, 1.75vw, 1.55rem);
-  line-height: 1.45;
+  font-size: clamp(1.38rem, 2vw, 1.72rem);
+  line-height: 1.5;
   opacity: 0.8;
 }
 
@@ -1359,7 +1358,7 @@ html[data-presentation-mode="print"] body {
   border: 1px solid #333;
   background: rgba(37, 37, 37, 0.6);
   color: var(--cc-accent);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1377,13 +1376,13 @@ html[data-presentation-mode="print"] body {
 
 .course-cover .author-label {
   color: #999;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 
 .course-cover .author-name {
   color: #d4d4d4;
-  font-size: 0.9375rem;
+  font-size: 1.08rem;
   font-weight: 500;
 }

@@ -15,6 +15,12 @@
 - `ui/`: 纯展示组件。默认不直接承载演示状态机或同步逻辑。
 - `theme/`: 主题、layout 和视觉 token。
 
+## UI Primitives Notes
+
+- `ui/primitives/` 放共享展示原语，优先收敛已经在多个 feature 中稳定复用的视觉模式。
+- presenter / overview 这类运行时 chrome 的共享展示原语也放在这里，例如 `ChromePanel`、`ChromeTag`、`ChromeIconButton`。
+- 如果一个抽象仍然强依赖某个 feature 的状态机或业务语义，就不要提到 `ui/`，继续留在对应 `features/<feature>/`。
+
 ## Placement Rules
 
 - 新增内容解析或编译逻辑时，优先放进 `deck/`。

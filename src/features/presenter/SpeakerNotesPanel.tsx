@@ -1,4 +1,6 @@
 import { LayoutGrid, MousePointerClick, NotebookText, PenLine, X } from "lucide-react";
+import { ChromePanel } from "../../ui/primitives/ChromePanel";
+import { ChromeTag } from "../../ui/primitives/ChromeTag";
 
 function renderNotes(notes: string) {
   const sections = notes
@@ -23,16 +25,16 @@ export function SpeakerNotesPanel({
   notes?: string;
 }) {
   return (
-    <section className="flex min-h-0 flex-col rounded-[8px] border border-slate-200/70 bg-white/72 p-4 shadow-[0_18px_44px_rgba(148,163,184,0.18)] backdrop-blur-md">
+    <ChromePanel className="flex flex-col">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
           Notes
         </p>
-        <span className="rounded-[5px] border border-slate-200 bg-white/88 px-2.5 py-1 text-[11px] font-medium text-slate-500">
+        <ChromeTag>
           {currentClicksTotal > 0 ? `Clicks ${currentClicks}/${currentClicksTotal}` : "Slide cue"}
-        </span>
+        </ChromeTag>
       </div>
-      <div className="min-h-0 flex-1 rounded-[5px] border border-slate-200/80 bg-slate-50/78 p-4 text-sm leading-7 text-slate-600">
+      <ChromePanel tone="inset" radius="frame" className="flex-1 p-4 text-sm leading-7">
         {notes ? (
           <div className="space-y-4 text-slate-600">{renderNotes(notes)}</div>
         ) : (
@@ -45,27 +47,27 @@ export function SpeakerNotesPanel({
           </>
         )}
         <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+          <ChromeTag tone="muted" className="gap-1.5">
             <NotebookText size={13} />
             <span>N</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+          </ChromeTag>
+          <ChromeTag tone="muted" className="gap-1.5">
             <LayoutGrid size={13} />
             <span>O</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+          </ChromeTag>
+          <ChromeTag tone="muted" className="gap-1.5">
             <PenLine size={13} />
             <span>D</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+          </ChromeTag>
+          <ChromeTag tone="muted" className="gap-1.5">
             <MousePointerClick size={13} />
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+          </ChromeTag>
+          <ChromeTag tone="muted" className="gap-1.5">
             <X size={13} />
             <span>Esc</span>
-          </span>
+          </ChromeTag>
         </div>
-      </div>
-    </section>
+      </ChromePanel>
+    </ChromePanel>
   );
 }

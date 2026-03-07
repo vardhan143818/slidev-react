@@ -9,28 +9,22 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useDraw } from "../draw/DrawProvider";
-
-function iconButtonClassName(active?: boolean) {
-  if (active) {
-    return "inline-flex size-8 items-center justify-center rounded-md border border-blue-300 bg-blue-100 text-blue-800 transition-colors";
-  }
-
-  return "inline-flex size-8 items-center justify-center rounded-md border border-slate-200 bg-slate-50/95 text-slate-700 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-45";
-}
+import { ChromeIconButton } from "../../ui/primitives/ChromeIconButton";
 
 function DrawControls() {
   const draw = useDraw();
 
   return (
-    <button
-      type="button"
+    <ChromeIconButton
       onClick={draw.toggleEnabled}
       title="Toggle draw (D)"
       aria-label="Toggle draw mode"
-      className={iconButtonClassName(draw.enabled)}
+      tone={draw.enabled ? "active" : "default"}
+      size="sm"
+      radius="soft"
     >
       <PenLine size={16} />
-    </button>
+    </ChromeIconButton>
   );
 }
 
@@ -80,67 +74,69 @@ export function PresentationNavbar({
         className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-t-xl border border-b-0 border-slate-200 bg-white/95 px-2 py-1.5 text-slate-800 shadow-[0_-8px_20px_rgba(15,23,42,0.08)] ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
         aria-label="Presentation navbar"
       >
-        <button
-          type="button"
-          className={iconButtonClassName()}
+        <ChromeIconButton
           title={`${slideTitle ?? "Slide"} (${currentIndex + 1}/${total})`}
           aria-label="Current slide info"
+          size="sm"
+          radius="soft"
         >
           <BookOpenText size={15} />
-        </button>
-        <button
-          type="button"
+        </ChromeIconButton>
+        <ChromeIconButton
           onClick={onToggleNotes}
           title="Notes Workspace (N)"
           aria-label="Toggle notes workspace"
-          className={iconButtonClassName(notesOpen)}
+          tone={notesOpen ? "active" : "default"}
+          size="sm"
+          radius="soft"
           disabled={!canControl}
         >
           <NotebookText size={16} />
-        </button>
-        <button
-          type="button"
+        </ChromeIconButton>
+        <ChromeIconButton
           onClick={onToggleOverview}
           title="Quick Overview (O)"
           aria-label="Toggle quick overview"
-          className={iconButtonClassName(overviewOpen)}
+          tone={overviewOpen ? "active" : "default"}
+          size="sm"
+          radius="soft"
           disabled={!canOpenOverview}
         >
           <LayoutGrid size={16} />
-        </button>
+        </ChromeIconButton>
         {showPresenterModeButton && (
-          <button
-            type="button"
+          <ChromeIconButton
             onClick={onEnterPresenterMode}
             title="Enter presenter mode"
             aria-label="Enter presenter mode"
-            className={iconButtonClassName()}
+            size="sm"
+            radius="soft"
           >
             <Radio size={15} />
-          </button>
+          </ChromeIconButton>
         )}
         {canControl && (
           <>
-            <button
-              type="button"
+            <ChromeIconButton
               onClick={onPrev}
               disabled={!canPrev}
               title="Previous slide"
               aria-label="Previous slide"
-              className={iconButtonClassName()}
+              size="sm"
+              radius="soft"
             >
               <ChevronLeft size={16} />
-            </button>
-            <button
-              type="button"
+            </ChromeIconButton>
+            <ChromeIconButton
               onClick={onNext}
               disabled={!canNext}
               title="Next slide"
               aria-label="Next slide"
-              className={iconButtonClassName()}
+              size="sm"
+              radius="soft"
             >
               <ChevronRight size={16} />
-            </button>
+            </ChromeIconButton>
             <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
             <DrawControls />
           </>

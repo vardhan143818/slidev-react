@@ -1,10 +1,13 @@
-import { useMemo } from "react";
+import { useMemo, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/slideSurface";
 import { SLIDE_HEIGHT, SLIDE_WIDTH, useSlideScale } from "../player/slideViewport";
 import type { CompiledSlide } from "../presenter/types";
 import { resolveLayout } from "../../theme/layouts/resolveLayout";
 import { useResolvedLayouts } from "../../theme/useResolvedLayout";
+import { ChromeIconButton } from "../../ui/primitives/ChromeIconButton";
+import { ChromePanel } from "../../ui/primitives/ChromePanel";
+import { ChromeTag } from "../../ui/primitives/ChromeTag";
 
 function OverviewSlidePreview({
   index,
@@ -35,14 +38,14 @@ function OverviewSlidePreview({
       ref={viewportRef}
       className={`relative mb-0 aspect-[16/9] w-full overflow-hidden rounded-t-[9px] rounded-b-none bg-slate-100/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] ${active ? "ring-1 ring-sky-200/70" : ""}`}
     >
-      <span
-        className={`absolute top-2 left-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.14em] uppercase backdrop-blur-sm ${active ? "bg-sky-100/92 text-sky-700" : "bg-white/80 text-slate-600"}`}
-      >
-        {index + 1}
+      <span className="absolute top-2 left-2 z-10">
+        <ChromeTag tone={active ? "active" : "default"} size="xs" weight="semibold">
+          {index + 1}
+        </ChromeTag>
       </span>
       {layoutLabel && (
-        <span className="absolute top-2 right-2 z-10 rounded-full bg-white/72 px-2 py-0.5 text-[10px] tracking-[0.12em] text-slate-500 uppercase backdrop-blur-sm">
-          {layoutLabel}
+        <span className="absolute top-2 right-2 z-10">
+          <ChromeTag size="xs">{layoutLabel}</ChromeTag>
         </span>
       )}
       <div className="pointer-events-none select-none" style={viewportStageStyle}>
@@ -80,6 +83,12 @@ export function QuickOverview({
 }) {
   const layouts = useResolvedLayouts();
 
+  function handleSelectKeyDown(event: KeyboardEvent<HTMLElement>, index: number) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    onSelect(index);
+  }
+
   if (!open) return null;
 
   return (
@@ -92,14 +101,13 @@ export function QuickOverview({
               Click a slide to jump. Press `O` or `Esc` to close.
             </p>
           </div>
-          <button
-            type="button"
+          <ChromeIconButton
             onClick={onClose}
             aria-label="Close quick overview"
-            className="inline-flex size-10 items-center justify-center rounded-full bg-white/78 text-slate-600 shadow-[0_10px_30px_rgba(148,163,184,0.22)] transition hover:bg-white hover:text-slate-900"
+            className="rounded-full shadow-[0_10px_30px_rgba(148,163,184,0.22)]"
           >
             <X size={18} />
-          </button>
+          </ChromeIconButton>
         </header>
         <div className="min-h-0 flex-1 overflow-auto pr-1">
           <div className="grid grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-5">
@@ -115,12 +123,18 @@ export function QuickOverview({
                 }),
               });
               return (
-                <button
+                <ChromePanel
                   key={slide.id}
-                  type="button"
+                  as="article"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onSelect(index)}
-                  className={`group overflow-hidden rounded-[12px] p-0 text-left transition ${active ? "bg-white/96 shadow-[0_24px_64px_rgba(37,99,235,0.16)] ring-1 ring-sky-300/70" : "bg-white/78 shadow-[0_18px_46px_rgba(148,163,184,0.18)] ring-1 ring-transparent hover:bg-white/92 hover:shadow-[0_26px_68px_rgba(148,163,184,0.24)] hover:ring-slate-300/70"}`}
+                  onKeyDown={(event) => handleSelectKeyDown(event, index)}
+                  className={`group cursor-pointer overflow-hidden p-0 text-left transition focus:outline-none focus:ring-2 focus:ring-sky-300/70 ${active ? "bg-white/96 shadow-[0_24px_64px_rgba(37,99,235,0.16)] ring-1 ring-sky-300/70" : "bg-white/78 shadow-[0_18px_46px_rgba(148,163,184,0.18)] ring-1 ring-transparent hover:bg-white/92 hover:shadow-[0_26px_68px_rgba(148,163,184,0.24)] hover:ring-slate-300/70"}`}
                   aria-label={`Go to slide ${index + 1}`}
+                  tone="solid"
+                  radius="section"
+                  padding="none"
                 >
                   <OverviewSlidePreview
                     index={index}
@@ -135,7 +149,7 @@ export function QuickOverview({
                   <div className="truncate px-2.5 py-2 text-sm font-medium text-slate-900">
                     {slide.meta.title ?? `Slide ${index + 1}`}
                   </div>
-                </button>
+                </ChromePanel>
               );
             })}
           </div>

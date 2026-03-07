@@ -4,6 +4,8 @@ import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/sli
 import { SLIDE_HEIGHT, SLIDE_WIDTH, useSlideScale } from "../player/slideViewport";
 import type { CompiledSlide } from "./types";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
+import { ChromePanel, chromePanelClassName } from "../../ui/primitives/ChromePanel";
+import { ChromeTag } from "../../ui/primitives/ChromeTag";
 
 export function PresenterSidePreview({
   title,
@@ -20,19 +22,22 @@ export function PresenterSidePreview({
 }) {
   if (!slide) {
     return (
-      <section className="flex h-full min-h-0 flex-col rounded-[8px] border border-slate-200/70 bg-white/72 p-4 text-slate-900 shadow-[0_18px_44px_rgba(148,163,184,0.18)] backdrop-blur-md">
+      <ChromePanel className="flex h-full flex-col">
         <div className="mb-3 flex items-center justify-between gap-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
             {title}
           </p>
-          <span className="rounded-[5px] border border-slate-200 bg-white/88 px-2.5 py-1 text-[11px] font-medium text-slate-500">
-            {indexLabel}
-          </span>
+          <ChromeTag>{indexLabel}</ChromeTag>
         </div>
-        <div className="grid min-h-[220px] flex-1 place-items-center rounded-[5px] border border-dashed border-slate-200/80 bg-slate-50/75 text-sm text-slate-500">
+        <ChromePanel
+          as="div"
+          tone="dashed"
+          radius="frame"
+          className="grid min-h-[220px] flex-1 place-items-center text-sm"
+        >
           End of deck
-        </div>
-      </section>
+        </ChromePanel>
+      </ChromePanel>
     );
   }
 
@@ -57,18 +62,21 @@ export function PresenterSidePreview({
   );
 
   return (
-    <section className="flex h-full min-h-0 flex-col rounded-[8px] border border-slate-200/70 bg-white/72 p-4 text-slate-900 shadow-[0_18px_44px_rgba(148,163,184,0.18)] backdrop-blur-md">
+    <ChromePanel className="flex h-full flex-col">
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
           {title}
         </p>
-        <span className="rounded-[5px] border border-slate-200 bg-white/88 px-2.5 py-1 text-[11px] font-medium text-slate-500">
-          {indexLabel}
-        </span>
+        <ChromeTag>{indexLabel}</ChromeTag>
       </div>
       <div
         ref={viewportRef}
-        className="relative min-h-0 flex-1 overflow-hidden rounded-[5px] border border-slate-200/80 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
+        className={chromePanelClassName({
+          tone: "frame",
+          radius: "frame",
+          padding: "none",
+          className: "relative flex-1 overflow-hidden",
+        })}
       >
         <div className="text-black" style={viewportStageStyle}>
           <article
@@ -88,6 +96,6 @@ export function PresenterSidePreview({
       <p className="mt-3 truncate text-base font-semibold text-slate-900">
         {slide.meta.title ?? "Untitled"}
       </p>
-    </section>
+    </ChromePanel>
   );
 }

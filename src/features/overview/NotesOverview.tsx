@@ -1,6 +1,7 @@
 import { NotebookText, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { CompiledSlide } from "../presenter/types";
+import { ChromePanel } from "../../ui/primitives/ChromePanel";
 
 function summarizeNotes(notes?: string) {
   if (!notes) return "No speaker notes yet.";
@@ -77,7 +78,7 @@ export function NotesOverview({
           </button>
         </header>
         <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
-          <section className="min-h-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/92 shadow-[0_18px_40px_rgba(148,163,184,0.16)]">
+          <ChromePanel tone="solid" radius="section" padding="none" className="overflow-hidden">
             <div className="border-b border-slate-200/80 px-5 py-4">
               <h3 className="text-sm font-semibold text-slate-900">Slide Notes Index</h3>
               <p className="mt-1 text-sm text-slate-500">
@@ -132,8 +133,13 @@ export function NotesOverview({
                 })}
               </div>
             </div>
-          </section>
-          <section className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white/92 shadow-[0_18px_40px_rgba(148,163,184,0.16)]">
+          </ChromePanel>
+          <ChromePanel
+            tone="solid"
+            radius="section"
+            padding="none"
+            className="flex flex-col overflow-hidden"
+          >
             <div className="border-b border-slate-200/80 px-6 py-5">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
@@ -184,7 +190,7 @@ export function NotesOverview({
                 </div>
               )}
             </div>
-          </section>
+          </ChromePanel>
         </div>
       </div>
     </div>
