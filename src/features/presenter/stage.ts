@@ -1,5 +1,7 @@
-export const STAGE_WIDTH = 1920;
-export const STAGE_HEIGHT = 1080;
+import { SLIDE_HEIGHT, SLIDE_WIDTH } from "../player/slideViewport";
+
+export const STAGE_WIDTH = SLIDE_WIDTH;
+export const STAGE_HEIGHT = SLIDE_HEIGHT;
 export const OVERVIEW_STAGE_WIDTH = 320;
 export const OVERVIEW_STAGE_HEIGHT = Math.round(
   (OVERVIEW_STAGE_WIDTH * STAGE_HEIGHT) / STAGE_WIDTH,

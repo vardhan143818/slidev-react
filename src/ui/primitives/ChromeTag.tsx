@@ -8,7 +8,7 @@ const toneClassNames = {
   default: "border-slate-200 bg-white/88 text-slate-500",
   defaultStrong: "border-slate-200 bg-white/88 text-slate-800",
   muted: "border-slate-200 bg-white/82 text-slate-600",
-  active: "border-sky-200 bg-sky-50 text-sky-700",
+  active: "border-emerald-200 bg-emerald-50 text-emerald-700",
   success: "border-emerald-200 bg-emerald-50 text-emerald-700",
   warning: "border-amber-200 bg-amber-50 text-amber-700",
   danger: "border-rose-300 bg-rose-50 text-rose-700",

@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 
 type CoverColor = "green" | "purple" | "blue" | "orange";
+type CoverTone = "dark" | "light";
 
 const colorTokenMap: Record<CoverColor, string> = {
   green: "#22C55E",
@@ -10,7 +11,8 @@ const colorTokenMap: Record<CoverColor, string> = {
 };
 
 export function CourseCover({
-  color = "blue",
+  color = "green",
+  tone = "dark",
   lesson,
   total = "10",
   series,
@@ -20,6 +22,7 @@ export function CourseCover({
   children,
 }: {
   color?: CoverColor;
+  tone?: CoverTone;
   lesson?: string;
   total?: string;
   series?: string;
@@ -33,7 +36,7 @@ export function CourseCover({
   const style = { "--cc-accent": accent } as CSSProperties;
 
   return (
-    <section className="course-cover" style={style}>
+    <section className="course-cover" data-tone={tone} style={style}>
       <div className="noise-layer" />
       <div className="lesson-number">{displayLesson}</div>
 

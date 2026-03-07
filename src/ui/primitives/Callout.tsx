@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 const stylesByType = {
-  info: "border-blue-600/80 bg-blue-50 text-blue-950",
+  info: "border-green-600/80 bg-green-50 text-green-950",
   warn: "border-amber-600/80 bg-amber-50 text-amber-950",
   success: "border-emerald-600/80 bg-emerald-50 text-emerald-950",
 } as const;

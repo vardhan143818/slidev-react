@@ -35,7 +35,7 @@ function badgeClassName(status: PresentationSyncStatus) {
     case "degraded":
       return "border-amber-200 bg-amber-50 text-amber-700";
     case "connecting":
-      return "border-blue-200 bg-blue-50 text-blue-700";
+      return "border-green-200 bg-green-50 text-green-700";
     default:
       return "border-slate-200 bg-slate-50 text-slate-700";
   }
@@ -48,7 +48,7 @@ function statusDotClassName(status: PresentationSyncStatus) {
     case "degraded":
       return "bg-amber-400";
     case "connecting":
-      return "bg-sky-400";
+      return "bg-green-400";
     default:
       return "bg-slate-400";
   }
@@ -246,7 +246,7 @@ export function PresentationStatus({
                 className={`inline-flex items-center gap-2 rounded-[5px] border px-3 py-2 text-xs ${
                   fullscreenSupported
                     ? fullscreenActive
-                      ? "border-blue-200 bg-blue-50 text-blue-700"
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                       : "border-slate-200 bg-white/82 text-slate-600"
                     : "border-amber-200 bg-amber-50 text-amber-700"
                 }`}
@@ -363,7 +363,7 @@ export function PresentationStatus({
                           }}
                           title={`Set draw color ${color}`}
                           aria-label={`Set draw color ${color}`}
-                          className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? "border-slate-700 ring-2 ring-sky-300" : "border-slate-300 opacity-90 hover:opacity-100"}`}
+                          className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? "border-slate-700 ring-2 ring-emerald-300" : "border-slate-300 opacity-90 hover:opacity-100"}`}
                           style={{ backgroundColor: color }}
                         />
                       ))}

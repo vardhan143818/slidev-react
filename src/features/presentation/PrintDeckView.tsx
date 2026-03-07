@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, Printer } from "lucide-react";
 import type { LayoutName } from "../../deck/model/layout";
 import { resolveCueTotal } from "../../core/presentation/flow/cue";
-import { SLIDE_HEIGHT, SLIDE_WIDTH, useSlideScale } from "../player/slideViewport";
-import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../player/slideSurface";
+import { SlidePreviewSurface } from "../player/SlidePreviewSurface";
 import type { CompiledSlide } from "../presenter/types";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
@@ -67,43 +66,6 @@ function PrintSlideSnapshot({
   return <RevealProvider value={revealContextValue}>{children(<Slide />)}</RevealProvider>;
 }
 
-function PrintSlideSurface({
-  surface,
-  children,
-}: {
-  surface: { className: string; style: CSSProperties };
-  children: ReactNode;
-}) {
-  const { viewportRef, scale, offset } = useSlideScale(1);
-  const viewportStageStyle = useMemo(
-    () => ({
-      width: `${SLIDE_WIDTH}px`,
-      height: `${SLIDE_HEIGHT}px`,
-      transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-      transformOrigin: "top left",
-    }),
-    [offset.x, offset.y, scale],
-  );
-
-  return (
-    <div ref={viewportRef} className="print-slide-viewport relative aspect-[16/9] w-full overflow-hidden">
-      <div style={viewportStageStyle}>
-        <article
-          data-export-surface="slide"
-          className={surface.className}
-          style={{
-            ...surface.style,
-            width: `${SLIDE_WIDTH}px`,
-            height: `${SLIDE_HEIGHT}px`,
-          }}
-        >
-          {children}
-        </article>
-      </div>
-    </div>
-  );
-}
-
 function PrintSlideGroup({
   slide,
   slideNumber,
@@ -121,15 +83,6 @@ function PrintSlideGroup({
 }) {
   const Slide = slide.component;
   const Layout = useResolvedLayout(slide.meta.layout ?? deckLayout);
-  const surface = resolveSlideSurface({
-    meta: slide.meta,
-    deckBackground,
-    className: resolveSlideSurfaceClassName({
-      layout: slide.meta.layout ?? deckLayout,
-      overflowHidden: true,
-      shadowClass: "shadow-[0_24px_60px_rgba(15,23,42,0.1)]",
-    }),
-  });
   const probeStepsRef = useRef(new Map<number, number>());
   const [detectedClicks, setDetectedClicks] = useState(0);
   const [measurementReady, setMeasurementReady] = useState(!withClicks);
@@ -219,25 +172,47 @@ function PrintSlideGroup({
             <div className="print-slide-sheet rounded-[24px] border border-slate-200/80 bg-white shadow-[0_30px_80px_rgba(148,163,184,0.22)]">
               <div className="print-slide-frame p-3">
                 {withClicks && typeof clickStep === "number" ? (
-                  <PrintSlideSnapshot
+                  <SlidePreviewSurface
                     Slide={Slide}
-                    slideId={`${slide.id}:${clickStep}`}
-                    clicks={clickStep}
-                    clicksTotal={clicksTotal}
-                    registerStep={noopRegisterStep}
-                  >
-                    {(content) => (
-                      <PrintSlideSurface surface={surface}>
-                        <Layout>{content}</Layout>
-                      </PrintSlideSurface>
-                    )}
-                  </PrintSlideSnapshot>
+                    meta={slide.meta}
+                    deckLayout={deckLayout}
+                    deckBackground={deckBackground}
+                    content={
+                      <PrintSlideSnapshot
+                        Slide={Slide}
+                        slideId={`${slide.id}:${clickStep}`}
+                        clicks={clickStep}
+                        clicksTotal={clicksTotal}
+                        registerStep={noopRegisterStep}
+                      >
+                        {(content) => <Layout>{content}</Layout>}
+                      </PrintSlideSnapshot>
+                    }
+                    viewportClassName="print-slide-viewport relative aspect-[16/9] w-full overflow-hidden"
+                    overflowHidden
+                    shadowClass="shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+                    articleProps={{
+                      "data-export-surface": "slide",
+                    }}
+                  />
                 ) : (
-                  <PrintSlideSurface surface={surface}>
-                    <Layout>
-                      <Slide />
-                    </Layout>
-                  </PrintSlideSurface>
+                  <SlidePreviewSurface
+                    Slide={Slide}
+                    meta={slide.meta}
+                    deckLayout={deckLayout}
+                    deckBackground={deckBackground}
+                    content={
+                      <Layout>
+                        <Slide />
+                      </Layout>
+                    }
+                    viewportClassName="print-slide-viewport relative aspect-[16/9] w-full overflow-hidden"
+                    overflowHidden
+                    shadowClass="shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+                    articleProps={{
+                      "data-export-surface": "slide",
+                    }}
+                  />
                 )}
               </div>
             </div>
@@ -269,12 +244,12 @@ export function PrintDeckView({
     <div
       data-export-view="print"
       data-export-with-clicks={withClicks ? "true" : "false"}
-      className="print-deck-view min-h-screen bg-[linear-gradient(180deg,#dbeafe_0%,#eff6ff_26%,#f8fafc_100%)] text-slate-900"
+      className="print-deck-view min-h-screen bg-[linear-gradient(180deg,#dcfce7_0%,#f0fdf4_26%,#f8fafc_100%)] text-slate-900"
     >
       <header className="print-deck-toolbar sticky top-0 z-20 border-b border-slate-200/80 bg-white/88 px-5 py-4 shadow-[0_16px_44px_rgba(148,163,184,0.18)] backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-700">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700">
               Print Export
             </p>
             <h1 className="truncate text-lg font-semibold text-slate-900">
@@ -298,7 +273,7 @@ export function PrintDeckView({
             <button
               type="button"
               onClick={() => window.print()}
-              className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-100"
+              className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100"
             >
               <Printer size={15} />
               Print / Save PDF

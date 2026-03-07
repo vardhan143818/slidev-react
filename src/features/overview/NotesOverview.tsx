@@ -99,7 +99,7 @@ export function NotesOverview({
                       onClick={() => setSelectedIndex(index)}
                       className={`w-full rounded-xl border p-4 text-left transition ${
                         active
-                          ? "border-blue-400 bg-blue-50 shadow-[0_0_0_1px_rgba(96,165,250,0.38)]"
+                          ? "border-emerald-400 bg-emerald-50 shadow-[0_0_0_1px_rgba(52,211,153,0.36)]"
                           : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >
@@ -116,7 +116,9 @@ export function NotesOverview({
                         </div>
                         <span
                           className={`rounded-md px-2 py-0.5 text-xs font-medium ${
-                            hasNotes ? "bg-sky-100 text-sky-700" : "bg-slate-100 text-slate-500"
+                            hasNotes
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-slate-100 text-slate-500"
                           }`}
                         >
                           {hasNotes ? "Notes ready" : "No notes"}

@@ -14,9 +14,9 @@ export type AnnotateProps = {
 const DEFAULT_ANIMATION_DURATION_MS = 520;
 
 const defaultColorByType: Record<AnnotateType, string> = {
-  underline: "#2563eb",
-  box: "#2563eb",
-  circle: "#2563eb",
+  underline: "#16a34a",
+  box: "#16a34a",
+  circle: "#16a34a",
   highlight: "rgba(250, 204, 21, 0.78)",
   "strike-through": "#ef4444",
   "crossed-off": "#ef4444",

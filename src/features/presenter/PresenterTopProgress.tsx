@@ -11,7 +11,7 @@ export function PresenterTopProgress({
     <div className="pointer-events-none absolute inset-x-0 top-0 z-30">
       <div className="relative h-[4px] w-full overflow-hidden bg-white/30">
         <div
-          className="absolute inset-y-0 left-0 bg-[linear-gradient(90deg,#22d3ee_0%,#38bdf8_42%,#f472b6_100%)] transition-[width] duration-300"
+          className="absolute inset-y-0 left-0 bg-[linear-gradient(90deg,#86efac_0%,#22c55e_46%,#15803d_100%)] transition-[width] duration-300"
           style={{ width: `${progressPercent}%` }}
         />
         <div

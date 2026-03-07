@@ -207,7 +207,7 @@ export function FlowTimelinePreview({
             onClick={() => onJumpToCue(previewClicks)}
             className={chromeTagClassName({
               tone: "active",
-              className: "transition hover:bg-sky-100",
+              className: "transition hover:bg-emerald-100",
             })}
           >
             Jump To Stage
@@ -233,7 +233,7 @@ export function FlowTimelinePreview({
                   selected
                     ? "border-slate-900 bg-slate-900 text-white shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
                     : current
-                      ? "border-sky-300 bg-sky-50 text-sky-800"
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-800"
                       : "border-slate-200 bg-white/90 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
                 }`}
               >
@@ -249,7 +249,11 @@ export function FlowTimelinePreview({
                 </div>
                 <div
                   className={`mt-1 text-xs ${
-                    selected ? "text-white/78" : current ? "text-sky-700" : "text-slate-500"
+                    selected
+                      ? "text-white/78"
+                      : current
+                        ? "text-emerald-700"
+                        : "text-slate-500"
                   }`}
                 >
                   {step === 0
