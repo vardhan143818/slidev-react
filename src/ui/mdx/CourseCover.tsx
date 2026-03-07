@@ -63,7 +63,7 @@ export function CourseCover({
 
         {author ? (
           <div className="author-info">
-            <span className="author-label">讲师</span>
+            <span className="author-label">Speaker</span>
             <span className="author-name">{author}</span>
           </div>
         ) : null}
