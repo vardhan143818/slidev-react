@@ -118,9 +118,7 @@ function createMermaidConfig(variant: MermaidRenderVariant) {
         padding: 15,
         htmlLabels: false,
       },
-      state: {
-        htmlLabels: false,
-      },
+      state: {} as Record<string, unknown>,
       sequence: {
         actorFontSize: 17,
         noteFontSize: 16,
@@ -161,9 +159,7 @@ function createMermaidConfig(variant: MermaidRenderVariant) {
       padding: 15,
       htmlLabels: false,
     },
-    state: {
-      htmlLabels: false,
-    },
+    state: {} as Record<string, unknown>,
     sequence: {
       actorFontSize: 19,
       noteFontSize: 18,
