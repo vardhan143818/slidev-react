@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../";
 
 :root {
   color-scheme: light;
@@ -17,31 +18,34 @@
   --slide-link-decoration-color-hover: rgba(15, 23, 42, 0.58);
   --slide-link-hover-bg: transparent;
   --slide-font-size-body: clamp(1.4rem, 1.72vw, 1.92rem);
-  --slide-line-height-body: 1.58;
+  --slide-line-height-body: 1.64;
   --slide-h1-margin: 0 0 1.05rem;
+  --slide-h1-padding: 0.12em 0 0.18em;
   --slide-h1-size: clamp(3rem, 5.9vw, 5.2rem);
   --slide-h1-line-height: 1.04;
   --slide-h1-letter-spacing: -0.03em;
   --slide-h1-weight: 850;
   --slide-h2-margin: 0 0 0.85rem;
+  --slide-h2-padding: 0.1em 0 0.15em;
   --slide-h2-size: clamp(2.2rem, 3.9vw, 3.7rem);
   --slide-h2-line-height: 1.1;
   --slide-h2-letter-spacing: -0.02em;
   --slide-h2-weight: 800;
   --slide-h2-color: var(--slide-color-heading);
   --slide-h3-margin: 0 0 0.75rem;
+  --slide-h3-padding: 0.08em 0 0.12em;
   --slide-h3-size: clamp(1.7rem, 2.6vw, 2.65rem);
   --slide-h3-line-height: 1.16;
   --slide-h3-weight: 740;
-  --slide-p-margin: 0.5rem 0 0.95rem;
+  --slide-p-margin: 0.68rem 0 1.12rem;
   --slide-p-color: var(--slide-color-body);
   --slide-p-font-size: clamp(1.52rem, 1.92vw, 2.08rem);
   --slide-p-line-height: var(--slide-line-height-body);
   --slide-p-letter-spacing: 0;
   --slide-p-font-weight: 400;
-  --slide-list-margin: 0.5rem 0 1.15rem;
+  --slide-list-margin: 0.68rem 0 1.3rem;
   --slide-list-padding: 0.15rem 0 0.15rem 0;
-  --slide-list-item-margin: 0.34rem 0;
+  --slide-list-item-margin: 0.42rem 0;
   --slide-list-item-padding-left: 1.55rem;
   --slide-list-marker-top: calc(var(--slide-li-line-height) * 0.5em);
   --slide-li-color: var(--slide-p-color);
@@ -56,18 +60,17 @@
   --slide-list-bullet-border: 1px solid rgba(255, 255, 255, 0.72);
   --slide-list-bullet-shadow: 0 0 0 2px rgba(34, 197, 94, 0.14), 0 4px 10px rgba(22, 163, 74, 0.2);
   --slide-list-bullet-transform: translateY(-50%) rotate(45deg);
-  --slide-ol-badge-min-width: 1.5rem;
-  --slide-ol-badge-height: 1.5rem;
-  --slide-ol-badge-padding-x: 0.26rem;
-  --slide-ol-item-padding-left: 2.15rem;
+  --slide-ol-badge-min-width: 1.92rem;
+  --slide-ol-badge-height: 1.92rem;
+  --slide-ol-badge-padding-x: 0.4rem;
+  --slide-ol-item-padding-left: 2.72rem;
   --slide-ol-badge-bg: rgba(34, 197, 94, 0.12);
   --slide-ol-badge-color: #15803d;
-  --slide-ol-badge-font-size: 0.66em;
+  --slide-ol-badge-font-size: 0.8em;
   --slide-ol-badge-font-weight: 700;
-  --slide-ol-badge-offset-y: 0.06em;
   --slide-strong-weight: 760;
-  --slide-blockquote-margin: 0.9rem 0;
-  --slide-blockquote-padding: 0.45rem 0.9rem;
+  --slide-blockquote-margin: 1.05rem 0;
+  --slide-blockquote-padding: 0.62rem 1rem;
   --slide-blockquote-border-color: #22c55e;
   --slide-blockquote-bg: #f0fdf4;
   --slide-blockquote-color: var(--slide-color-body);
@@ -75,15 +78,19 @@
   --slide-blockquote-line-height: inherit;
   --slide-blockquote-letter-spacing: inherit;
   --slide-blockquote-font-weight: inherit;
-  --slide-table-margin: 1rem 0 1.2rem;
-  --slide-table-font-size: 0.88em;
+  --slide-table-margin: 1.15rem 0 1.35rem;
+  --slide-table-font-size: 0.96em;
+  --slide-table-head-font-size: 1.02em;
+  --slide-table-head-line-height: 1.35;
   --slide-table-radius: 10px;
   --slide-table-border-color: rgba(15, 23, 42, 0.11);
   --slide-table-shadow: none;
-  --slide-table-cell-padding: 0.56rem 0.72rem;
+  --slide-table-cell-padding: 0.66rem 0.82rem;
   --slide-table-head-bg: rgba(15, 23, 42, 0.03);
   --slide-table-head-color: var(--slide-color-body);
   --slide-table-head-weight: 680;
+  --slide-table-body-font-size: 1em;
+  --slide-table-body-line-height: 1.5;
   --slide-table-divider-color: rgba(15, 23, 42, 0.09);
   --slide-table-row-odd-bg: transparent;
   --slide-table-row-hover-bg: rgba(15, 23, 42, 0.025);
@@ -92,11 +99,11 @@
   --slide-kbd-font-size: 0.86em;
   --slide-kbd-border-color: rgba(15, 23, 42, 0.2);
   --slide-kbd-bg: #fff;
-  --slide-hr-margin: 1rem 0;
+  --slide-hr-margin: 1.25rem 0;
   --slide-hr-color: rgba(15, 23, 42, 0.12);
   --slide-img-radius: 0.75rem;
-  --slide-pre-margin: 0.75rem 0 1rem;
-  --slide-pre-padding: 0.875rem 1rem;
+  --slide-pre-margin: 0.95rem 0 1.2rem;
+  --slide-pre-padding: 1rem 1.1rem;
   --slide-pre-radius: 0.75rem;
   --slide-pre-font-size: 1.14rem;
   --slide-pre-border-color: rgba(15, 23, 42, 0.08);
@@ -154,6 +161,7 @@ html[data-presentation-mode="print"] body {
 
 .slide-prose h1 {
   margin: var(--slide-h1-margin);
+  padding: var(--slide-h1-padding);
   color: var(--slide-color-heading);
   font-size: var(--slide-h1-size);
   line-height: var(--slide-h1-line-height);
@@ -163,6 +171,7 @@ html[data-presentation-mode="print"] body {
 
 .slide-prose h2 {
   margin: var(--slide-h2-margin);
+  padding: var(--slide-h2-padding);
   color: var(--slide-h2-color);
   font-size: var(--slide-h2-size);
   line-height: var(--slide-h2-line-height);
@@ -172,6 +181,7 @@ html[data-presentation-mode="print"] body {
 
 .slide-prose h3 {
   margin: var(--slide-h3-margin);
+  padding: var(--slide-h3-padding);
   color: var(--slide-color-heading);
   font-size: var(--slide-h3-size);
   line-height: var(--slide-h3-line-height);
@@ -331,8 +341,8 @@ html[data-presentation-mode="print"] body {
   content: counter(slide-ol);
   position: absolute;
   left: 0;
-  top: var(--slide-list-marker-top);
-  transform: translateY(calc(-50% + var(--slide-ol-badge-offset-y)));
+  top: 50%;
+  transform: translateY(-50%);
   display: grid;
   place-items: center;
   min-width: var(--slide-ol-badge-min-width);
@@ -484,7 +494,14 @@ html[data-presentation-mode="print"] body {
 .slide-prose th {
   background: var(--slide-table-head-bg);
   color: var(--slide-table-head-color);
+  font-size: var(--slide-table-head-font-size);
   font-weight: var(--slide-table-head-weight);
+  line-height: var(--slide-table-head-line-height);
+}
+
+.slide-prose td {
+  font-size: var(--slide-table-body-font-size);
+  line-height: var(--slide-table-body-line-height);
 }
 
 .slide-prose th + th,

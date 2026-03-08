@@ -140,6 +140,22 @@ function splitSlides(content: string): string[] {
   return slides;
 }
 
+function createSlideUnits(slideSources: string[]) {
+  return slideSources.map((slide, index): SlideUnit => {
+    const slideMatter = parseFrontmatter(slide);
+    const slideMeta = parseSlideMeta(slideMatter.data, index);
+    const trimmedSource = slideMatter.content.trim();
+
+    return {
+      id: `slide-${index + 1}`,
+      index,
+      meta: slideMeta,
+      source: trimmedSource || "# Empty slide",
+      hasInlineSource: trimmedSource.length > 0,
+    };
+  });
+}
+
 function parseSlidesMeta(data: unknown): SlidesMeta {
   const parsed = slidesMetaSchema.safeParse(data);
   if (!parsed.success) {
@@ -179,23 +195,21 @@ export function parseSlides(source: string): SlidesDocument {
   const meta = parseSlidesMeta(slidesMatter.data);
   const rawSlides = splitSlides(slidesMatter.content);
   const slideSources = rawSlides.length > 0 ? rawSlides : ["# Empty slides"];
-
-  const slides = slideSources.map((slide, index): SlideUnit => {
-    const slideMatter = parseFrontmatter(slide);
-    const slideMeta = parseSlideMeta(slideMatter.data, index);
-    const trimmedSource = slideMatter.content.trim();
-
-    return {
-      id: `slide-${index + 1}`,
-      index,
-      meta: slideMeta,
-      source: trimmedSource || "# Empty slide",
-      hasInlineSource: trimmedSource.length > 0,
-    };
-  });
+  const slides = createSlideUnits(slideSources);
 
   return {
     meta,
     slides,
   };
+}
+
+export function parseImportedSlides(source: string): SlideUnit[] {
+  const normalized = source.replace(/\r\n/g, "\n").trim();
+  const slideSources = splitSlides(normalized);
+
+  if (slideSources.length === 0) {
+    return createSlideUnits(["# Empty slide"]);
+  }
+
+  return createSlideUnits(slideSources);
 }

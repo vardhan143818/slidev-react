@@ -4,8 +4,7 @@ import path from "node:path";
 import { compile } from "@mdx-js/mdx";
 import type { Plugin, ViteDevServer } from "vite";
 import { getMdxCompileOptions } from "../compiling/mdx-options.ts";
-import { parseFrontmatter } from "../parsing/frontmatter.ts";
-import { parseSlides, parseSlideMeta } from "../parsing/parseSlides.ts";
+import { parseImportedSlides, parseSlides } from "../parsing/parseSlides.ts";
 import type { SlideUnit } from "@slidev-react/core/slides/slide";
 import { validateSlidesAuthoring } from "../validation/validateSlidesAuthoring.ts";
 
@@ -159,12 +158,14 @@ async function resolveSlideUnitSource({
 }) {
   const slideSrc = slide.meta.src?.trim();
   if (!slideSrc) {
-    return {
-      ...slide,
-      watchedFiles: [] as string[],
-      externalFilePath: undefined,
-      externalFileSource: undefined,
-    };
+    return [
+      {
+        ...slide,
+        watchedFiles: [] as string[],
+        externalFilePath: undefined,
+        externalFileSource: undefined,
+      },
+    ];
   }
 
   if (slide.hasInlineSource) {
@@ -185,32 +186,26 @@ async function resolveSlideUnitSource({
     );
   }
 
-  const externalMatter = parseFrontmatter(externalFileSource.replace(/\r\n/g, "\n").trim());
-  const externalMeta = parseSlideMeta(
-    externalMatter.data,
-    `slide ${slide.index + 1} src "${slideSrc}"`,
-  );
+  const importedSlides = parseImportedSlides(externalFileSource);
 
-  if (externalMeta.src) {
+  for (const importedSlide of importedSlides) {
+    if (!importedSlide.meta.src) continue;
+
     throw new Error(
       `Nested src is not supported in slide ${slide.index + 1}${slide.meta.title ? ` (${slide.meta.title})` : ""}.`,
     );
   }
 
-  const mergedMeta = {
-    ...externalMeta,
-    ...slide.meta,
-  };
-  const resolvedSource = externalMatter.content.trim() || "# Empty slide";
-
-  return {
-    ...slide,
-    meta: mergedMeta,
-    source: resolvedSource,
+  return importedSlides.map((importedSlide) => ({
+    ...importedSlide,
+    meta: {
+      ...importedSlide.meta,
+      ...slide.meta,
+    },
     watchedFiles: [externalFilePath],
     externalFilePath,
     externalFileSource,
-  };
+  }));
 }
 
 export async function generateCompiledSlidesArtifacts(options: {
@@ -220,10 +215,6 @@ export async function generateCompiledSlidesArtifacts(options: {
   const { appRoot, slidesSourceFile } = options;
   const slidesSource = await readFile(slidesSourceFile, "utf8");
   const parsedSlides = parseSlides(slidesSource);
-  const warnings = await validateSlidesAuthoring({
-    appRoot,
-    slides: parsedSlides,
-  });
   const generatedSlidesRootDir = path.join(appRoot, GENERATED_SLIDES_DIR_ROOT);
   const generatedSlideModulesDir = path.join(appRoot, GENERATED_SLIDE_MODULES_DIR);
   const manifestFile = path.join(appRoot, GENERATED_MANIFEST_FILE);
@@ -235,7 +226,7 @@ export async function generateCompiledSlidesArtifacts(options: {
     importPath: string;
     meta: object;
   }> = [];
-  const resolvedSlides = await Promise.all(
+  const resolvedSlideGroups = await Promise.all(
     parsedSlides.slides.map((slide) =>
       resolveSlideUnitSource({
         slide,
@@ -243,6 +234,18 @@ export async function generateCompiledSlidesArtifacts(options: {
       }),
     ),
   );
+  const resolvedSlides = resolvedSlideGroups.flat().map((slide, index) => ({
+    ...slide,
+    id: `slide-${index + 1}`,
+    index,
+  }));
+  const warnings = await validateSlidesAuthoring({
+    appRoot,
+    slides: {
+      meta: parsedSlides.meta,
+      slides: resolvedSlides,
+    },
+  });
   const sourceHash = createSlidesSourceHash({
     slidesSource,
     resolvedSlides,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseFrontmatter } from "./frontmatter.ts";
-import { parseSlides } from "./parseSlides.ts";
+import { parseImportedSlides, parseSlides } from "./parseSlides.ts";
 
 describe("parseFrontmatter", () => {
   it("parses frontmatter block and content", () => {
@@ -136,6 +136,34 @@ describe("parseSlides", () => {
     expect(parsed.slides[0].meta.src).toBe("./slides/imported.mdx");
     expect(parsed.slides[0].hasInlineSource).toBe(false);
     expect(parsed.slides[1].meta.title).toBe("Second");
+  });
+
+  it("parses imported slide files as slide collections without deck-level frontmatter", () => {
+    const parsed = parseImportedSlides(
+      [
+        "---",
+        "title: Imported Intro",
+        "layout: center",
+        "---",
+        "",
+        "# Imported hello",
+        "",
+        "---",
+        "title: Imported Next",
+        "---",
+        "",
+        "## Follow-up",
+      ].join("\n"),
+    );
+
+    expect(parsed).toHaveLength(2);
+    expect(parsed[0].meta).toEqual({
+      title: "Imported Intro",
+      layout: "center",
+    });
+    expect(parsed[0].source).toBe("# Imported hello");
+    expect(parsed[1].meta.title).toBe("Imported Next");
+    expect(parsed[1].source).toBe("## Follow-up");
   });
 
   it("accepts extended layout names", () => {

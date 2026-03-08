@@ -146,6 +146,77 @@ describe("generateCompiledSlidesArtifacts", () => {
     expect(first.sourceHash).not.toBe(second.sourceHash);
   });
 
+  it("expands imported slide files into multiple generated slides", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "slides/module.mdx",
+      [
+        "---",
+        "title: Imported Intro",
+        "layout: center",
+        "---",
+        "",
+        "# Imported hello",
+        "",
+        "---",
+        "title: Imported Deep Dive",
+        "---",
+        "",
+        "## Imported details",
+      ].join("\n"),
+    );
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "---",
+        "",
+        "---",
+        "src: ./slides/module.mdx",
+        "---",
+        "",
+        "---",
+        "title: Final",
+        "---",
+        "",
+        "# Closing",
+      ].join("\n"),
+    );
+
+    const result = await generateCompiledSlidesArtifacts({
+      appRoot,
+      slidesSourceFile,
+    });
+    const manifest = await readFile(result.manifestFile, "utf8");
+    const firstSlide = await readFile(
+      path.join(appRoot, ".generated/slides/slides/slide-1.tsx"),
+      "utf8",
+    );
+    const secondSlide = await readFile(
+      path.join(appRoot, ".generated/slides/slides/slide-2.tsx"),
+      "utf8",
+    );
+    const thirdSlide = await readFile(
+      path.join(appRoot, ".generated/slides/slides/slide-3.tsx"),
+      "utf8",
+    );
+
+    expect(manifest).toContain('id: "slide-1"');
+    expect(manifest).toContain('id: "slide-2"');
+    expect(manifest).toContain('id: "slide-3"');
+    expect(manifest).toContain('"title": "Imported Intro"');
+    expect(manifest).toContain('"title": "Imported Deep Dive"');
+    expect(manifest).toContain('"title": "Final"');
+    expect(manifest).toContain('"src": "./slides/module.mdx"');
+    expect(firstSlide).toContain("Imported hello");
+    expect(secondSlide).toContain("Imported details");
+    expect(thirdSlide).toContain("Closing");
+    expect(result.watchedFiles).toContain(path.join(appRoot, "slides/module.mdx"));
+  });
+
   it("fails when a slide mixes src with inline content", async () => {
     const appRoot = await createTempAppRoot();
     tempDirs.push(appRoot);
@@ -172,6 +243,41 @@ describe("generateCompiledSlidesArtifacts", () => {
         slidesSourceFile,
       }),
     ).rejects.toThrow("mixes inline content with src");
+  });
+
+  it("fails when an imported slide file contains nested src", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "slides/module.mdx",
+      [
+        "---",
+        "title: Imported Intro",
+        "src: ./slides/nested.mdx",
+        "---",
+      ].join("\n"),
+    );
+    await writeSupportFile(appRoot, "slides/nested.mdx", "# Nested");
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "---",
+        "",
+        "---",
+        "src: ./slides/module.mdx",
+        "---",
+      ].join("\n"),
+    );
+
+    await expect(
+      generateCompiledSlidesArtifacts({
+        appRoot,
+        slidesSourceFile,
+      }),
+    ).rejects.toThrow("Nested src is not supported");
   });
 
   it("removes stale generated slide modules", async () => {
