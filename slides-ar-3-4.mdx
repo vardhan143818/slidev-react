@@ -5,41 +5,193 @@ layout: cover
 ---
 
 ---
-
 title: Vertical Cover
 layout: cover
 class: text-center
-background: 'linear-gradient(180deg, #f7fee7 0%, #dcfce7 42%, #ecfeff 100%)'
-
+background: 'linear-gradient(180deg, #f7fee7 0%, #dcfce7 38%, #ecfeff 100%)'
+notes: |
+  这份 deck 的目标不是单纯证明 ar: 3/4 可以工作，
+  而是展示竖屏内容在 slidev-react 里应该怎么组织才会更顺。
 ---
 
 # 竖屏 3:4
 
-更适合信息分层、单列叙事和封面视觉。
+把演示从“横向铺开”改成“纵向递进”。
+
+<Badge>Portrait</Badge>
+<Badge>Story-first</Badge>
+<Badge>Mobile-friendly</Badge>
 
 ---
-
-title: Narrative Stack
+title: Portrait Framing
 layout: statement
-
 ---
 
-把重点信息改成纵向堆叠：
-
-- 一屏只讲一个结论
-- 图在上，文在下
-- 减少横向并排内容
+3:4 不是把 16:9 硬压窄，而是把信息重排成更适合单列阅读的节奏。
 
 ---
+title: Why Portrait
+layout: default
+---
 
-title: Portrait Notes
+# 为什么值得单独做一份 3:4 deck
+
+- 手机录屏、社媒封面、直播画面都更偏爱竖向构图
+- 单列阅读天然减少左右扫视，观众更容易跟住主线
+- 文字、图表、结论可以排成“上中下”三段式，信息层次更稳
+- 对讲解型内容来说，竖屏更像是在带着观众往下走，而不是横向比较
+
+<Callout title="一个关键区别">
+横屏常见的问题是“同一页想讲三件事”；竖屏更适合主动收敛成
+<Annotate type="underline">一屏一个判断</Annotate>
+。
+</Callout>
+
+---
+title: Content Rhythm
+layout: section
+---
+
+# 竖屏最重要的不是比例
+
+## 而是内容节奏
+
+---
+title: Narrative Stack
+layout: two-cols
+---
+
+# 从横向思维切到纵向思维
+
+## 不建议这样排
+
+- 左右并排两张大图
+- 一页塞进大段解释和补充条件
+- 把结论埋在第三层 bullet 里
+- 希望观众自己扫视后总结重点
+
+<hr />
+
+## 更适合 3:4 的写法
+
+- 顶部先给结论或问题
+- 中段只放一组核心信息
+- 底部补一句解释或行动建议
+- 让页面像短篇文章一样自然往下读
+
+---
+title: Slide Pattern
+layout: default
+---
+
+# 推荐的竖屏页面结构
+
+<RevealGroup>
+  <div className="rounded-2xl border border-green-200 bg-green-50/80 px-4 py-4">
+    <strong className="block">1. 顶部先定锚点</strong>
+    用标题、数字或一句判断，先把这页的主命题说清楚。
+  </div>
+  <div className="rounded-2xl border border-sky-200 bg-sky-50/80 px-4 py-4">
+    <strong className="block">2. 中部只留一块主内容</strong>
+    可以是图、列表、对比卡片，但不要让视觉焦点分叉。
+  </div>
+  <div className="rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-4">
+    <strong className="block">3. 底部补解释或动作</strong>
+    用一句补充说明，告诉观众“所以呢”或者“下一步是什么”。
+  </div>
+</RevealGroup>
+
+<Callout type="success" title="经验法则">
+如果一页里的信息无法自然排成从上到下的阅读顺序，通常就该拆页了。
+</Callout>
+
+---
+title: Authoring Example
+layout: default
+---
+
+# 在 `slidev-react` 里怎么写
+
+```mdx
+---
+title: Portrait Demo
+ar: 3/4
+---
+
+---
+title: Key Point
+layout: statement
+---
+
+一页先讲一个判断
+
+---
+title: Progressive Detail
+---
+
+<RevealGroup>
+  <div>先出现结论</div>
+  <div>再补充证据</div>
+  <div>最后给行动建议</div>
+</RevealGroup>
+```
+
+<Callout type="info" title="当前仓库能力">
+`ar: 3/4` 会直接驱动 viewport 计算、打印导出方向，以及整个 deck 的渲染比例。
+</Callout>
+
+---
+title: What This Deck Should Demonstrate
+layout: default
+---
+
+# 这份示例最好覆盖什么
+
+- `cover` / `section` / `statement` 这些版式在竖屏里都要能成立
+- 文本密度应该明显低于文档，但高于纯海报
+- Reveal 节奏要帮讲解，不要把一页做成点击迷宫
+- 示例内容要兼顾“为什么用”与“怎么写”
+
+<Callout title="判断标准">
+如果一页同时需要横向比较、复杂表格和长代码，它可能就不适合放在 3:4 里。
+</Callout>
+
+---
+title: Capability Snapshot
 layout: center
 notes: |
-先说明这份 deck 的目标是验证 3:4 竖屏体验。
-再讲为什么它比 16:9 更适合手机录屏和社媒封面。
+  这里用来收口：它既是一个内容建议，也是在说明当前仓库的真实支持边界。
+---
 
+## 当前可直接验证的点
+
+<p className="mt-6 text-lg leading-8">
+  这份 deck 已经在用 <Annotate type="box">3:4 视口</Annotate>、
+  <Annotate type="underline">多种内置 layout</Annotate>、
+  以及 <Annotate type="circle">MDX 组件 + reveal</Annotate> 来做竖屏编排。
+</p>
+
+<div className="mt-8 flex flex-wrap justify-center gap-3">
+  <Badge>cover</Badge>
+  <Badge>section</Badge>
+  <Badge>statement</Badge>
+  <Badge>two-cols</Badge>
+  <Badge>RevealGroup</Badge>
+</div>
+
+---
+title: Portrait Notes
+layout: center
 ---
 
 ## 使用方式
 
 `SLIDES_FILE=slides-ar-3-4.mdx pnpm dev`
+
+或：
+
+`pnpm slidev-react -- export slides-ar-3-4.mdx --format png`
+
+<Callout type="warn" title="扩写方向">
+后续如果你还想继续补，我建议下一步加一页真正的竖屏图文案例，而不是继续堆抽象原则。
+</Callout>
