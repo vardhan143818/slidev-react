@@ -1,5 +1,9 @@
 # slidev-react
 
+[![Version](https://img.shields.io/npm/v/@slidev-react/core)](https://npmjs.com/package/@slidev-react/core)
+[![CI](https://github.com/hylarucoder/slidev-react/actions/workflows/ci.yml/badge.svg)](https://github.com/hylarucoder/slidev-react/actions)
+[![License](https://img.shields.io/npm/l/@slidev-react/core)](LICENSE)
+
 React-first presentation runtime with an MDX slides pipeline, presenter/viewer modes, and built-in interactive slide features.
 
 [中文说明](./README.zh-CN.md)
@@ -361,6 +365,14 @@ Run the test suite with:
 ```bash
 pnpm test
 ```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Changelog
+
+See [CHANGELOG](./CHANGELOG.md) for a detailed list of changes.
 
 ## Acknowledgements
 
