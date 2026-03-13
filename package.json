@@ -35,6 +35,8 @@
     "release:publish": "pnpm run build:packages && changeset publish"
   },
   "dependencies": {
+    "@antv/g-svg": "^2.1.1",
+    "@antv/g2": "^5.4.8",
     "@mdx-js/mdx": "3.1.1",
     "@mdx-js/react": "3.1.1",
     "@slidev-react/core": "workspace:*",

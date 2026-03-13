@@ -419,6 +419,62 @@ package "Some Group" {
 ```
 
 ---
+title: Charts
+---
+
+# Charts
+
+Use the `<Chart />` component to render data visualizations powered by G2.
+
+<Chart
+  type="interval"
+  width={1280}
+  height={760}
+  data={[
+    { genre: "Sports", sold: 275 },
+    { genre: "Strategy", sold: 115 },
+    { genre: "Action", sold: 120 },
+    { genre: "Shooter", sold: 350 },
+    { genre: "RPG", sold: 180 },
+    { genre: "Simulation", sold: 95 },
+    { genre: "Puzzle", sold: 85 },
+    { genre: "Racing", sold: 140 },
+    { genre: "Fighting", sold: 110 },
+    { genre: "Adventure", sold: 165 },
+    { genre: "Platformer", sold: 130 },
+    { genre: "Other", sold: 150 },
+  ]}
+  encode={{ x: "genre", y: "sold", color: "genre" }}
+/>
+---
+title: Revenue Trends
+---
+
+# Revenue Trends
+
+<Chart
+  type="line"
+  width={1280}
+  height={500}
+  data={[
+    { month: "Jan", revenue: 4200, users: 1200 },
+    { month: "Feb", revenue: 3800, users: 1350 },
+    { month: "Mar", revenue: 5100, users: 1600 },
+    { month: "Apr", revenue: 4700, users: 1850 },
+    { month: "May", revenue: 6200, users: 2100 },
+    { month: "Jun", revenue: 5800, users: 2400 },
+    { month: "Jul", revenue: 7100, users: 2800 },
+    { month: "Aug", revenue: 6900, users: 3100 },
+    { month: "Sep", revenue: 8200, users: 3500 },
+    { month: "Oct", revenue: 7800, users: 3900 },
+    { month: "Nov", revenue: 9400, users: 4500 },
+    { month: "Dec", revenue: 11200, users: 5200 },
+  ]}
+  encode={{ x: "month", y: "revenue", color: "#22c55e" }}
+/>
+
+
+---
 title: Learn More
 layout: center
 class: text-center
