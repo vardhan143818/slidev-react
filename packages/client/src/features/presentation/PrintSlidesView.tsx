@@ -21,7 +21,7 @@ import type { CompiledSlide } from "./presenter/types";
 import { RevealProvider, type RevealContextValue } from "./reveal/RevealContext";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
 
-function noopCleanup() {}
+function noopCleanup() { }
 
 function noopRegisterStep() {
   return noopCleanup;
@@ -42,10 +42,10 @@ function createRevealContextValue({
     slideId,
     clicks,
     clicksTotal,
-    setClicks: () => {},
+    setClicks: () => { },
     registerStep,
-    advance: () => {},
-    retreat: () => {},
+    advance: () => { },
+    retreat: () => { },
     canAdvance: false,
     canRetreat: false,
   };
@@ -263,6 +263,12 @@ export function PrintSlidesView({
   onBack: () => void;
 }) {
   const pageSize = useMemo(() => resolvePrintPageSize(slidesViewport), [slidesViewport]);
+  const printScale = useMemo(() => {
+    const CSS_PX_PER_MM = 96 / 25.4;
+    const pageWidthPx = pageSize.widthMm * CSS_PX_PER_MM;
+    const pageHeightPx = pageSize.heightMm * CSS_PX_PER_MM;
+    return Math.min(pageWidthPx / slidesViewport.width, pageHeightPx / slidesViewport.height);
+  }, [pageSize.widthMm, pageSize.heightMm, slidesViewport.width, slidesViewport.height]);
   const rootStyle = useMemo(
     () =>
       ({
@@ -283,7 +289,13 @@ export function PrintSlidesView({
       className="print-slides-view min-h-screen bg-[linear-gradient(180deg,#dcfce7_0%,#f0fdf4_26%,#f8fafc_100%)] text-slate-900"
       style={rootStyle}
     >
-      <style>{`@page { size: ${pageSize.widthMm}mm ${pageSize.heightMm}mm; margin: 0; }`}</style>
+      <style>{`@page { size: ${pageSize.widthMm}mm ${pageSize.heightMm}mm; margin: 0; }
+@media print {
+  .print-slide-viewport > div {
+    transform: scale(${printScale}) !important;
+    transform-origin: top left !important;
+  }
+}`}</style>
       <header className="print-slides-toolbar sticky top-0 z-20 border-b border-slate-200/80 bg-white/88 px-5 py-4  backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">

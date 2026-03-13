@@ -44,3 +44,4 @@ export function useSlideScale(
 
   return { viewportRef, scale, offset };
 }
+
