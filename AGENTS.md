@@ -56,6 +56,39 @@ This repository currently has no commit history, so no project-specific conventi
 - test results
 - screenshots or short recordings for UI or presentation-flow changes
 
+## Release & Publishing
+
+根目录 `package.json` 已设置 `"private": true`，不会被误发到 npm。实际发布的是 `@slidev-react/*` 子包。
+
+### 升级版本
+
+使用 `scripts/bump-version.sh` 统一升级根目录和所有子包的版本号：
+
+```bash
+./scripts/bump-version.sh          # patch: 0.2.8 → 0.2.9
+./scripts/bump-version.sh minor    # minor: 0.2.8 → 0.3.0
+./scripts/bump-version.sh major    # major: 0.2.8 → 1.0.0
+./scripts/bump-version.sh 1.0.0    # 指定版本
+```
+
+### 发布
+
+```bash
+npm login                    # 确保已登录 npm
+pnpm run release:publish     # 构建子包并发布到 npm
+```
+
+`release:publish` 会先执行 `build:packages` 构建 `@slidev-react/core`、`@slidev-react/node`、`@slidev-react/cli`，然后通过 changeset 发布。
+
+### 完整流程
+
+```bash
+./scripts/bump-version.sh       # 1. 升版本
+git add -A && git commit -m "chore: bump v0.2.9"  # 2. 提交
+pnpm run release:publish         # 3. 构建 + 发布
+git push                         # 4. 推送
+```
+
 ## Contributor Notes
 
 Document only behavior that exists today. If you mention deck syntax in docs, verify it against `slides.mdx`, `packages/node/src/slides/`, and the current runtime rather than legacy Slidev behavior.
