@@ -34,10 +34,10 @@ Weak fit today:
 | Vue components in slides | rewrite required                  | Replace with React components / MDX helpers           |
 | Presenter notes          | supported with different syntax   | Use `notes:` in slide frontmatter                     |
 | Layouts                  | supported                         | Built-in layouts plus theme/addon layouts             |
-| Themes                   | supported with different contract | Local runtime themes instead of Slidev theme packages |
-| Addons / extensions      | supported with different contract | Local addon seam, not broad ecosystem compatibility   |
+| Themes                   | supported with different contract | npm package themes (`@slidev-react/theme-<id>`)       |
+| Addons / extensions      | supported with different contract | Built-in addon seam, not broad ecosystem compatibility|
 | PDF / PNG export         | supported                         | Browser print and Playwright export are available     |
-| Reveal flow              | supported with React-first syntax | Use `<Reveal />`, not Vue directives                  |
+| Reveal flow              | supported with React-first syntax | Use `<Step />`, not Vue directives                    |
 | Monaco / live coding     | not implemented yet               | Planned but not shipped                               |
 
 ## Frontmatter Mapping
@@ -88,9 +88,9 @@ Pause before the cost slide.
 
 # Three decisions to make now
 
-<Reveal step={1}>
+<Step step={1}>
   <Insight title="Board angle">Tie margin recovery to hiring discipline.</Insight>
-</Reveal>
+</Step>
 ```
 
 ## Speaker Notes
@@ -123,9 +123,9 @@ Slidev often expresses reveal behavior through Vue directives and shorthand synt
 
 Use:
 
-- `<Reveal step={1}>...</Reveal>`
-- `<RevealGroup>` when grouping related reveals
-- `clicks:` when you need explicit pacing beyond detected reveal blocks
+- `<Step step={1}>...</Step>`
+- `<Steps>` when grouping related steps
+- `clicks:` when you need explicit pacing beyond detected step blocks
 
 Migration rule of thumb:
 
@@ -138,13 +138,13 @@ Migration rule of thumb:
 
 Themes:
 
-- live under `src/theme/themes/<theme-id>/`
-- export `theme` from `index.ts`
+- installed as npm packages (`@slidev-react/theme-<id>`) or local workspace packages (`packages/theme-<id>/`)
+- export a `SlideThemeDefinition` from `index.ts`
 - can provide layouts, MDX component overrides, root attributes, and an optional provider
 
 Addons:
 
-- live under `src/addons/<addon-id>/`
+- live under `packages/client/src/addons/<addon-id>/`
 - export `addon` from `index.ts`
 - can provide layouts, MDX helpers, and an optional provider
 
@@ -189,8 +189,8 @@ Practical implication:
 
 1. Start with one representative Slidev deck, not the biggest one.
 2. Port only slides frontmatter, slide frontmatter, Markdown, code fences, and diagrams first.
-3. Replace Vue directives with `Reveal`-based React syntax.
-4. Recreate theme behavior with a local theme under `src/theme/themes/`.
+3. Replace Vue directives with `Step`-based React syntax.
+4. Recreate theme behavior with a theme package under `packages/theme-<id>/`.
 5. Recreate custom extension behavior with local addons only when needed.
 6. Validate presenter notes, exports, and reveal pacing before migrating the rest of the portfolio.
 

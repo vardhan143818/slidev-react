@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createHighlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
 
-const STEPS = [
+const DEFAULT_STEPS = [
   `const message = 'Hello'
 const target = 'world'
 
@@ -32,7 +32,8 @@ function getHighlighter() {
   return highlighterPromise;
 }
 
-export function MagicMoveDemo() {
+export function CodeMagicMove({ steps }: { steps?: string[] }) {
+  const resolvedSteps = steps && steps.length > 0 ? steps : DEFAULT_STEPS;
   const [stepIndex, setStepIndex] = useState(0);
   const [highlighter, setHighlighter] = useState<HighlighterCore>();
 
@@ -51,7 +52,7 @@ export function MagicMoveDemo() {
     };
   }, []);
 
-  const code = useMemo(() => STEPS[stepIndex], [stepIndex]);
+  const code = useMemo(() => resolvedSteps[stepIndex], [resolvedSteps, stepIndex]);
 
   if (!highlighter) {
     return (
@@ -79,31 +80,33 @@ export function MagicMoveDemo() {
             lineNumbers: false,
             splitTokens: false,
             enhanceMatching: true,
-            animateContainer: false,
-            containerStyle: false,
+            animateContainer: true,
           }}
         />
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white disabled:opacity-45"
+          className="rounded-lg bg-emerald-600 px-3.5 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-500 active:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600"
           onClick={() => setStepIndex((index) => Math.max(index - 1, 0))}
           disabled={stepIndex === 0}
         >
-          Prev Step
+          ← Prev
         </button>
         <button
           type="button"
-          className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white disabled:opacity-45"
-          onClick={() => setStepIndex((index) => Math.min(index + 1, STEPS.length - 1))}
-          disabled={stepIndex >= STEPS.length - 1}
+          className="rounded-lg bg-emerald-600 px-3.5 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-500 active:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600"
+          onClick={() => setStepIndex((index) => Math.min(index + 1, resolvedSteps.length - 1))}
+          disabled={stepIndex >= resolvedSteps.length - 1}
         >
-          Next Step
+          Next →
         </button>
+        <span className="text-xs text-slate-400">
+          {stepIndex + 1} / {resolvedSteps.length}
+        </span>
         <button
           type="button"
-          className="rounded-lg bg-slate-600 px-3 py-1.5 text-sm text-white"
+          className="ml-auto rounded-lg border border-slate-200 bg-white/80 px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm transition hover:bg-slate-50 active:bg-slate-100"
           onClick={() => setStepIndex(0)}
         >
           Reset

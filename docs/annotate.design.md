@@ -23,7 +23,7 @@ type AnnotateProps = {
 ## Design Rules
 
 1. `Annotate` only owns the mark, not the text content.
-2. `step` uses the same reveal timeline as `Reveal`, but controls mark timing instead of content timing.
+2. `step` uses the same reveal timeline as `Step`, but controls mark timing instead of content timing.
 3. Without `step`, the mark appears immediately.
 4. With `step`, the mark appears on that reveal step while the text stays readable.
 5. `animate` only controls how the mark appears, not whether it participates in reveal flow.
@@ -45,5 +45,5 @@ type AnnotateProps = {
 
 ## Authoring Heuristic
 
-- Use `Reveal` when content should appear later.
+- Use `Step` when content should appear later.
 - Use `Annotate step={n}` when the content should stay visible but the emphasis should arrive later.

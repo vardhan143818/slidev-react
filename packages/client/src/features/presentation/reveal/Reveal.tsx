@@ -35,7 +35,7 @@ function cloneWithRevealClass(
   });
 }
 
-export function Reveal({
+export function Step({
   step,
   preset = "fade-up",
   asChild = false,
@@ -71,7 +71,7 @@ export function Reveal({
   );
 }
 
-export function RevealGroup({
+export function Steps({
   start = 1,
   increment = 1,
   preset = "fade-up",
@@ -96,7 +96,7 @@ export function RevealGroup({
 
         if (isValidElement(child)) {
           return (
-            <Reveal
+            <Step
               key={child.key ?? step}
               step={step}
               preset={preset}
@@ -104,14 +104,14 @@ export function RevealGroup({
               asChild
             >
               {child}
-            </Reveal>
+            </Step>
           );
         }
 
         return (
-          <Reveal key={step} step={step} preset={preset} reserveSpace={reserveSpace}>
+          <Step key={step} step={step} preset={preset} reserveSpace={reserveSpace}>
             {child}
-          </Reveal>
+          </Step>
         );
       })}
     </>

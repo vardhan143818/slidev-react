@@ -62,7 +62,7 @@ Keep the copy visible, then
 .
 ```
 
-Use `Reveal` when the content itself should appear later.
+Use `Step` when the content itself should appear later.
 
 ### Use animation selectively
 
