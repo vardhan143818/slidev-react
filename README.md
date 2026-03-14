@@ -12,37 +12,46 @@ https://github.com/user-attachments/assets/553392a4-36ae-4505-87c2-ca54e7e00f08
 
 ## Overview
 
-`slidev-react` is an experimental slide system built around:
+`slidev-react` is a slide system built around:
 
-- React 19 for rendering
-- MDX as the authoring format
-- Vite for the app runtime
+- **React 19** for rendering
+- **MDX** as the authoring format
+- **Vite** for the app runtime
 - a compile-time slides pipeline under `packages/node/src/slides`
 - a presentation shell with presenter/viewer sync, reveal flow, drawings, and recording
 
-This repo is not a Vue Slidev runtime. It is a React + MDX implementation that borrows some presentation ideas while using its own slides model and rendering pipeline.
+> Inspired by [Slidev](https://github.com/slidevjs/slidev), but this is an independent React + MDX runtime with its own slides model and rendering pipeline, not a Vue Slidev port.
 
 ## Highlights
 
 - MDX-authored slides source in [`slides.mdx`](./slides.mdx)
 - Compile-time parsing and slides artifact generation
-- Built-in slide layouts such as `default`, `center`, `cover`, `section`, `two-cols`, `image-right`, and `statement`
-- React-native MDX helpers including `Badge`, `Callout`, `AnnotationMark`, `Reveal`, and `RevealGroup`
-- Diagram fences for Mermaid and PlantUML
+- Built-in slide layouts: `default`, `center`, `cover`, `section`, `two-cols`, `image-right`, `statement`
+- React-native MDX helpers: `Badge`, `Callout`, `Annotate`, `Reveal`, `RevealGroup`, and more
+- Diagram fences for Mermaid, PlantUML, and G2 charts (via addons)
 - KaTeX-based math rendering
 - Presenter and viewer routes with sync-ready state handling
 - Multi-tab sync through `BroadcastChannel`
 - Optional cross-device sync through a WebSocket relay
 - Stage drawing tools, cursor sync, quick overview, browser recording, print/PDF export
-- PDF export via `Print / PDF` button, `?export=print` URL param, or Playwright-driven `pnpm export:slides:pdf`
 
 ## Status
 
-The project is currently an MVP / playground. APIs, authoring conventions, and slides capabilities may still change.
+The project is under active development. Core features (MDX authoring, layouts, reveal flow, presenter sync, export) are functional and tested. The addon and theme plugin APIs are still evolving and may change.
 
-## Release Positioning
+## Monorepo Structure
 
-This repository is an open-source application/runtime repo, not an npm package. Keep `"private": true` in `package.json` to prevent accidental publication, and treat source checkout as the supported way to use or extend the project.
+This is a pnpm workspace monorepo with the following packages:
+
+| Package | Path | Description |
+|---------|------|-------------|
+| `@slidev-react/core` | `packages/core` | Pure presentation models, flow logic, and shared contracts |
+| `@slidev-react/client` | `packages/client` | React app assembly, providers, presentation UI, themes, addons |
+| `@slidev-react/node` | `packages/node` | Node-side dev/build/export/lint entry points and servers |
+| `@slidev-react/cli` | `packages/cli` | The `slidev-react` command-line interface |
+| `@slidev-react/theme-paper` | `packages/theme-paper` | The "paper" theme package |
+
+The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Sub-packages under `packages/core`, `packages/node`, and `packages/cli` are publishable to npm via [Changesets](https://github.com/changesets/changesets).
 
 ## Quick Start
 
@@ -51,74 +60,53 @@ This repository is an open-source application/runtime repo, not an npm package. 
 - Node.js `>=22`
 - pnpm `10`
 
-### Install
+### Install and run
 
 ```bash
 pnpm install
-```
-
-### Start development
-
-```bash
 pnpm dev
 ```
 
-### Build production assets
+Open the viewer at `http://localhost:5173/1` or the presenter at `http://localhost:5173/presenter/1`.
 
-```bash
-pnpm build
-```
+## Scripts
 
-### Preview the build
-
-```bash
-pnpm preview
-```
-
-### Export slides artifacts with Playwright
-
-```bash
-pnpm export:slides
-```
-
-### Lint slides authoring
-
-```bash
-pnpm lint:slides
-```
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start the Vite development server |
+| `pnpm build` | Build production assets |
+| `pnpm preview` | Preview the production build |
+| `pnpm clean` | Remove `dist/`, `.generated/`, and `output/` |
+| `pnpm presentation:server` | Start the WebSocket relay for cross-device sync |
+| `pnpm test` | Run the Vitest suite |
+| `pnpm test:e2e` | Run the Playwright end-to-end suite |
+| `pnpm test:e2e:headed` | Run Playwright with a visible browser |
+| `pnpm test:e2e:install` | Install the Chromium browser for Playwright |
+| `pnpm lint` | Run type-aware Oxlint |
+| `pnpm lint:slides` | Lint slides authoring (unknown themes, addons, layouts) |
+| `pnpm format` | Format the repository with Oxfmt |
+| `pnpm format:check` | Check formatting with Oxfmt |
 
 Use `pnpm lint:slides -- --strict` to fail on warnings in CI.
 
-This writes browser-rendered artifacts to `output/export/<slides-name>/`:
+### Slides Export
 
-- `*.pdf` for the whole slides document
-- `png/*.png` for one image per slide
-
-Useful variants:
+Export slides as PDF or PNG artifacts via Playwright:
 
 ```bash
-pnpm export:slides:pdf
-pnpm export:slides:png
+pnpm export:slides              # PDF + PNG
+pnpm export:slides:pdf           # PDF only
+pnpm export:slides:png           # PNG only
 pnpm export:slides -- --slides 3-7
 pnpm export:slides -- --with-clicks
 pnpm export:slides -- --base-url http://127.0.0.1:4173
 ```
 
-### Clean generated output
-
-```bash
-pnpm clean
-```
+Output goes to `output/export/<slides-name>/`. You can also use the `Print / PDF` button in the presenter shell, or visit any slides URL with `?export=print`.
 
 ## Presentation Mode
 
-Start the app first:
-
-```bash
-pnpm dev
-```
-
-Optional: start the relay server for cross-device sync:
+Start the app with `pnpm dev`, then optionally start the relay server for cross-device sync:
 
 ```bash
 pnpm presentation:server
@@ -131,18 +119,13 @@ Routes:
 - Presenter: `http://localhost:5173/presenter/1`
 - Viewer: `http://localhost:5173/1`
 
-The presenter shell currently includes:
+The presenter shell includes:
 
-- presenter / viewer roles
-- page sync
-- reveal-state sync
-- cursor sync
-- drawing sync
+- presenter / viewer roles with page, reveal-state, cursor, and drawing sync
 - browser recording via `MediaRecorder`
-- print-ready slides export via browser Print / Save as PDF
+- print-ready slides export
 - quick overview and presenter-side controls
-- wake lock, mirror-stage launch, fullscreen toggle, stage scale, and idle-cursor settings in presenter mode
-- `pnpm lint:slides` for authoring warnings such as unknown themes, addons, or layouts
+- wake lock, mirror-stage launch, fullscreen toggle, stage scale, and idle-cursor settings
 
 ## Slides Authoring
 
@@ -155,32 +138,44 @@ Core authoring rules:
 - Use MDX for slide content
 - Use repo-provided React components directly in MDX
 
-Supported frontmatter today:
+### Frontmatter Reference
 
-- Slides: `title`, `theme`, `addons`, `layout`, `background`, `transition`, `exportFilename`
-- Slide: `title`, `layout`, `class`, `background`, `transition`, `clicks`, `notes`, `src`
+**Slides-level** (first slide block):
 
-Notes:
+| Field | Description |
+|-------|-------------|
+| `title` | Presentation title |
+| `theme` | Theme id (e.g. `paper`); falls back to `default` |
+| `addons` | List of addon ids to enable (e.g. `[mermaid, g2, insight]`) |
+| `layout` | Default layout for all slides |
+| `background` | Default background (color, gradient, or image URL) |
+| `transition` | Default transition: `fade`, `slide-left`, `slide-up`, `zoom` |
+| `exportFilename` | Base name for export files and recording downloads |
 
-- `layout:` is active and affects rendering
-- `class:` is applied to the stage article element
-- `background:` accepts colors, gradients, CSS background values, or bare image URLs
-- `transition:` supports `fade`, `slide-left`, `slide-up`, and `zoom`
-- `exportFilename:` sets the preferred base name for slides exports and recording downloads
-- `addons:` enables locally registered addons from `src/addons/*/index.ts`
-- `clicks:` defines explicit reveal steps even when the slide has fewer `<Reveal />` blocks
-- `notes:` is available in presenter mode and works best with YAML block strings
-- `src:` loads a single external slide file relative to `slides.mdx`
-- `theme:` loads a local runtime theme from `packages/client/src/theme/themes/*/index.ts`, with the default theme as fallback
-- invalid frontmatter now reports field-level parser errors, and compile-time generation warns for unknown local themes or addons
+**Slide-level**:
 
-Example:
+| Field | Description |
+|-------|-------------|
+| `title` | Slide title |
+| `layout` | Layout override for this slide |
+| `class` | CSS class applied to the stage article element |
+| `background` | Colors, gradients, CSS background values, or bare image URLs |
+| `transition` | Per-slide transition override |
+| `clicks` | Explicit reveal steps (even when fewer `<Reveal />` blocks exist) |
+| `notes` | Presenter notes (YAML block strings work best) |
+| `src` | Load slide body from an external file relative to `slides.mdx` |
+
+Invalid frontmatter reports field-level parser errors, and compile-time generation warns for unknown themes or addons.
+
+### Example
 
 ```mdx
 ---
 title: Demo Slides
 theme: paper
 addons:
+  - mermaid
+  - g2
   - insight
 layout: default
 background: "linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)"
@@ -189,7 +184,6 @@ exportFilename: client-demo
 ---
 
 ---
-
 title: Compare
 layout: two-cols
 class: px-20
@@ -198,9 +192,8 @@ transition: slide-left
 clicks: 3
 src: ./slides/compare.mdx
 notes: |
-Open with the tradeoff, not the implementation.
-Pause after the chart before moving to the API boundary.
-
+  Open with the tradeoff, not the implementation.
+  Pause after the chart before moving to the API boundary.
 ---
 
 # Left column
@@ -214,26 +207,11 @@ Pause after the chart before moving to the API boundary.
 </Reveal>
 ```
 
-Recommended `src` syntax:
+When `src:` is present, put the slide body in the external file — do not mix inline content in the same block.
 
-```mdx
----
-title: Imported Slide
-layout: cover
-src: ./slides/imported-intro.mdx
-notes: |
-  Keep the wrapper metadata here.
-  Put the slide body in the external file.
----
-```
+## Themes
 
-When `src:` is present, do not also put inline slide body content in the same slide block.
-
-To export slides as PDF today, open the presenter shell and use the `Print / PDF` button, visit the current slides URL with `?export=print`, or run `pnpm export:slides` for Playwright-driven PDF and PNG artifacts.
-
-## Local Themes
-
-The built-in non-default example theme is `paper`:
+Set the theme in slides-level frontmatter:
 
 ```mdx
 ---
@@ -242,38 +220,49 @@ theme: paper
 ---
 ```
 
-Local themes live under `packages/client/src/theme/themes/<theme-id>/` and are discovered automatically when they export `theme` from `index.ts`.
+Themes are distributed as workspace packages. The built-in non-default theme is **paper** (`packages/theme-paper`), published as `@slidev-react/theme-paper`.
 
-Current theme contract:
+A theme package exports a `SlideThemeDefinition` from its entry point, with support for:
 
-- `rootAttributes` and `rootClassName` for document-level tokens or selectors
-- `layouts` to override or extend slide layouts
-- `mdxComponents` to override MDX helpers such as `Badge`
-- `provider` for theme-scoped React context when needed
+- `rootAttributes` and `rootClassName` — document-level tokens or selectors
+- `layouts` — override or extend slide layouts
+- `mdxComponents` — override MDX helpers such as `Badge`
+- `provider` — theme-scoped React context when needed
 
-Theme CSS files placed at `packages/client/src/theme/themes/<theme-id>/style.css` are also auto-loaded. If a requested theme is missing, the runtime falls back to the default theme.
+Theme CSS files (e.g. `style.css`) are auto-loaded. If a requested theme is missing, the runtime falls back to the default theme.
 
-## Local Addons
+## Addons
 
-Slides can opt into local addons with slides frontmatter:
+Slides can opt into addons with slides-level frontmatter:
 
 ```mdx
 ---
-title: QBR Review
 addons:
+  - mermaid
+  - g2
   - insight
 ---
 ```
 
-Local addons live under `src/addons/<addon-id>/` and are discovered automatically when they export `addon` from `index.ts`.
+Addons live under `packages/client/src/addons/<addon-id>/` and are discovered automatically when they export `addon` from `index.ts`.
 
-Current addon contract:
+### Available Addons
 
-- `layouts` to add or override layout names, including custom ones such as `spotlight`
-- `mdxComponents` to add slides-local helpers such as `Insight`
-- `provider` to wrap the runtime tree with addon-specific React context or side effects
+| Addon | Components | Description |
+|-------|-----------|-------------|
+| `mermaid` | `MermaidDiagram` | Mermaid diagram rendering |
+| `g2` | `Chart` | G2 data visualization charts |
+| `insight` | `Insight`, `spotlight` layout | Insight component and spotlight layout |
 
-The built-in example addon is `insight`, which contributes a `spotlight` layout and an `Insight` MDX component:
+### Addon Contract
+
+- `layouts` — add or override layout names
+- `mdxComponents` — add slides-local MDX helpers
+- `provider` — wrap the runtime tree with addon-specific React context or side effects
+
+Addon CSS files at `packages/client/src/addons/<addon-id>/style.css` are auto-loaded. Unknown addon ids are ignored, keeping slides startup safe while the addon API is experimental.
+
+### Example
 
 ```mdx
 ---
@@ -290,81 +279,73 @@ layout: spotlight
 </Insight>
 ```
 
-Addon CSS files placed at `src/addons/<addon-id>/style.css` are also auto-loaded. Unknown addon ids are ignored for now, which keeps slides startup safe while the addon API is still experimental.
-
 ## MDX Helpers
 
-Common helpers exposed to MDX include:
+### Core (always available)
 
-- `Badge`
-- `Callout`
-- `AnnotationMark`
-- `CourseCover`
-- `MagicMoveDemo`
-- `MinimaxReactVisualizer`
-- `Reveal`
-- `RevealGroup`
-- `MermaidDiagram`
-- `PlantUmlDiagram`
+| Component | Description |
+|-----------|-------------|
+| `Badge` | Inline badge labels |
+| `Callout` | Callout blocks with titles |
+| `Annotate` | Rough-notation style annotations (highlight, underline, box, bracket) |
+| `CourseCover` | Course cover page helper |
+| `MagicMoveDemo` | Shiki Magic Move code animations |
+| `MinimaxReactVisualizer` | Minimax tree visualizer |
+| `PlantUmlDiagram` | PlantUML diagram rendering |
+| `Reveal` | Step-based reveal for click-triggered content |
+| `RevealGroup` | Auto-numbered reveal container |
 
-`AnnotationMark` example:
+### Via Addons
+
+| Component | Addon | Description |
+|-----------|-------|-------------|
+| `MermaidDiagram` | `mermaid` | Mermaid diagrams |
+| `Chart` | `g2` | G2 data charts |
+| `Insight` | `insight` | Insight blocks |
+
+`Annotate` example:
 
 ```mdx
-<AnnotationMark>Default highlight</AnnotationMark>
-<AnnotationMark type="underline">Key idea</AnnotationMark>
-<AnnotationMark type="box" color="#2563eb">
-  API boundary
-</AnnotationMark>
-<AnnotationMark type="bracket" brackets={["left", "right"]}>
-  Focus block
-</AnnotationMark>
+<Annotate>Default highlight</Annotate>
+<Annotate type="underline">Key idea</Annotate>
+<Annotate type="box" color="#2563eb">API boundary</Annotate>
+<Annotate type="bracket" brackets={["left", "right"]}>Focus block</Annotate>
 ```
 
 ## Project Structure
 
-Top-level source areas under [`src/`](./src):
+```
+packages/
+  core/         → @slidev-react/core     — models, flow, shared contracts
+  client/       → @slidev-react/client   — React app, UI, themes, addons
+    src/
+      addons/   — addon definitions (mermaid, g2, insight)
+      app/      — application assembly, providers, entry wiring
+      features/ — presentation capabilities (reveal, presenter, sync, draw, navigation)
+      theme/    — theme registry, layouts, visual tokens
+      ui/       — reusable components and MDX helpers
+  node/         → @slidev-react/node     — dev/build/export/lint
+  cli/          → @slidev-react/cli      — CLI entry point
+  theme-paper/  → @slidev-react/theme-paper — "paper" theme
+```
 
-- `app/`: application assembly, providers, entry wiring
-- `slides/`: slides parsing, frontmatter handling, MDX compilation, generated artifacts
-- `features/`: presentation capabilities such as reveal, presenter shell, sync, draw, and navigation
-- `features/presentation/stage/`: stage rendering and stage interaction
-- `addons/`: local runtime extension points for layouts, MDX helpers, and providers
-- `ui/`: reusable presentation components and MDX helpers
-- `theme/`: layouts and visual tokens
-
-For more internal structure guidance, see [`packages/client/README.md`](./packages/client/README.md) and [`packages/node/README.md`](./packages/node/README.md).
-
-## Scripts
-
-- `pnpm clean`: remove generated output such as `dist/`, `.generated/`, and `output/`
-- `pnpm dev`: start the development server
-- `pnpm build`: build the app
-- `pnpm preview`: preview the production build
-- `pnpm presentation:server`: start the WebSocket relay server
-- `pnpm test`: run the Vitest suite
-- `pnpm test:e2e`: run the Playwright end-to-end suite
-- `pnpm test:e2e:headed`: run the Playwright suite with a visible browser
-- `pnpm test:e2e:install`: install the Chromium browser used by Playwright
-- `pnpm lint`: run type-aware Oxlint on `src/` and `packages/`
-- `pnpm format`: format the repository with Oxfmt
-- `pnpm format:check`: check repository formatting with Oxfmt
+For per-package details, see [`packages/client/README.md`](./packages/client/README.md) and [`packages/node/README.md`](./packages/node/README.md).
 
 ## Build Artifact Management
 
-Build output is disposable and should not be committed. In this repository:
+Build output is disposable and should not be committed:
 
-- `dist/` is generated by production builds
-- `.generated/` is compile-time slides output
-- `output/` is treated as generated runtime output
+- `dist/` — production builds
+- `.generated/` — compile-time slides output
+- `output/` — runtime generated output (exports, recordings)
 
-Before opening a PR, remove generated files with `pnpm clean` if they are unrelated to the change.
+Run `pnpm clean` to remove all generated files.
 
 ## Testing
 
-Run the test suite with:
-
 ```bash
-pnpm test
+pnpm test        # Vitest unit/integration tests
+pnpm test:e2e    # Playwright end-to-end tests
 ```
 
 ## Contributing
@@ -377,7 +358,7 @@ See [CHANGELOG](./CHANGELOG.md) for a detailed list of changes.
 
 ## Acknowledgements
 
-This project is inspired by [Slidev](https://github.com/slidevjs/slidev), and some early slides content was migrated from the Slidev starter deck while adapting the authoring model to this React + MDX runtime.
+This project is inspired by [Slidev](https://github.com/slidevjs/slidev). Some early slides content was migrated from the Slidev starter deck while adapting the authoring model to this React + MDX runtime.
 
 ## License
 

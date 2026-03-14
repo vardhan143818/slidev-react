@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/node",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": false,
   "description": "Node-side command APIs for slidev-react authoring and build workflows",
   "license": "MIT",
@@ -28,7 +28,6 @@
   "dependencies": {
     "@mdx-js/mdx": "3.1.1",
     "@mdx-js/react": "3.1.1",
-    "@playwright/test": "^1.58.2",
     "@slidev-react/core": "workspace:*",
     "@vitejs/plugin-react": "^6.0.0",
     "react": "19.2.3",
@@ -39,6 +38,14 @@
     "vite": "^8.0.0",
     "yaml": "2.8.2",
     "zod": "4.3.6"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.58.2"
+  },
+  "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

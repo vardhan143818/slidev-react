@@ -1,6 +1,6 @@
 import { Code, Database, Layers, Maximize, MousePointer2, Terminal, ThumbsUp } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useRevealProgress } from "../../features/presentation/reveal/useRevealStep";
+import { useRevealProgress } from "@/features/presentation/reveal/useRevealStep";
 
 type StepTheme = "default" | "blue" | "purple" | "green";
 

@@ -1,8 +1,7 @@
 import type { KeyboardEvent } from "react";
 import { X } from "lucide-react";
-import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 import { formatViewportAspectRatio } from "@slidev-react/core/slides/viewport";
-import type { CompiledSlide } from "../presenter/types";
+import type { CompiledSlide, SlidesConfig } from "../presenter/types";
 import { ChromeIconButton } from "../../../ui/primitives/ChromeIconButton";
 import { ChromePanel } from "../../../ui/primitives/ChromePanel";
 import { ChromeTag } from "../../../ui/primitives/ChromeTag";
@@ -12,17 +11,14 @@ function OverviewSlidePreview({
   index,
   active,
   slide,
-  slidesViewport,
-  slidesLayout,
-  slidesBackground,
+  slidesConfig,
 }: {
   index: number;
   active: boolean;
   slide: CompiledSlide;
-  slidesViewport: SlidesViewport;
-  slidesLayout?: CompiledSlide["meta"]["layout"];
-  slidesBackground?: string;
+  slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
 }) {
+  const { slidesViewport, slidesLayout, slidesBackground } = slidesConfig;
   return (
     <div
       style={{ aspectRatio: formatViewportAspectRatio(slidesViewport) }}
@@ -41,9 +37,7 @@ function OverviewSlidePreview({
       <SlidePreviewSurface
         Slide={slide.component}
         meta={slide.meta}
-        slidesViewport={slidesViewport}
-        slidesLayout={slidesLayout}
-        slidesBackground={slidesBackground}
+        slidesConfig={slidesConfig}
         viewportClassName="size-full"
         stageClassName="pointer-events-none select-none"
       />
@@ -55,18 +49,14 @@ export function QuickOverview({
   open,
   slides,
   currentIndex,
-  slidesViewport,
-  slidesLayout,
-  slidesBackground,
+  slidesConfig,
   onClose,
   onSelect,
 }: {
   open: boolean;
   slides: CompiledSlide[];
   currentIndex: number;
-  slidesViewport: SlidesViewport;
-  slidesLayout?: CompiledSlide["meta"]["layout"];
-  slidesBackground?: string;
+  slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
   onClose: () => void;
   onSelect: (index: number) => void;
 }) {
@@ -120,9 +110,7 @@ export function QuickOverview({
                     index={index}
                     active={active}
                     slide={slide}
-                    slidesViewport={slidesViewport}
-                    slidesLayout={slidesLayout}
-                    slidesBackground={slidesBackground}
+                    slidesConfig={slidesConfig}
                   />
                   <div className="truncate px-2.5 py-2 text-sm font-medium text-slate-900">
                     {slide.meta.title ?? `Slide ${index + 1}`}

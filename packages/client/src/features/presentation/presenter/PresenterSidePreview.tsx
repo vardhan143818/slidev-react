@@ -1,6 +1,4 @@
-import type { LayoutName } from "@slidev-react/core/slides/layout";
-import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
-import type { CompiledSlide } from "./types";
+import type { CompiledSlide, SlidesConfig } from "./types";
 import { ChromePanel, chromePanelClassName } from "../../../ui/primitives/ChromePanel";
 import { ChromeTag } from "../../../ui/primitives/ChromeTag";
 import { SlidePreviewSurface } from "../stage/SlidePreviewSurface";
@@ -9,16 +7,12 @@ export function PresenterSidePreview({
   title,
   indexLabel,
   slide,
-  slidesViewport,
-  slidesLayout,
-  slidesBackground,
+  slidesConfig,
 }: {
   title: string;
   indexLabel: string;
   slide: CompiledSlide | null;
-  slidesViewport: SlidesViewport;
-  slidesLayout?: LayoutName;
-  slidesBackground?: string;
+  slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
 }) {
   if (!slide) {
     return (
@@ -56,9 +50,7 @@ export function PresenterSidePreview({
       <SlidePreviewSurface
         Slide={slide.component}
         meta={slide.meta}
-        slidesViewport={slidesViewport}
-        slidesLayout={slidesLayout}
-        slidesBackground={slidesBackground}
+        slidesConfig={slidesConfig}
         alignment="top-left"
         viewportClassName={chromePanelClassName({
           tone: "frame",

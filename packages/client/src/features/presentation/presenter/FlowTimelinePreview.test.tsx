@@ -24,7 +24,7 @@ function renderPreview(props?: Partial<React.ComponentProps<typeof FlowTimelineP
           slide={demoSlide}
           currentClicks={1}
           currentClicksTotal={3}
-          slidesViewport={DEFAULT_SLIDES_VIEWPORT}
+          slidesConfig={{ slidesViewport: DEFAULT_SLIDES_VIEWPORT }}
           onJumpToCue={vi.fn()}
           {...props}
         />

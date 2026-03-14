@@ -28,8 +28,8 @@ export type PresentationDrawingsState = Record<string, PresentationDrawStroke[]>
 
 export interface PresentationSharedState {
   page: number;
-  clicks: number;
-  clicksTotal: number;
+  cue: number;
+  cueTotal: number;
   timer: number;
   cursor: PresentationCursorState | null;
   drawings: PresentationDrawingsState;
@@ -109,8 +109,8 @@ const presentationDrawingsStateSchema = z.record(z.string(), z.array(presentatio
 
 const presentationSharedStateSchema = z.object({
   page: z.number(),
-  clicks: z.number(),
-  clicksTotal: z.number(),
+  cue: z.number(),
+  cueTotal: z.number(),
   timer: z.number(),
   cursor: presentationCursorStateSchema.nullable(),
   drawings: presentationDrawingsStateSchema,

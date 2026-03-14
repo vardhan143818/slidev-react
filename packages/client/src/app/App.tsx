@@ -65,10 +65,12 @@ function ThemeBoundApp({
         <PresenterShell
           slides={slidesDocument.slides}
           slidesTitle={slidesDocument.meta.title}
-          slidesViewport={slidesDocument.meta.viewport}
-          slidesLayout={slidesDocument.meta.layout}
-          slidesBackground={slidesDocument.meta.background}
-          slidesTransition={slidesDocument.meta.transition}
+          slidesConfig={{
+            slidesViewport: slidesDocument.meta.viewport,
+            slidesLayout: slidesDocument.meta.layout,
+            slidesBackground: slidesDocument.meta.background,
+            slidesTransition: slidesDocument.meta.transition,
+          }}
           slidesExportFilename={slidesDocument.meta.exportFilename}
           slidesSessionSeed={slidesDocument.sourceHash}
           drawStorageKey={drawStorageKey}

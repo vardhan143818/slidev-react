@@ -232,5 +232,7 @@ export function usePresentationFlowRuntime({
     goToSlideAtStart,
     advanceReveal,
     retreatReveal,
-  };
+  }
 }
+
+export type PresentationFlowRuntime = ReturnType<typeof usePresentationFlowRuntime>

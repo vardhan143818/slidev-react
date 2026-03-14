@@ -1,6 +1,6 @@
 import { useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
-import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 import type { SlideMeta, SlideComponent } from "@slidev-react/core/slides/slide";
+import type { SlidesConfig } from "../presenter/types";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import { useSlideScale } from "./slideViewport";
@@ -16,9 +16,7 @@ type SlideArticleProps = HTMLAttributes<HTMLElement> & {
 export function SlidePreviewSurface({
   Slide,
   meta,
-  slidesViewport,
-  slidesLayout,
-  slidesBackground,
+  slidesConfig,
   content,
   viewportClassName,
   viewportStyle,
@@ -31,9 +29,7 @@ export function SlidePreviewSurface({
 }: {
   Slide: SlideComponent;
   meta: SlideMeta;
-  slidesViewport: SlidesViewport;
-  slidesLayout?: SlideMeta["layout"];
-  slidesBackground?: string;
+  slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
   content?: ReactNode;
   viewportClassName?: string;
   viewportStyle?: CSSProperties;
@@ -44,6 +40,7 @@ export function SlidePreviewSurface({
   alignment?: "center" | "top-left";
   articleProps?: SlideArticleProps;
 }) {
+  const { slidesViewport, slidesLayout, slidesBackground } = slidesConfig;
   const Layout = useResolvedLayout(meta.layout ?? slidesLayout);
   const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier, alignment, slidesViewport);
   const viewportStageStyle = useMemo(

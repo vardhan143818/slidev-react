@@ -1,7 +1,7 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  entry: ["src/index.ts", "src/theme/types.ts"],
+  entry: ["src/index.ts", "src/theme/types.ts", "src/addon/types.ts"],
   dts: true,
   deps: {
     neverBundle: [/^[^./]/],

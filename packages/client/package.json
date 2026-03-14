@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/client",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "description": "Browser-side React app and presentation UI for slidev-react",
   "license": "MIT",
@@ -10,7 +10,31 @@
   },
   "dependencies": {
     "@slidev-react/core": "workspace:*",
+    "katex": "0.16.33",
+    "lucide-react": "0.568.0",
+    "plantuml-encoder": "1.4.0",
+    "shiki": "4.0.1",
+    "shiki-magic-move": "1.2.1",
     "zod": "4.3.6"
+  },
+  "peerDependencies": {
+    "@antv/g-svg": ">=2.0.0",
+    "@antv/g2": ">=5.0.0",
+    "@mdx-js/react": ">=3.0.0",
+    "mermaid": ">=11.0.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@antv/g-svg": {
+      "optional": true
+    },
+    "@antv/g2": {
+      "optional": true
+    },
+    "mermaid": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=22"

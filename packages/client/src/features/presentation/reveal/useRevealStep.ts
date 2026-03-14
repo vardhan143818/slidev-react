@@ -1,12 +1,12 @@
 import { useLayoutEffect } from "react";
 import { useReveal } from "./RevealContext";
-import { normalizeRevealStep } from "./step";
+import { normalizeCueStep } from "@slidev-react/core/presentation/flow/step";
 
 export function useRevealStep(step: number | undefined) {
   const reveal = useReveal();
   const registerStep = reveal?.registerStep;
   const slideId = reveal?.slideId;
-  const normalizedStep = normalizeRevealStep(step);
+  const normalizedStep = normalizeCueStep(step);
 
   useLayoutEffect(() => {
     if (!registerStep || normalizedStep === undefined) return;

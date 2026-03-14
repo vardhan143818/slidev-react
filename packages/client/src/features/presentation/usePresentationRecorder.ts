@@ -190,3 +190,5 @@ export function usePresentationRecorder({
     stop,
   };
 }
+
+export type PresentationRecorderRuntime = ReturnType<typeof usePresentationRecorder>;

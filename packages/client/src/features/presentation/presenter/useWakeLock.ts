@@ -106,3 +106,5 @@ export function useWakeLock() {
     toggle,
   };
 }
+
+export type WakeLockRuntime = ReturnType<typeof useWakeLock>;

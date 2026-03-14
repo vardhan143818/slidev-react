@@ -330,16 +330,16 @@ export function usePresentationSync({
     }
 
     const hasPageChange = previous.page !== current.page;
-    const hasClicksChange = previous.clicks !== current.clicks;
-    const hasClicksTotalChange = previous.clicksTotal !== current.clicksTotal;
+    const hasCueChange = previous.cue !== current.cue;
+    const hasCueTotalChange = previous.cueTotal !== current.cueTotal;
     const hasTimerChange = previous.timer !== current.timer;
     const hasDrawingsChange = previous.drawingsRevision !== current.drawingsRevision;
     const hasCursorChange = !isCursorEqual(previous.cursor, current.cursor);
 
     if (
       !hasPageChange &&
-      !hasClicksChange &&
-      !hasClicksTotalChange &&
+      !hasCueChange &&
+      !hasCueTotalChange &&
       !hasTimerChange &&
       !hasDrawingsChange &&
       !hasCursorChange
@@ -348,8 +348,8 @@ export function usePresentationSync({
 
     if (
       hasPageChange ||
-      hasClicksChange ||
-      hasClicksTotalChange ||
+      hasCueChange ||
+      hasCueTotalChange ||
       hasTimerChange ||
       hasDrawingsChange
     ) {
@@ -358,8 +358,8 @@ export function usePresentationSync({
         payload: {
           state: {
             ...(hasPageChange ? { page: current.page } : {}),
-            ...(hasClicksChange ? { clicks: current.clicks } : {}),
-            ...(hasClicksTotalChange ? { clicksTotal: current.clicksTotal } : {}),
+            ...(hasCueChange ? { cue: current.cue } : {}),
+            ...(hasCueTotalChange ? { cueTotal: current.cueTotal } : {}),
             ...(hasTimerChange ? { timer: current.timer } : {}),
             ...(hasDrawingsChange
               ? {

@@ -4,9 +4,9 @@ import type { SlideComponent, SlideMeta } from "@slidev-react/core/slides/slide"
 import { DrawOverlay } from "../draw/DrawOverlay";
 import { useDraw } from "../draw/DrawProvider";
 import type { PresentationCursorState } from "../types";
+import type { SlidesConfig } from "../presenter/types";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import { useSlideScale } from "./slideViewport";
-import type { TransitionName } from "@slidev-react/core/slides/transition";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
 
 function clamp(value: number, min: number, max: number) {
@@ -43,7 +43,7 @@ function toViewportPoint(
   };
 }
 
-function toTransitionClassName(transition: TransitionName | undefined) {
+function toTransitionClassName(transition: string | undefined) {
   switch (transition) {
     case "slide-left":
       return "slide-transition slide-transition--slide-left";
@@ -66,10 +66,7 @@ export function SlideStage({
   Slide,
   slideId,
   meta,
-  slidesViewport,
-  slidesLayout,
-  slidesBackground,
-  slidesTransition,
+  slidesConfig,
   remoteCursor,
   onCursorChange,
   onStageAdvance,
@@ -78,15 +75,13 @@ export function SlideStage({
   Slide: SlideComponent;
   slideId: string;
   meta: SlideMeta;
-  slidesViewport: SlidesViewport;
-  slidesLayout?: SlideMeta["layout"];
-  slidesBackground?: string;
-  slidesTransition?: TransitionName;
+  slidesConfig: SlidesConfig;
   remoteCursor?: PresentationCursorState | null;
   onCursorChange?: (cursor: PresentationCursorState | null) => void;
   onStageAdvance?: () => void;
   scaleMultiplier?: number;
 }) {
+  const { slidesViewport, slidesLayout, slidesBackground, slidesTransition } = slidesConfig;
   const Layout = useResolvedLayout(meta.layout ?? slidesLayout);
   const draw = useDraw();
   const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier, "center", slidesViewport);

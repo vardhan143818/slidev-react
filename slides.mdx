@@ -422,60 +422,318 @@ package "Some Group" {
 ```
 
 ---
-title: Charts
+title: Charts — Basic
 ---
 
-# Charts
+# Charts — Basic
 
-Use the `<Chart />` component to render data visualizations powered by G2.
+<div className="grid grid-cols-2 gap-4">
+<div>
 
-<Chart
-  type="interval"
-  width={1280}
-  height={760}
+**BarChart**
+
+<BarChart
+  width={620}
+  height={260}
   data={[
     { genre: "Sports", sold: 275 },
     { genre: "Strategy", sold: 115 },
     { genre: "Action", sold: 120 },
     { genre: "Shooter", sold: 350 },
     { genre: "RPG", sold: 180 },
-    { genre: "Simulation", sold: 95 },
-    { genre: "Puzzle", sold: 85 },
-    { genre: "Racing", sold: 140 },
-    { genre: "Fighting", sold: 110 },
-    { genre: "Adventure", sold: 165 },
-    { genre: "Platformer", sold: 130 },
     { genre: "Other", sold: 150 },
   ]}
-  encode={{ x: "genre", y: "sold", color: "genre" }}
+  x="genre"
+  y="sold"
+  color="genre"
 />
+
+</div>
+<div>
+
+**LineChart**
+
+<LineChart
+  width={620}
+  height={260}
+  data={[
+    { month: "Jan", revenue: 4200 },
+    { month: "Feb", revenue: 3800 },
+    { month: "Mar", revenue: 5100 },
+    { month: "Apr", revenue: 4700 },
+    { month: "May", revenue: 6200 },
+    { month: "Jun", revenue: 5800 },
+    { month: "Jul", revenue: 7100 },
+    { month: "Aug", revenue: 6900 },
+    { month: "Sep", revenue: 8200 },
+    { month: "Oct", revenue: 7800 },
+    { month: "Nov", revenue: 9400 },
+    { month: "Dec", revenue: 11200 },
+  ]}
+  x="month"
+  y="revenue"
+/>
+
+</div>
+<div>
+
+**PieChart (donut)**
+
+<PieChart
+  width={620}
+  height={260}
+  data={[
+    { brand: "Apple", share: 35 },
+    { brand: "Samsung", share: 25 },
+    { brand: "Xiaomi", share: 15 },
+    { brand: "Huawei", share: 12 },
+    { brand: "Other", share: 13 },
+  ]}
+  value="share"
+  label="brand"
+  donut
+/>
+
+</div>
+<div>
+
+**AreaChart (stacked)**
+
+<AreaChart
+  width={620}
+  height={260}
+  data={[
+    { month: "Jan", users: 1200, channel: "Organic" },
+    { month: "Feb", users: 1800, channel: "Organic" },
+    { month: "Mar", users: 2400, channel: "Organic" },
+    { month: "Apr", users: 3200, channel: "Organic" },
+    { month: "May", users: 4100, channel: "Organic" },
+    { month: "Jun", users: 5000, channel: "Organic" },
+    { month: "Jan", users: 800, channel: "Paid" },
+    { month: "Feb", users: 1200, channel: "Paid" },
+    { month: "Mar", users: 1600, channel: "Paid" },
+    { month: "Apr", users: 2000, channel: "Paid" },
+    { month: "May", users: 2800, channel: "Paid" },
+    { month: "Jun", users: 3500, channel: "Paid" },
+  ]}
+  x="month"
+  y="users"
+  color="channel"
+  stack
+/>
+
+</div>
+</div>
+
 ---
-title: Revenue Trends
+title: Charts — Advanced
 ---
 
-# Revenue Trends
+# Charts — Advanced
+
+<div className="grid grid-cols-2 gap-4">
+<div>
+
+**ScatterChart**
+
+<ScatterChart
+  width={620}
+  height={260}
+  data={[
+    { height: 170, weight: 65, gender: "Male" },
+    { height: 175, weight: 72, gender: "Male" },
+    { height: 180, weight: 80, gender: "Male" },
+    { height: 168, weight: 68, gender: "Male" },
+    { height: 182, weight: 85, gender: "Male" },
+    { height: 163, weight: 55, gender: "Female" },
+    { height: 158, weight: 50, gender: "Female" },
+    { height: 165, weight: 58, gender: "Female" },
+    { height: 170, weight: 62, gender: "Female" },
+    { height: 160, weight: 52, gender: "Female" },
+    { height: 172, weight: 78, gender: "Male" },
+    { height: 155, weight: 48, gender: "Female" },
+  ]}
+  x="height"
+  y="weight"
+  color="gender"
+/>
+
+</div>
+<div>
+
+**RadarChart (area)**
+
+<RadarChart
+  width={620}
+  height={260}
+  data={[
+    { dim: "Frontend", score: 90, team: "Alpha" },
+    { dim: "Backend", score: 75, team: "Alpha" },
+    { dim: "Design", score: 60, team: "Alpha" },
+    { dim: "DevOps", score: 85, team: "Alpha" },
+    { dim: "Testing", score: 70, team: "Alpha" },
+    { dim: "Frontend", score: 65, team: "Beta" },
+    { dim: "Backend", score: 90, team: "Beta" },
+    { dim: "Design", score: 80, team: "Beta" },
+    { dim: "DevOps", score: 55, team: "Beta" },
+    { dim: "Testing", score: 85, team: "Beta" },
+  ]}
+  x="dim"
+  y="score"
+  color="team"
+  area
+/>
+
+</div>
+<div>
+
+**HeatmapChart**
+
+<HeatmapChart
+  width={620}
+  height={260}
+  data={[
+    { week: "Mon", hour: "9am", value: 10 },
+    { week: "Mon", hour: "12pm", value: 26 },
+    { week: "Mon", hour: "3pm", value: 18 },
+    { week: "Mon", hour: "6pm", value: 8 },
+    { week: "Tue", hour: "9am", value: 14 },
+    { week: "Tue", hour: "12pm", value: 32 },
+    { week: "Tue", hour: "3pm", value: 22 },
+    { week: "Tue", hour: "6pm", value: 12 },
+    { week: "Wed", hour: "9am", value: 20 },
+    { week: "Wed", hour: "12pm", value: 28 },
+    { week: "Wed", hour: "3pm", value: 30 },
+    { week: "Wed", hour: "6pm", value: 16 },
+    { week: "Thu", hour: "9am", value: 18 },
+    { week: "Thu", hour: "12pm", value: 35 },
+    { week: "Thu", hour: "3pm", value: 24 },
+    { week: "Thu", hour: "6pm", value: 10 },
+    { week: "Fri", hour: "9am", value: 12 },
+    { week: "Fri", hour: "12pm", value: 30 },
+    { week: "Fri", hour: "3pm", value: 20 },
+    { week: "Fri", hour: "6pm", value: 6 },
+  ]}
+  x="hour"
+  y="week"
+  color="value"
+/>
+
+</div>
+<div>
+
+**FunnelChart**
 
 <Chart
-  type="line"
-  width={1280}
-  height={500}
+  type="interval"
+  width={620}
+  height={260}
   data={[
-    { month: "Jan", revenue: 4200, users: 1200 },
-    { month: "Feb", revenue: 3800, users: 1350 },
-    { month: "Mar", revenue: 5100, users: 1600 },
-    { month: "Apr", revenue: 4700, users: 1850 },
-    { month: "May", revenue: 6200, users: 2100 },
-    { month: "Jun", revenue: 5800, users: 2400 },
-    { month: "Jul", revenue: 7100, users: 2800 },
-    { month: "Aug", revenue: 6900, users: 3100 },
-    { month: "Sep", revenue: 8200, users: 3500 },
-    { month: "Oct", revenue: 7800, users: 3900 },
-    { month: "Nov", revenue: 9400, users: 4500 },
-    { month: "Dec", revenue: 11200, users: 5200 },
+    { stage: "Visitors", count: 5000 },
+    { stage: "Sign-ups", count: 3200 },
+    { stage: "Trials", count: 1800 },
+    { stage: "Paid", count: 950 },
+    { stage: "Retained", count: 600 },
   ]}
-  encode={{ x: "month", y: "revenue", color: "#22c55e" }}
+  encode={{ x: "stage", y: "count", color: "stage", shape: "funnel" }}
+  coordinate={{ transform: [{ type: "transpose" }] }}
 />
 
+</div>
+</div>
+
+---
+title: Charts — Composite
+---
+
+# Charts — Composite
+
+<div className="grid grid-cols-2 gap-4">
+<div>
+
+**GaugeChart**
+
+<Chart
+  preset="gauge"
+  width={620}
+  height={260}
+  data={{ value: { target: 78, total: 100, name: 'Score' } }}
+/>
+
+</div>
+<div>
+
+**LiquidChart**
+
+<Chart
+  preset="liquid"
+  width={620}
+  height={260}
+  data={0.72}
+/>
+
+</div>
+<div>
+
+**WordCloud**
+
+<Chart
+  type="wordCloud"
+  width={620}
+  height={260}
+  data={[
+    { text: "React", value: 120 },
+    { text: "TypeScript", value: 100 },
+    { text: "MDX", value: 85 },
+    { text: "Slides", value: 75 },
+    { text: "Presenter", value: 65 },
+    { text: "Animation", value: 60 },
+    { text: "Components", value: 55 },
+    { text: "Themes", value: 50 },
+    { text: "Charts", value: 48 },
+    { text: "Layouts", value: 45 },
+    { text: "Diagrams", value: 42 },
+    { text: "Code", value: 40 },
+    { text: "LaTeX", value: 38 },
+    { text: "Export", value: 35 },
+    { text: "Sync", value: 32 },
+    { text: "Reveal", value: 30 },
+    { text: "Mermaid", value: 28 },
+    { text: "Keyboard", value: 25 },
+    { text: "Navigation", value: 22 },
+    { text: "Annotate", value: 20 },
+  ]}
+  encode={{ text: "text", value: "value", color: "text" }}
+  legend={false}
+/>
+
+</div>
+<div>
+
+**Boxplot**
+
+<Chart
+  type="boxplot"
+  width={620}
+  height={260}
+  data={[
+    { category: "A", value: 10 }, { category: "A", value: 15 },
+    { category: "A", value: 20 }, { category: "A", value: 25 },
+    { category: "A", value: 30 }, { category: "A", value: 35 },
+    { category: "A", value: 50 },
+    { category: "B", value: 5 }, { category: "B", value: 12 },
+    { category: "B", value: 18 }, { category: "B", value: 22 },
+    { category: "B", value: 28 }, { category: "B", value: 40 },
+    { category: "C", value: 8 }, { category: "C", value: 14 },
+    { category: "C", value: 19 }, { category: "C", value: 24 },
+    { category: "C", value: 32 }, { category: "C", value: 38 },
+    { category: "C", value: 45 },
+  ]}
+  encode={{ x: "category", y: "value" }}
+/>
+
+</div>
+</div>
 
 ---
 title: Learn More

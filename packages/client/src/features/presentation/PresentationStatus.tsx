@@ -24,13 +24,47 @@ import { useMemo, useState } from "react";
 import { useDraw } from "./draw/DrawProvider";
 import type { PresentationSession } from "./session";
 import type { PresentationSyncMode } from "./types";
-import type { PresentationSyncStatus } from "./usePresentationSync";
+import type { PresentationSyncStatus, UsePresentationSyncResult } from "./usePresentationSync";
+import type { PresentationRecorderRuntime } from "./usePresentationRecorder";
+import type { WakeLockRuntime } from "./presenter/useWakeLock";
+import type { FullscreenRuntime } from "./presenter/useFullscreen";
 import { ChromeIconButton } from "../../ui/primitives/ChromeIconButton";
 import { ChromeTag } from "../../ui/primitives/ChromeTag";
 import { FormSelect } from "../../ui/primitives/FormSelect";
 
 const DRAW_COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#111827"];
 const DRAW_WIDTHS = [3, 5, 8];
+
+interface PresenterChromeProps {
+  stageScale: number;
+  cursorMode: "always" | "idle-hide";
+  timelinePreviewOpen: boolean;
+  overviewOpen: boolean;
+  notesOpen: boolean;
+  shortcutsOpen: boolean;
+  canOpenOverview: boolean;
+  onToggleTimelinePreview: () => void;
+  onToggleOverview: () => void;
+  onToggleNotes: () => void;
+  onToggleShortcuts: () => void;
+  onStageScaleChange: (value: number) => void;
+  onCursorModeChange: (value: "always" | "idle-hide") => void;
+}
+
+export interface PresentationStatusProps {
+  slideId: string;
+  session: PresentationSession;
+  sync: UsePresentationSyncResult;
+  recorder: PresentationRecorderRuntime;
+  wakeLock: WakeLockRuntime;
+  fullscreen: FullscreenRuntime;
+  chrome: PresenterChromeProps;
+  sessionTimerSeconds: number;
+  canRecord: boolean;
+  onOpenMirrorStage?: () => void;
+  onOpenPrintExport?: () => void;
+  onSyncModeChange?: (mode: PresentationSyncMode) => void;
+}
 
 function badgeClassName(status: PresentationSyncStatus) {
   switch (status) {
@@ -67,84 +101,17 @@ function formatTimer(seconds: number) {
 export function PresentationStatus({
   slideId,
   session,
-  status,
-  broadcastConnected,
-  wsConnected,
-  lastSyncedAt,
-  peerCount,
-  remoteActive,
+  sync,
+  recorder,
+  wakeLock,
+  fullscreen,
+  chrome,
   sessionTimerSeconds,
   canRecord,
-  recordingSupported,
-  isRecording,
-  recordingError,
-  wakeLockSupported,
-  wakeLockRequested,
-  wakeLockActive,
-  wakeLockError,
-  fullscreenSupported,
-  fullscreenActive,
-  stageScale,
-  cursorMode,
-  timelinePreviewOpen,
-  overviewOpen,
-  notesOpen,
-  shortcutsOpen,
-  canOpenOverview,
-  onStartRecording,
-  onStopRecording,
-  onToggleWakeLock,
-  onToggleFullscreen,
-  onToggleTimelinePreview,
-  onToggleOverview,
-  onToggleNotes,
-  onToggleShortcuts,
-  onStageScaleChange,
-  onCursorModeChange,
   onOpenMirrorStage,
   onOpenPrintExport,
   onSyncModeChange,
-}: {
-  slideId: string;
-  session: PresentationSession;
-  status: PresentationSyncStatus;
-  broadcastConnected: boolean;
-  wsConnected: boolean;
-  lastSyncedAt: number | null;
-  peerCount: number;
-  remoteActive: boolean;
-  sessionTimerSeconds: number;
-  canRecord: boolean;
-  recordingSupported: boolean;
-  isRecording: boolean;
-  recordingError: string | null;
-  wakeLockSupported: boolean;
-  wakeLockRequested: boolean;
-  wakeLockActive: boolean;
-  wakeLockError: string | null;
-  fullscreenSupported: boolean;
-  fullscreenActive: boolean;
-  stageScale: number;
-  cursorMode: "always" | "idle-hide";
-  timelinePreviewOpen: boolean;
-  overviewOpen: boolean;
-  notesOpen: boolean;
-  shortcutsOpen: boolean;
-  canOpenOverview: boolean;
-  onStartRecording: () => void;
-  onStopRecording: () => void;
-  onToggleWakeLock: () => void;
-  onToggleFullscreen: () => void;
-  onToggleTimelinePreview: () => void;
-  onToggleOverview: () => void;
-  onToggleNotes: () => void;
-  onToggleShortcuts: () => void;
-  onStageScaleChange: (value: number) => void;
-  onCursorModeChange: (value: "always" | "idle-hide") => void;
-  onOpenMirrorStage?: () => void;
-  onOpenPrintExport?: () => void;
-  onSyncModeChange?: (mode: PresentationSyncMode) => void;
-}) {
+}: PresentationStatusProps) {
   const draw = useDraw();
   const [copiedTarget, setCopiedTarget] = useState<"viewer" | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -152,7 +119,7 @@ export function PresentationStatus({
   const hasStrokes = strokeCount > 0;
 
   const statusLabel = useMemo(() => {
-    switch (status) {
+    switch (sync.status) {
       case "connected":
         return "Connected";
       case "connecting":
@@ -162,7 +129,7 @@ export function PresentationStatus({
       default:
         return "Disabled";
     }
-  }, [status]);
+  }, [sync.status]);
 
   if (!session.enabled || !session.sessionId) return null;
 
@@ -175,10 +142,10 @@ export function PresentationStatus({
           <div className="pointer-events-auto absolute inset-x-0 bottom-full mb-2 border-t border-slate-200/80 bg-slate-50/72 px-3 py-3 text-slate-800  ring-1 ring-white/45 backdrop-blur-xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <ChromeTag size="md" weight="semibold" className="uppercase tracking-[0.18em]">
-                <span className={`size-2.5 rounded-full ${statusDotClassName(status)}`} />
+                <span className={`size-2.5 rounded-full ${statusDotClassName(sync.status)}`} />
                 Live
                 <span
-                  className={`rounded-[4px] border px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal ${badgeClassName(status)}`}
+                  className={`rounded-[4px] border px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal ${badgeClassName(sync.status)}`}
                 >
                   {statusLabel}
                 </span>
@@ -234,9 +201,9 @@ export function PresentationStatus({
               <FormSelect
                 label="stage scale"
                 size="sm"
-                value={String(stageScale)}
+                value={String(chrome.stageScale)}
                 onChange={(event) => {
-                  onStageScaleChange(Number(event.target.value));
+                  chrome.onStageScaleChange(Number(event.target.value));
                 }}
               >
                 <option value="0.9">90%</option>
@@ -246,9 +213,9 @@ export function PresentationStatus({
               <FormSelect
                 label="cursor"
                 size="sm"
-                value={cursorMode}
+                value={chrome.cursorMode}
                 onChange={(event) => {
-                  onCursorModeChange(event.target.value as "always" | "idle-hide");
+                  chrome.onCursorModeChange(event.target.value as "always" | "idle-hide");
                 }}
               >
                 <option value="always">always visible</option>
@@ -256,29 +223,29 @@ export function PresentationStatus({
               </FormSelect>
               <span
                 className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs ${
-                  fullscreenSupported
-                    ? fullscreenActive
+                  fullscreen.supported
+                    ? fullscreen.active
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                       : "border-slate-200 bg-white/82 text-slate-600"
                     : "border-amber-200 bg-amber-50 text-amber-700"
                 }`}
               >
                 fullscreen:{" "}
-                {fullscreenSupported ? (fullscreenActive ? "active" : "off") : "unsupported"}
+                {fullscreen.supported ? (fullscreen.active ? "active" : "off") : "unsupported"}
               </span>
               <span
                 className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs ${
-                  wakeLockSupported
-                    ? wakeLockActive
+                  wakeLock.supported
+                    ? wakeLock.active
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                       : "border-slate-200 bg-white/82 text-slate-600"
                     : "border-amber-200 bg-amber-50 text-amber-700"
                 }`}
               >
                 wake lock:{" "}
-                {wakeLockSupported
-                  ? wakeLockRequested || wakeLockActive
-                    ? wakeLockActive
+                {wakeLock.supported
+                  ? wakeLock.requested || wakeLock.active
+                    ? wakeLock.active
                       ? "active"
                       : "requesting"
                     : "off"
@@ -287,21 +254,21 @@ export function PresentationStatus({
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               <ChromeTag tone="muted" size="md" className="py-2 text-xs">
-                {broadcastConnected ? <Wifi size={12} /> : <WifiOff size={12} />}
-                {broadcastConnected ? "Broadcast connected" : "Broadcast unavailable"}
+                {sync.broadcastConnected ? <Wifi size={12} /> : <WifiOff size={12} />}
+                {sync.broadcastConnected ? "Broadcast connected" : "Broadcast unavailable"}
               </ChromeTag>
               <ChromeTag tone="muted" size="md" className="py-2 text-xs">
-                ws: {wsConnected ? "connected" : "idle"}
+                ws: {sync.wsConnected ? "connected" : "idle"}
               </ChromeTag>
               <ChromeTag tone="muted" size="md" className="py-2 text-xs tabular-nums">
-                peers: {peerCount}
+                peers: {sync.peerCount}
               </ChromeTag>
               <ChromeTag
-                tone={remoteActive ? "success" : "warning"}
+                tone={sync.remoteActive ? "success" : "warning"}
                 size="md"
                 className="py-2 text-xs"
               >
-                remote: {remoteActive ? "active" : "stale"}
+                remote: {sync.remoteActive ? "active" : "stale"}
               </ChromeTag>
               <ChromeTag tone="muted" size="md" className="py-2 text-xs">
                 role: {session.role}
@@ -310,9 +277,9 @@ export function PresentationStatus({
                 {session.sessionId}
               </ChromeTag>
             </div>
-            {lastSyncedAt && (
+            {sync.lastSyncedAt && (
               <p className="mt-3 text-right text-[11px] text-slate-500">
-                last sync {new Date(lastSyncedAt).toLocaleTimeString()}
+                last sync {new Date(sync.lastSyncedAt).toLocaleTimeString()}
               </p>
             )}
           </div>
@@ -432,17 +399,17 @@ export function PresentationStatus({
                 <Radio size={13} />
                 {formatTimer(sessionTimerSeconds)}
               </ChromeTag>
-              {canRecord && recordingSupported && (
+              {canRecord && recorder.supported && (
                 <ChromeIconButton
                   onClick={() => {
-                    if (isRecording) onStopRecording();
-                    else onStartRecording();
+                    if (recorder.isRecording) void recorder.stop();
+                    else void recorder.start();
                   }}
-                  title={isRecording ? "Stop recording" : "Start recording"}
-                  aria-label={isRecording ? "Stop recording" : "Start recording"}
-                  tone={isRecording ? "danger" : "default"}
+                  title={recorder.isRecording ? "Stop recording" : "Start recording"}
+                  aria-label={recorder.isRecording ? "Stop recording" : "Start recording"}
+                  tone={recorder.isRecording ? "danger" : "default"}
                 >
-                  {isRecording ? <Square size={12} /> : <CircleDot size={12} />}
+                  {recorder.isRecording ? <Square size={12} /> : <CircleDot size={12} />}
                 </ChromeIconButton>
               )}
               {canRecord && onOpenPrintExport && (
@@ -455,65 +422,69 @@ export function PresentationStatus({
                 </ChromeIconButton>
               )}
               <ChromeIconButton
-                onClick={onToggleNotes}
+                onClick={chrome.onToggleNotes}
                 title="Notes Workspace (N)"
                 aria-label="Toggle notes workspace"
-                tone={notesOpen ? "active" : "default"}
+                tone={chrome.notesOpen ? "active" : "default"}
               >
                 <NotebookText size={13} />
               </ChromeIconButton>
               <ChromeIconButton
-                onClick={onToggleOverview}
-                disabled={!canOpenOverview}
+                onClick={chrome.onToggleOverview}
+                disabled={!chrome.canOpenOverview}
                 title="Quick Overview (O)"
                 aria-label="Toggle quick overview"
-                tone={overviewOpen ? "active" : "default"}
+                tone={chrome.overviewOpen ? "active" : "default"}
               >
                 <LayoutGrid size={13} />
               </ChromeIconButton>
               <ChromeIconButton
-                onClick={onToggleShortcuts}
+                onClick={chrome.onToggleShortcuts}
                 title="Keyboard shortcuts (?)"
                 aria-label="Toggle keyboard shortcuts"
-                tone={shortcutsOpen ? "active" : "default"}
+                tone={chrome.shortcutsOpen ? "active" : "default"}
               >
                 <Keyboard size={13} />
               </ChromeIconButton>
               <ChromeIconButton
-                onClick={onToggleTimelinePreview}
-                title={timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
-                aria-label={timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
-                tone={timelinePreviewOpen ? "violet" : "default"}
+                onClick={chrome.onToggleTimelinePreview}
+                title={chrome.timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
+                aria-label={chrome.timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
+                tone={chrome.timelinePreviewOpen ? "violet" : "default"}
               >
                 <List size={13} />
               </ChromeIconButton>
               <ChromeIconButton
-                onClick={onToggleWakeLock}
-                disabled={!wakeLockSupported}
+                onClick={() => {
+                  void wakeLock.toggle();
+                }}
+                disabled={!wakeLock.supported}
                 title={
-                  wakeLockSupported
-                    ? wakeLockActive
+                  wakeLock.supported
+                    ? wakeLock.active
                       ? "Wake lock on"
                       : "Turn on wake lock"
                     : "Wake lock unsupported"
                 }
                 aria-label={
-                  wakeLockSupported
-                    ? wakeLockActive
+                  wakeLock.supported
+                    ? wakeLock.active
                       ? "Wake lock on"
                       : "Turn on wake lock"
                     : "Wake lock unsupported"
                 }
-                tone={wakeLockActive ? "success" : "default"}
+                tone={wakeLock.active ? "success" : "default"}
               >
                 <SunMedium size={13} />
               </ChromeIconButton>
               <ChromeIconButton
-                onClick={onToggleFullscreen}
-                disabled={!fullscreenSupported}
-                title={fullscreenActive ? "Fullscreen on" : "Fullscreen"}
-                aria-label={fullscreenActive ? "Fullscreen on" : "Fullscreen"}
-                tone={fullscreenActive ? "info" : "default"}
+                onClick={() => {
+                  void fullscreen.toggle();
+                }}
+                disabled={!fullscreen.supported}
+                title={fullscreen.active ? "Fullscreen on" : "Fullscreen"}
+                aria-label={fullscreen.active ? "Fullscreen on" : "Fullscreen"}
+                tone={fullscreen.active ? "info" : "default"}
               >
                 <Expand size={12} />
               </ChromeIconButton>
@@ -525,16 +496,16 @@ export function PresentationStatus({
                 <span className="relative inline-flex items-center justify-center">
                   <Radio size={13} />
                   <span
-                    className={`absolute right-0 bottom-0 size-2 rounded-full ring-2 ring-white ${statusDotClassName(status)}`}
+                    className={`absolute right-0 bottom-0 size-2 rounded-full ring-2 ring-white ${statusDotClassName(sync.status)}`}
                   />
                 </span>
               </ChromeIconButton>
             </div>
-            {canRecord && !recordingSupported && (
+            {canRecord && !recorder.supported && (
               <span className="text-xs text-amber-700">Recording unsupported in this browser.</span>
             )}
-            {recordingError && <span className="text-xs text-rose-700">{recordingError}</span>}
-            {wakeLockError && <span className="text-xs text-amber-700">{wakeLockError}</span>}
+            {recorder.error && <span className="text-xs text-rose-700">{recorder.error}</span>}
+            {wakeLock.error && <span className="text-xs text-amber-700">{wakeLock.error}</span>}
           </div>
         </div>
       </div>

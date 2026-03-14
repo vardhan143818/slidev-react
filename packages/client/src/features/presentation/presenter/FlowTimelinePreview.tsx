@@ -1,7 +1,6 @@
 import { X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { LayoutName } from "@slidev-react/core/slides/layout";
-import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
+import type { SlidesConfig } from "./types";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../stage/slideSurface";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
@@ -70,9 +69,7 @@ export function FlowTimelinePreview({
   slide,
   currentClicks,
   currentClicksTotal,
-  slidesViewport,
-  slidesLayout,
-  slidesBackground,
+  slidesConfig,
   onJumpToCue,
   onClose,
   className,
@@ -80,13 +77,12 @@ export function FlowTimelinePreview({
   slide: CompiledSlide;
   currentClicks: number;
   currentClicksTotal: number;
-  slidesViewport: SlidesViewport;
-  slidesLayout?: LayoutName;
-  slidesBackground?: string;
+  slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
   onJumpToCue?: (cueIndex: number) => void;
   onClose?: () => void;
   className?: string;
 }) {
+  const { slidesViewport, slidesLayout, slidesBackground } = slidesConfig;
   const [mode, setMode] = useState<FlowPreviewMode>("live");
   const [selectedClicks, setSelectedClicks] = useState(currentClicks);
   const Layout = useResolvedLayout(slide.meta.layout ?? slidesLayout);

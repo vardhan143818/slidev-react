@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/core",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": false,
   "description": "Pure presentation models, flow, and shared contracts for slidev-react",
   "license": "MIT",
@@ -72,6 +72,10 @@
     "./theme": {
       "types": "./dist/theme/types.d.ts",
       "import": "./dist/theme/types.js"
+    },
+    "./addon": {
+      "types": "./dist/addon/types.d.ts",
+      "import": "./dist/addon/types.js"
     }
   },
   "dependencies": {

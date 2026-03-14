@@ -54,3 +54,5 @@ export function useFullscreen() {
     toggle,
   };
 }
+
+export type FullscreenRuntime = ReturnType<typeof useFullscreen>;

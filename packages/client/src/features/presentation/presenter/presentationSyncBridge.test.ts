@@ -6,8 +6,8 @@ describe("presentationSyncBridge", () => {
     expect(
       buildPresentationSharedState({
         page: 2,
-        clicks: 1,
-        clicksTotal: 3,
+        cue: 1,
+        cueTotal: 3,
         timer: 9,
         cursor: { x: 10, y: 20 },
         drawings: {
@@ -17,8 +17,8 @@ describe("presentationSyncBridge", () => {
       }),
     ).toEqual({
       page: 2,
-      clicks: 1,
-      clicksTotal: 3,
+      cue: 1,
+      cueTotal: 3,
       timer: 9,
       cursor: { x: 10, y: 20 },
       drawings: {
@@ -38,8 +38,8 @@ describe("presentationSyncBridge", () => {
         patch: {
           timer: 12,
           cursor: { x: 4, y: 8 },
-          clicks: 2,
-          clicksTotal: 5,
+          cue: 2,
+          cueTotal: 5,
           drawings: {
             "slide-2": [],
           },

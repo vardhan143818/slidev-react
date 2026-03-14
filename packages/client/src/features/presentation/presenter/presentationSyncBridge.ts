@@ -3,8 +3,8 @@ import type { PresentationCursorState, PresentationSharedState } from "../types"
 
 export interface LocalPresentationSyncState {
   page: number;
-  clicks: number;
-  clicksTotal: number;
+  cue: number;
+  cueTotal: number;
   timer: number;
   cursor: PresentationCursorState | null;
   drawings: Record<string, DrawStroke[]>;
@@ -57,17 +57,17 @@ export function mapRemotePresentationPatch({
     effects.remoteCursor = remotePage === currentPage ? (patch.cursor ?? null) : null;
   }
 
-  if (remoteSlideId && typeof patch.clicksTotal === "number") {
+  if (remoteSlideId && typeof patch.cueTotal === "number") {
     effects.slideClicksTotal = {
       slideId: remoteSlideId,
-      clicksTotal: patch.clicksTotal,
+      clicksTotal: patch.cueTotal,
     };
   }
 
-  if (remoteSlideId && typeof patch.clicks === "number") {
+  if (remoteSlideId && typeof patch.cue === "number") {
     effects.slideClicks = {
       slideId: remoteSlideId,
-      clicks: patch.clicks,
+      clicks: patch.cue,
     };
   }
 

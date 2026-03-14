@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/theme-paper",
-  "version": "0.0.1",
+  "version": "0.2.5",
   "private": true,
   "type": "module",
   "main": "./index.ts",

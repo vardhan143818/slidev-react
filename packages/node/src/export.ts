@@ -1,16 +1,13 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { buildPrintExportUrl } from "@slidev-react/core/presentation/export/urls";
-import { parseExportArgs } from "./cli/exportArgs.ts";
+import { parseExportArgs } from "./cli/exportArgs.ts"
 import {
   createSuccessResult,
   type CommandResult,
   type SlidesCommandOptions,
-} from "./context.ts";
-import { startSlidesDevServer, stopSlidesDevServer } from "./dev.ts";
-import {
-  exportSlidesInBrowser,
-  type ExportSlidesArtifactsResult,
-} from "./exportBrowser.ts";
+} from "./context.ts"
+import { startSlidesDevServer, stopSlidesDevServer } from "./dev.ts"
+import type { ExportSlidesArtifactsResult } from "./exportBrowser.ts"
 
 const DEV_SERVER_TIMEOUT_MS = 120_000;
 
@@ -66,6 +63,7 @@ export async function exportSlidesArtifacts(
   }
 
   try {
+    const { exportSlidesInBrowser } = await import("./exportBrowser.ts")
     return await exportSlidesInBrowser({
       printUrl,
       format: exportOptions.format,

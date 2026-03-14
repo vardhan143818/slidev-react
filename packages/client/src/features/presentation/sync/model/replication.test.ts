@@ -42,8 +42,8 @@ describe("replication model", () => {
     expect(
       createSnapshotState({
         page: 1,
-        clicks: 2,
-        clicksTotal: 3,
+        cue: 2,
+        cueTotal: 3,
         timer: 4,
         cursor: null,
         drawings: {},

@@ -24,6 +24,8 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "packages/**/*.d.ts",
+    "components/**/*.ts",
+    "components/**/*.tsx",
     "scripts/**/*.ts",
     "scripts/**/*.d.ts",
     "e2e/**/*.ts",

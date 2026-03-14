@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: ["packages/**/*.test.{ts,tsx}"],
+    include: ["packages/**/*.test.{ts,tsx}", "components/**/*.test.{ts,tsx}"],
     exclude: ["e2e/**", "**/node_modules/**"],
   },
   resolve: {
@@ -12,6 +12,7 @@ export default defineConfig({
         import.meta.dirname,
         "packages/client/src/theme/__mocks__/active-theme.ts",
       ),
+      "@": path.resolve(import.meta.dirname, "packages/client/src"),
     },
   },
 });

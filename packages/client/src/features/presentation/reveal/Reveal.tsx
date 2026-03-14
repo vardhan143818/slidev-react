@@ -6,7 +6,7 @@ import {
   type CSSProperties,
   type ReactElement,
 } from "react";
-import { normalizeRevealStep } from "./step";
+import { normalizeCueStep } from "@slidev-react/core/presentation/flow/step";
 import { useRevealStep } from "./useRevealStep";
 
 export type RevealPreset = "fade" | "fade-up" | "scale-in";
@@ -91,7 +91,7 @@ export function RevealGroup({
       {Children.map(children, (child) => {
         if (child === null || child === undefined || typeof child === "boolean") return child;
 
-        const step = normalizeRevealStep(start + index * increment) ?? 1;
+        const step = normalizeCueStep(start + index * increment) ?? 1;
         index += 1;
 
         if (isValidElement(child)) {
