@@ -1,10 +1,57 @@
+import { createRequire } from "node:module";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import type { SlidesDocument } from "@slidev-react/core/slides/slides";
 import { layoutNames } from "@slidev-react/core/slides/layout";
 
-const CLIENT_ADDONS_DIR = "packages/client/src/addons";
+const require = createRequire(import.meta.url);
 const THEME_PACKAGE_PREFIX = "theme-";
+
+/**
+ * Resolve the addons directory from @slidev-react/client's package location.
+ * Works both inside the monorepo (workspace link → packages/client/src/addons)
+ * and in standalone projects (npm install → node_modules/.../src/addons).
+ */
+function resolveClientAddonsDir() {
+  try {
+    const clientPkgPath = require.resolve("@slidev-react/client/package.json");
+    return path.join(path.dirname(clientPkgPath), "src", "addons");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Read addon IDs from both the framework's bundled addons dir and any local dir.
+ * Deduplicates results.
+ */
+async function readCombinedAddonIds(
+  clientAddonsDir: string | null,
+  localAddonsDir: string,
+) {
+  const [clientIds, localIds] = await Promise.all([
+    clientAddonsDir ? readLocalIds(clientAddonsDir) : [],
+    readLocalIds(localAddonsDir),
+  ]);
+  return [...new Set([...clientIds, ...localIds])];
+}
+
+/**
+ * Read custom layout IDs from both the framework's bundled addons dir and any local dir.
+ */
+async function readCombinedAddonLayouts(
+  clientAddonsDir: string | null,
+  localAddonsDir: string,
+) {
+  const [clientLayouts, localLayouts] = await Promise.all([
+    clientAddonsDir ? readCustomLayoutIds(clientAddonsDir) : new Set<string>(),
+    readCustomLayoutIds(localAddonsDir),
+  ]);
+  const merged = new Set<string>();
+  for (const l of clientLayouts) merged.add(l);
+  for (const l of localLayouts) merged.add(l);
+  return merged;
+}
 
 function collectKnownLayouts() {
   return new Set<string>(layoutNames);
@@ -149,13 +196,14 @@ export async function validateSlidesAuthoring({
   slides: SlidesDocument;
 }) {
   const warnings: string[] = [];
-  const addonsRootDir = path.join(appRoot, CLIENT_ADDONS_DIR);
+  const clientAddonsDir = resolveClientAddonsDir();
+  const localAddonsDir = path.join(appRoot, "packages/client/src/addons");
   const packagesDir = path.join(appRoot, "packages");
   const [themePackageIdList, addonIdList, themePackageLayouts, addonLayouts] = await Promise.all([
     readThemePackageIds(packagesDir),
-    readLocalIds(addonsRootDir),
+    readCombinedAddonIds(clientAddonsDir, localAddonsDir),
     readThemePackageLayoutIds(packagesDir),
-    readCustomLayoutIds(addonsRootDir),
+    readCombinedAddonLayouts(clientAddonsDir, localAddonsDir),
   ]);
   const themeIds = new Set(themePackageIdList);
   const addonIds = new Set(addonIdList);

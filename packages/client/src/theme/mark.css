@@ -1,7 +1,7 @@
 .slide-mark {
   display: inline-block;
   position: relative;
-  border-radius: var(--slide-mark-radius);
+  border-radius: 0.2em;
   vertical-align: baseline;
   line-height: inherit;
   isolation: isolate;

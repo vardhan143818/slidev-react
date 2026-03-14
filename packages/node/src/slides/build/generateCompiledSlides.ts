@@ -8,7 +8,7 @@ import { parseImportedSlides, parseSlides } from "../parsing/parseSlides.ts";
 import type { SlideUnit } from "@slidev-react/core/slides/slide";
 import { validateSlidesAuthoring } from "../validation/validateSlidesAuthoring.ts";
 
-const GENERATED_SLIDES_DIR_ROOT = ".generated/slides";
+const GENERATED_SLIDES_DIR_ROOT = ".slidev-react/slides";
 const GENERATED_SLIDE_MODULES_DIR = `${GENERATED_SLIDES_DIR_ROOT}/slides`;
 const GENERATED_MANIFEST_FILE = `${GENERATED_SLIDES_DIR_ROOT}/index.ts`;
 

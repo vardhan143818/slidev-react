@@ -1,6 +1,6 @@
 {
   "name": "slidev-react",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Open-source React + MDX presentation app/runtime (not published to npm)",
   "license": "MIT",
@@ -9,7 +9,7 @@
   ],
   "type": "module",
   "scripts": {
-    "clean": "rm -rf dist .generated output packages/*/dist",
+    "clean": "rm -rf dist .generated .slidev-react output packages/*/dist",
     "changeset": "changeset",
     "build:packages": "pnpm -r --filter @slidev-react/core --filter @slidev-react/node --filter @slidev-react/cli run build:pkg",
     "dev:packages": "pnpm -r --parallel --filter @slidev-react/core --filter @slidev-react/node --filter @slidev-react/cli run dev:pkg",

@@ -79,11 +79,11 @@ describe("generateCompiledSlidesArtifacts", () => {
 
     const manifest = await readFile(result.manifestFile, "utf8");
     const firstSlide = await readFile(
-      path.join(appRoot, ".generated/slides/slides/slide-1.tsx"),
+      path.join(appRoot, ".slidev-react/slides/slides/slide-1.tsx"),
       "utf8",
     );
     const secondSlide = await readFile(
-      path.join(appRoot, ".generated/slides/slides/slide-2.tsx"),
+      path.join(appRoot, ".slidev-react/slides/slides/slide-2.tsx"),
       "utf8",
     );
 
@@ -192,15 +192,15 @@ describe("generateCompiledSlidesArtifacts", () => {
     });
     const manifest = await readFile(result.manifestFile, "utf8");
     const firstSlide = await readFile(
-      path.join(appRoot, ".generated/slides/slides/slide-1.tsx"),
+      path.join(appRoot, ".slidev-react/slides/slides/slide-1.tsx"),
       "utf8",
     );
     const secondSlide = await readFile(
-      path.join(appRoot, ".generated/slides/slides/slide-2.tsx"),
+      path.join(appRoot, ".slidev-react/slides/slides/slide-2.tsx"),
       "utf8",
     );
     const thirdSlide = await readFile(
-      path.join(appRoot, ".generated/slides/slides/slide-3.tsx"),
+      path.join(appRoot, ".slidev-react/slides/slides/slide-3.tsx"),
       "utf8",
     );
 
@@ -301,7 +301,7 @@ describe("generateCompiledSlidesArtifacts", () => {
     });
 
     await expect(
-      access(path.join(appRoot, ".generated/slides/slides/slide-2.tsx")),
+      access(path.join(appRoot, ".slidev-react/slides/slides/slide-2.tsx")),
     ).rejects.toThrow();
   });
 

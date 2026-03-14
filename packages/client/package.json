@@ -5,7 +5,9 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./theme/*": "./src/theme/*",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@slidev-react/core": "workspace:*",

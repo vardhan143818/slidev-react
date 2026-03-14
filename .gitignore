@@ -2,6 +2,7 @@ node_modules
 dist
 output
 .generated
+.slidev-react
 .turbo
 .playwright-cli
 .DS_Store

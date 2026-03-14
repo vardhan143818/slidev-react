@@ -34,5 +34,5 @@
     "playwright.config.ts",
     "postcss.config.mjs"
   ],
-  "exclude": ["**/dist", "output", ".generated", "node_modules"]
+  "exclude": ["**/dist", "output", ".generated", ".slidev-react", "node_modules"]
 }
