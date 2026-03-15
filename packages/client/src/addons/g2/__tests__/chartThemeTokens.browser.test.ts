@@ -1,112 +1,132 @@
 import { expect, test } from "vitest";
 import {
-  buildSlidevTheme,
+  buildSlideTheme,
   resolveCategoryPalette,
   resolveDivergingPalette,
+  resolveHeatmapPalette,
   resolveSemanticColors,
   resolveSequentialPalette,
 } from "../chartThemeTokens";
+import type { SlideThemeTokens } from "../../../theme/types";
 
-const themedProperties = [
-  "--slide-color-body",
-  "--slide-color-muted",
-  "--slide-chart-accent",
-  "--slide-chart-category-1",
-  "--slide-chart-category-2",
-  "--slide-chart-category-3",
-  "--slide-chart-category-4",
-  "--slide-chart-category-5",
-  "--slide-chart-category-6",
-  "--slide-chart-positive",
-  "--slide-chart-negative",
-  "--slide-chart-warning",
-  "--slide-chart-neutral",
-  "--slide-absolutely-line",
-  "--slide-diagram-surface",
-  "--slide-diagram-surface-alt",
-];
+const tokens: SlideThemeTokens = {
+  fonts: {
+    sans: "Avenir Next",
+    serif: "Iowan Old Style",
+    mono: "JetBrains Mono",
+  },
+  ui: {
+    background: "#faf9f5",
+    surface: "#f5f0e8",
+    surfaceStrong: "#ede8df",
+    text: "#141413",
+    heading: "#141413",
+    muted: "#6b5f4e",
+    mutedSoft: "#b0aea5",
+    accent: "#d97757",
+    accentStrong: "#d4722b",
+    accentSoft: "#ebd4cb",
+    border: "rgba(20, 20, 19, 0.1)",
+    borderStrong: "rgba(20, 20, 19, 0.16)",
+  },
+  feedback: {
+    positive: "#788c5d",
+    negative: "#b55a4e",
+    warning: "#d4722b",
+    info: "#6a9bcc",
+    neutral: "#a9a59c",
+  },
+  chart: {
+    accent: "#d97757",
+    categorical: ["#d97757", "#6a9bcc", "#788c5d", "#c78b72", "#9f8d79", "#b8b2a6"],
+    positive: "#788c5d",
+    negative: "#b55a4e",
+    warning: "#d4722b",
+    neutral: "#a9a59c",
+    axis: "rgba(20, 20, 19, 0.1)",
+    grid: "#efe9df",
+  },
+  diagram: {
+    primary: "#ebd4cb",
+    primaryBorder: "#d97757",
+    line: "#7a746a",
+    surface: "#f5f0e8",
+    surfaceAlt: "#efe9df",
+    text: "#141413",
+    note: "#f3e6c8",
+    categorical: ["#d97757", "#6a9bcc", "#788c5d", "#c78b72", "#9f8d79", "#b8b2a6"],
+    accent: "#d97757",
+  },
+  addons: {
+    insight: {
+      border: "rgba(120, 140, 93, 0.22)",
+      background: "rgba(245, 240, 232, 0.96)",
+      title: "#5a6349",
+      text: "#2d2b28",
+      shadow: "0 16px 38px rgba(72, 58, 43, 0.07)",
+    },
+  },
+};
 
-function resetThemeProperties() {
-  for (const property of themedProperties) {
-    document.documentElement.style.removeProperty(property);
-  }
-}
+test("builds chart colors from theme tokens", () => {
+  expect(resolveCategoryPalette(tokens)).toEqual([
+    "#d97757",
+    "#6a9bcc",
+    "#788c5d",
+    "#c78b72",
+    "#9f8d79",
+    "#b8b2a6",
+    "#d97757",
+    "#d4722b",
+    "#a9a59c",
+    "#6b5f4e",
+  ]);
+  expect(resolveSequentialPalette(tokens)).toEqual([
+    "#f5f0e8",
+    "#6a9bcc",
+    "#788c5d",
+    "#d97757",
+    "#b8b2a6",
+    "#b55a4e",
+  ]);
+  expect(resolveHeatmapPalette(tokens)).toEqual([
+    "#f5f0e8",
+    "#ebd4cb",
+    "#6a9bcc",
+    "#d97757",
+    "#d4722b",
+  ]);
+  expect(resolveDivergingPalette(tokens)).toEqual([
+    "#b55a4e",
+    "#c78b72",
+    "#f5f0e8",
+    "#6a9bcc",
+    "#788c5d",
+  ]);
+  expect(resolveSemanticColors(tokens)).toEqual({
+    positive: "#788c5d",
+    negative: "#b55a4e",
+    warning: "#d4722b",
+    neutral: "#a9a59c",
+  });
 
-test("builds chart colors from active theme variables", () => {
-  resetThemeProperties();
+  const theme = buildSlideTheme(tokens);
 
-  try {
-    document.documentElement.style.setProperty("--slide-color-body", "#1f1a17");
-    document.documentElement.style.setProperty("--slide-color-muted", "#6a6058");
-    document.documentElement.style.setProperty("--slide-chart-accent", "#c56e45");
-    document.documentElement.style.setProperty("--slide-chart-category-1", "#c56e45");
-    document.documentElement.style.setProperty("--slide-chart-category-2", "#7c8a6a");
-    document.documentElement.style.setProperty("--slide-chart-category-3", "#9b7e62");
-    document.documentElement.style.setProperty("--slide-chart-category-4", "#d08b66");
-    document.documentElement.style.setProperty("--slide-chart-category-5", "#b4977c");
-    document.documentElement.style.setProperty("--slide-chart-category-6", "#7f6b5d");
-    document.documentElement.style.setProperty("--slide-chart-positive", "#7c8a6a");
-    document.documentElement.style.setProperty("--slide-chart-negative", "#b25c4f");
-    document.documentElement.style.setProperty("--slide-chart-warning", "#d0934f");
-    document.documentElement.style.setProperty("--slide-chart-neutral", "#9e8f82");
-    document.documentElement.style.setProperty("--slide-absolutely-line", "rgba(31, 26, 23, 0.12)");
-    document.documentElement.style.setProperty("--slide-diagram-surface", "#fff8ef");
-    document.documentElement.style.setProperty("--slide-diagram-surface-alt", "#f1e6d7");
-
-    expect(resolveCategoryPalette()).toEqual([
-      "#c56e45",
-      "#7c8a6a",
-      "#9b7e62",
-      "#d08b66",
-      "#b4977c",
-      "#7f6b5d",
-      "#c56e45",
-      "#d0934f",
-      "#9e8f82",
-      "#475569",
-    ]);
-    expect(resolveSequentialPalette()).toEqual([
-      "#fff8ef",
-      "#7c8a6a",
-      "#7c8a6a",
-      "#c56e45",
-      "#7f6b5d",
-      "#052e16",
-    ]);
-    expect(resolveDivergingPalette()).toEqual([
-      "#b25c4f",
-      "#d08b66",
-      "#fff8ef",
-      "#7c8a6a",
-      "#7c8a6a",
-    ]);
-    expect(resolveSemanticColors()).toEqual({
-      positive: "#7c8a6a",
-      negative: "#b25c4f",
-      warning: "#d0934f",
-      neutral: "#9e8f82",
-    });
-
-    const theme = buildSlidevTheme();
-
-    expect(theme.color).toBe("#c56e45");
-    expect(theme.category10).toEqual([
-      "#c56e45",
-      "#7c8a6a",
-      "#9b7e62",
-      "#d08b66",
-      "#b4977c",
-      "#7f6b5d",
-      "#c56e45",
-      "#d0934f",
-      "#9e8f82",
-      "#475569",
-    ]);
-    expect(theme.category20).toHaveLength(20);
-    expect(theme.axis?.labelFill).toBe("#6a6058");
-    expect(theme.axis?.lineStroke).toBe("rgba(31, 26, 23, 0.12)");
-    expect(theme.legendCategory?.titleFill).toBe("#1f1a17");
-  } finally {
-    resetThemeProperties();
-  }
+  expect(theme.color).toBe("#d97757");
+  expect(theme.category10).toEqual([
+    "#d97757",
+    "#6a9bcc",
+    "#788c5d",
+    "#c78b72",
+    "#9f8d79",
+    "#b8b2a6",
+    "#d97757",
+    "#d4722b",
+    "#a9a59c",
+    "#6b5f4e",
+  ]);
+  expect(theme.category20).toHaveLength(20);
+  expect(theme.axis?.labelFill).toBe("#6b5f4e");
+  expect(theme.axis?.lineStroke).toBe("rgba(20, 20, 19, 0.1)");
+  expect(theme.legendCategory?.titleFill).toBe("#141413");
 });

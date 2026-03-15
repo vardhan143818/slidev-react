@@ -37,11 +37,11 @@ describe("resolveSlideSurfaceClassName", () => {
 });
 
 describe("resolveSlideSurface", () => {
-  it("returns default white background when no background is set", () => {
+  it("returns theme background when no background is set", () => {
     const result = resolveSlideSurface({
       meta: { layout: "default" },
     });
-    expect(result.style.backgroundColor).toBe("#ffffff");
+    expect(result.style.backgroundColor).toBe("var(--slide-ui-background)");
   });
 
   it("detects bare image URLs and sets backgroundImage", () => {

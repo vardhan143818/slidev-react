@@ -37,13 +37,13 @@
 
 这是一个 pnpm workspace monorepo，包含以下包：
 
-| 包名 | 路径 | 说明 |
-|------|------|------|
-| `@slidev-react/core` | `packages/core` | 纯演示模型、flow 逻辑、共享契约 |
-| `@slidev-react/client` | `packages/client` | React 应用装配、UI、主题、addons |
-| `@slidev-react/node` | `packages/node` | Node 侧 dev/build/export/lint 入口和服务 |
-| `@slidev-react/cli` | `packages/cli` | `slidev-react` 命令行工具 |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | "paper" 主题包 |
+| 包名                        | 路径                   | 说明                                     |
+| --------------------------- | ---------------------- | ---------------------------------------- |
+| `@slidev-react/core`        | `packages/core`        | 纯演示模型、flow 逻辑、共享契约          |
+| `@slidev-react/client`      | `packages/client`      | React 应用装配、UI、主题、addons         |
+| `@slidev-react/node`        | `packages/node`        | Node 侧 dev/build/export/lint 入口和服务 |
+| `@slidev-react/cli`         | `packages/cli`         | `slidev-react` 命令行工具                |
+| `@slidev-react/theme-paper` | `packages/theme-paper` | "paper" 主题包                           |
 
 根目录 `package.json` 设为 `private: true`，承载 Vite 开发服务器和顶层脚本。`packages/core`、`packages/node`、`packages/cli` 等子包通过 [Changesets](https://github.com/changesets/changesets) 发布到 npm。
 
@@ -65,21 +65,21 @@ pnpm dev
 
 ## 脚本
 
-| 命令 | 说明 |
-|------|------|
-| `pnpm dev` | 启动 Vite 开发服务器 |
-| `pnpm build` | 构建生产产物 |
-| `pnpm preview` | 预览生产构建 |
-| `pnpm clean` | 清理 `dist/`、`.generated/`、`output/` |
-| `pnpm presentation:server` | 启动 WebSocket relay 服务（跨设备同步） |
-| `pnpm test` | 运行 Vitest 测试 |
-| `pnpm test:e2e` | 运行 Playwright 端到端测试 |
-| `pnpm test:e2e:headed` | 以可见浏览器运行 Playwright 测试 |
-| `pnpm test:e2e:install` | 安装 Playwright 使用的 Chromium |
-| `pnpm lint` | 运行 type-aware Oxlint 检查 |
-| `pnpm lint:slides` | 检查 slides 编写问题（未知 theme、addon、layout） |
-| `pnpm format` | 用 Oxfmt 格式化仓库 |
-| `pnpm format:check` | 用 Oxfmt 检查格式 |
+| 命令                       | 说明                                              |
+| -------------------------- | ------------------------------------------------- |
+| `pnpm dev`                 | 启动 Vite 开发服务器                              |
+| `pnpm build`               | 构建生产产物                                      |
+| `pnpm preview`             | 预览生产构建                                      |
+| `pnpm clean`               | 清理 `dist/`、`.generated/`、`output/`            |
+| `pnpm presentation:server` | 启动 WebSocket relay 服务（跨设备同步）           |
+| `pnpm test`                | 运行 Vitest 测试                                  |
+| `pnpm test:e2e`            | 运行 Playwright 端到端测试                        |
+| `pnpm test:e2e:headed`     | 以可见浏览器运行 Playwright 测试                  |
+| `pnpm test:e2e:install`    | 安装 Playwright 使用的 Chromium                   |
+| `pnpm lint`                | 运行 type-aware Oxlint 检查                       |
+| `pnpm lint:slides`         | 检查 slides 编写问题（未知 theme、addon、layout） |
+| `pnpm format`              | 用 Oxfmt 格式化仓库                               |
+| `pnpm format:check`        | 用 Oxfmt 检查格式                                 |
 
 在 CI 中可以用 `pnpm lint:slides -- --strict` 把 warning 也当失败处理。
 
@@ -136,28 +136,28 @@ Slides 源文件位于 [`slides.mdx`](./slides.mdx)。
 
 **Slides 级**（第一个 slide block）：
 
-| 字段 | 说明 |
-|------|------|
-| `title` | 演示文稿标题 |
-| `theme` | 主题 id（如 `paper`），找不到时回退到 `default` |
-| `addons` | 要启用的 addon 列表（如 `[mermaid, g2, insight]`） |
-| `layout` | 所有页面的默认布局 |
-| `background` | 默认背景（颜色、渐变或图片 URL） |
-| `transition` | 默认转场：`fade`、`slide-left`、`slide-up`、`zoom` |
-| `exportFilename` | 导出文件和录制下载的文件名前缀 |
+| 字段             | 说明                                               |
+| ---------------- | -------------------------------------------------- |
+| `title`          | 演示文稿标题                                       |
+| `theme`          | 主题 id（如 `paper`），找不到时回退到 `default`    |
+| `addons`         | 要启用的 addon 列表（如 `[mermaid, g2, insight]`） |
+| `layout`         | 所有页面的默认布局                                 |
+| `background`     | 默认背景（颜色、渐变或图片 URL）                   |
+| `transition`     | 默认转场：`fade`、`slide-left`、`slide-up`、`zoom` |
+| `exportFilename` | 导出文件和录制下载的文件名前缀                     |
 
 **Slide 级**：
 
-| 字段 | 说明 |
-|------|------|
-| `title` | 页面标题 |
-| `layout` | 本页布局覆盖 |
-| `class` | CSS class，挂到舞台的 article 容器上 |
-| `background` | 颜色、渐变、CSS background 值，或裸写图片 URL |
-| `transition` | 本页转场覆盖 |
-| `clicks` | 显式声明 reveal 步数（即使 `<Reveal />` 数量更少） |
-| `notes` | Presenter 笔记（推荐配合 YAML 多行字符串使用） |
-| `src` | 按相对 `slides.mdx` 的路径载入单页外部文件 |
+| 字段         | 说明                                               |
+| ------------ | -------------------------------------------------- |
+| `title`      | 页面标题                                           |
+| `layout`     | 本页布局覆盖                                       |
+| `class`      | CSS class，挂到舞台的 article 容器上               |
+| `background` | 颜色、渐变、CSS background 值，或裸写图片 URL      |
+| `transition` | 本页转场覆盖                                       |
+| `clicks`     | 显式声明 reveal 步数（即使 `<Reveal />` 数量更少） |
+| `notes`      | Presenter 笔记（推荐配合 YAML 多行字符串使用）     |
+| `src`        | 按相对 `slides.mdx` 的路径载入单页外部文件         |
 
 非法 frontmatter 会报到字段级别，编译期也会对未知 theme/addon 给出 warning。
 
@@ -178,6 +178,7 @@ exportFilename: client-demo
 ---
 
 ---
+
 title: Compare
 layout: two-cols
 class: px-20
@@ -186,8 +187,9 @@ transition: slide-left
 clicks: 3
 src: ./slides/compare.mdx
 notes: |
-  先讲取舍，不要先讲实现。
-  图表讲完停半秒，再切到 API 边界。
+先讲取舍，不要先讲实现。
+图表讲完停半秒，再切到 API 边界。
+
 ---
 
 # 左栏
@@ -218,12 +220,13 @@ theme: paper
 
 主题包从入口文件导出 `SlideThemeDefinition`，支持以下能力：
 
+- `tokens` — 主题字体、UI 颜色、图表颜色、图示颜色、addon 颜色的唯一真源
 - `rootAttributes` 和 `rootClassName` — 文档根节点的 token 或选择器
 - `layouts` — 覆盖或扩展 slide layout
 - `mdxComponents` — 覆盖 `Badge` 等 MDX helper
 - `provider` — 注入主题级 React context
 
-主题 CSS 文件（如 `style.css`）会自动加载。如果请求的主题不存在，运行时会安全回退到默认主题。
+主题 CSS 文件（如 `style.css`）会自动加载。运行时会根据 `tokens` 派生 CSS custom properties，所以 CSS 是 token 的消费层，而不是主题真源。如果请求的主题不存在，运行时会安全回退到默认主题。
 
 ## Addons
 
@@ -242,10 +245,10 @@ Addon 放在 `packages/client/src/addons/<addon-id>/` 下，只要在 `index.ts`
 
 ### 可用 Addons
 
-| Addon | 提供的组件 | 说明 |
-|-------|-----------|------|
-| `mermaid` | `MermaidDiagram` | Mermaid 图表渲染 |
-| `g2` | `Chart` | G2 数据可视化图表 |
+| Addon     | 提供的组件                    | 说明                          |
+| --------- | ----------------------------- | ----------------------------- |
+| `mermaid` | `MermaidDiagram`              | Mermaid 图表渲染              |
+| `g2`      | `Chart`                       | G2 数据可视化图表             |
 | `insight` | `Insight`、`spotlight` layout | Insight 组件和 spotlight 布局 |
 
 ### Addon 契约
@@ -277,33 +280,37 @@ layout: spotlight
 
 ### 核心组件（始终可用）
 
-| 组件 | 说明 |
-|------|------|
-| `Badge` | 行内标签 |
-| `Callout` | 带标题的提示块 |
-| `Annotate` | rough-notation 风格的标注（高亮、下划线、方框、括号） |
-| `CourseCover` | 课程封面辅助组件 |
-| `MagicMoveDemo` | Shiki Magic Move 代码动画 |
-| `MinimaxReactVisualizer` | Minimax 博弈树可视化 |
-| `PlantUmlDiagram` | PlantUML 图表渲染 |
-| `Reveal` | 基于步骤的渐进揭示 |
-| `RevealGroup` | 自动编号的 reveal 容器 |
+| 组件                     | 说明                                                  |
+| ------------------------ | ----------------------------------------------------- |
+| `Badge`                  | 行内标签                                              |
+| `Callout`                | 带标题的提示块                                        |
+| `Annotate`               | rough-notation 风格的标注（高亮、下划线、方框、括号） |
+| `CourseCover`            | 课程封面辅助组件                                      |
+| `MagicMoveDemo`          | Shiki Magic Move 代码动画                             |
+| `MinimaxReactVisualizer` | Minimax 博弈树可视化                                  |
+| `PlantUmlDiagram`        | PlantUML 图表渲染                                     |
+| `Reveal`                 | 基于步骤的渐进揭示                                    |
+| `RevealGroup`            | 自动编号的 reveal 容器                                |
 
 ### 由 Addon 提供
 
-| 组件 | 所属 Addon | 说明 |
-|------|-----------|------|
-| `MermaidDiagram` | `mermaid` | Mermaid 图表 |
-| `Chart` | `g2` | G2 数据图表 |
-| `Insight` | `insight` | Insight 提示块 |
+| 组件             | 所属 Addon | 说明           |
+| ---------------- | ---------- | -------------- |
+| `MermaidDiagram` | `mermaid`  | Mermaid 图表   |
+| `Chart`          | `g2`       | G2 数据图表    |
+| `Insight`        | `insight`  | Insight 提示块 |
 
 `Annotate` 示例：
 
 ```mdx
 <Annotate>默认高亮</Annotate>
 <Annotate type="underline">关键观点</Annotate>
-<Annotate type="box" color="#2563eb">API 边界</Annotate>
-<Annotate type="bracket" brackets={["left", "right"]}>聚焦区域</Annotate>
+<Annotate type="box" color="#2563eb">
+  API 边界
+</Annotate>
+<Annotate type="bracket" brackets={["left", "right"]}>
+  聚焦区域
+</Annotate>
 ```
 
 ## 项目结构

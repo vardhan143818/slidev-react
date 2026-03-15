@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/theme-paper",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "scripts": {
     "build:pkg": "pnpm exec tsdown",
     "dev:pkg": "pnpm exec tsdown --watch",

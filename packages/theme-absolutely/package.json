@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/theme-absolutely",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "files": [
     "dist",
     "README.md"

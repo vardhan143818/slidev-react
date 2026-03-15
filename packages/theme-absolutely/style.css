@@ -1,87 +1,3 @@
-:root[data-slide-theme="absolutely"] {
-  color-scheme: light;
-  --font-sans:
-    "Avenir Next", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --font-serif:
-    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Source Han Serif SC", "Songti SC",
-    serif;
-  --slide-absolutely-bg: #faf9f5;
-  --slide-absolutely-surface: #f5f0e8;
-  --slide-absolutely-surface-strong: #ede8df;
-  --slide-absolutely-text: #141413;
-  --slide-absolutely-heading: #141413;
-  --slide-absolutely-muted: #6b5f4e;
-  --slide-absolutely-muted-soft: #b0aea5;
-  --slide-absolutely-accent: #d97757;
-  --slide-absolutely-accent-strong: #d4722b;
-  --slide-absolutely-accent-soft: #ebd4cb;
-  --slide-absolutely-sage: #788c5d;
-  --slide-absolutely-blue: #6a9bcc;
-  --slide-absolutely-line: rgba(20, 20, 19, 0.1);
-  --slide-color-body: var(--slide-absolutely-text);
-  --slide-color-heading: var(--slide-absolutely-heading);
-  --slide-color-muted: var(--slide-absolutely-muted);
-  --slide-link-decoration-style: solid;
-  --slide-link-decoration-color: rgba(217, 119, 87, 0.28);
-  --slide-link-decoration-color-hover: rgba(217, 119, 87, 0.52);
-  --slide-list-bullet-bg: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--slide-absolutely-accent-soft) 66%, white 34%) 0%,
-    var(--slide-absolutely-accent) 100%
-  );
-  --slide-list-bullet-shadow: 0 0 0 2px rgba(217, 119, 87, 0.1), 0 8px 18px rgba(116, 72, 44, 0.12);
-  --slide-ol-badge-bg: rgba(217, 119, 87, 0.13);
-  --slide-ol-badge-color: color-mix(in srgb, var(--slide-absolutely-accent) 86%, black 14%);
-  --slide-blockquote-padding: 0.95rem 1.2rem;
-  --slide-blockquote-border-color: var(--slide-absolutely-accent);
-  --slide-blockquote-bg: color-mix(
-    in srgb,
-    var(--slide-absolutely-accent-soft) 38%,
-    var(--slide-absolutely-surface) 62%
-  );
-  --slide-blockquote-color: var(--slide-absolutely-text);
-  --slide-table-head-bg: rgba(20, 20, 19, 0.035);
-  --slide-inline-code-bg: rgba(20, 20, 19, 0.06);
-  --slide-pre-padding: 1.05rem 1.18rem;
-  --slide-pre-font-size: 1.08rem;
-  --slide-code-line-min-height: 1.42em;
-  --slide-badge-font-size: clamp(0.98rem, 1.02vw, 1.08rem);
-  --slide-badge-line-height: 1.2;
-  --slide-badge-bg: color-mix(
-    in srgb,
-    var(--slide-absolutely-accent-soft) 72%,
-    var(--slide-absolutely-surface) 28%
-  );
-  --slide-badge-color: color-mix(in srgb, var(--slide-absolutely-accent) 74%, black 26%);
-  --slide-badge-border: 1px solid rgba(217, 119, 87, 0.16);
-  --slide-surface-padding-inline: clamp(3.8rem, 4vw, 5.3rem);
-  --slide-surface-padding-block-start: clamp(3.2rem, 4vw, 4.4rem);
-  --slide-surface-padding-block-end: clamp(3rem, 3.8vw, 4.2rem);
-  --slide-chart-accent: var(--slide-absolutely-accent);
-  --slide-chart-category-1: var(--slide-absolutely-accent);
-  --slide-chart-category-2: var(--slide-absolutely-blue);
-  --slide-chart-category-3: var(--slide-absolutely-sage);
-  --slide-chart-category-4: #c78b72;
-  --slide-chart-category-5: #9f8d79;
-  --slide-chart-category-6: #b8b2a6;
-  --slide-chart-positive: var(--slide-absolutely-sage);
-  --slide-chart-negative: #b55a4e;
-  --slide-chart-warning: var(--slide-absolutely-accent-strong);
-  --slide-chart-neutral: #a9a59c;
-  --slide-diagram-primary: var(--slide-absolutely-accent-soft);
-  --slide-diagram-primary-border: var(--slide-absolutely-accent);
-  --slide-diagram-line: #7a746a;
-  --slide-diagram-surface: var(--slide-absolutely-surface);
-  --slide-diagram-surface-alt: #efe9df;
-  --slide-diagram-text: var(--slide-absolutely-text);
-  --slide-diagram-note: #f3e6c8;
-  --slide-insight-border: rgba(120, 140, 93, 0.22);
-  --slide-insight-bg: rgba(245, 240, 232, 0.96);
-  --slide-insight-title: color-mix(in srgb, var(--slide-absolutely-sage) 72%, black 28%);
-  --slide-insight-text: color-mix(in srgb, var(--slide-absolutely-text) 88%, white 12%);
-  --slide-insight-shadow: 0 16px 38px rgba(72, 58, 43, 0.07);
-}
-
 :root[data-slide-theme="absolutely"][data-slide-viewport-orientation="portrait"] {
   --slide-h1-size: clamp(3.3rem, 6.2vw, 5.8rem);
   --slide-h2-size: clamp(2.3rem, 4.4vw, 4rem);
@@ -91,9 +7,9 @@
 
 :root[data-slide-theme="absolutely"] body {
   background:
-    radial-gradient(circle at top right, rgba(235, 212, 203, 0.76), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(120, 140, 93, 0.08), transparent 24%),
-    linear-gradient(180deg, #fcfbf8 0%, var(--slide-absolutely-bg) 100%);
+    radial-gradient(circle at top right, rgba(220, 233, 250, 0.88), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(231, 229, 250, 0.52), transparent 24%),
+    linear-gradient(180deg, #fdfbf8 0%, var(--slide-ui-background) 100%);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose {
@@ -120,69 +36,70 @@
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose a {
-  color: color-mix(in srgb, var(--slide-absolutely-accent) 76%, black 24%);
+  color: color-mix(in srgb, var(--slide-ui-accent) 76%, black 24%);
+  text-decoration-style: solid;
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose strong {
-  color: var(--slide-absolutely-heading);
+  color: var(--slide-ui-heading);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose blockquote {
+  padding: 0.95rem 1.2rem;
   border-radius: 1.2rem;
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose table {
-  border-color: rgba(20, 20, 19, 0.08);
-  background: color-mix(in srgb, var(--slide-absolutely-surface) 94%, white 6%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  border-color: rgba(35, 33, 29, 0.08);
+  background: color-mix(in srgb, var(--slide-ui-surface) 96%, white 4%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose th {
-  color: color-mix(in srgb, var(--slide-absolutely-heading) 92%, white 8%);
+  background: rgba(242, 236, 228, 0.78);
+  color: color-mix(in srgb, var(--slide-ui-heading) 92%, white 8%);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose td {
-  color: color-mix(in srgb, var(--slide-absolutely-text) 90%, white 10%);
+  color: color-mix(in srgb, var(--slide-ui-text) 90%, white 10%);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose th + th,
 :root[data-slide-theme="absolutely"] .slide-prose td + td,
 :root[data-slide-theme="absolutely"] .slide-prose tbody tr + tr td {
-  border-color: rgba(20, 20, 19, 0.07);
+  border-color: rgba(35, 33, 29, 0.07);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose tbody tr:nth-child(even) td {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.34);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose tbody tr:hover td {
-  background: rgba(20, 20, 19, 0.024);
+  background: rgba(136, 183, 234, 0.06);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose kbd {
-  border-color: rgba(20, 20, 19, 0.14);
-  background: rgba(245, 240, 232, 0.92);
-  box-shadow: inset 0 -1px 0 rgba(20, 20, 19, 0.07);
+  border-color: rgba(63, 115, 184, 0.16);
+  background: rgba(220, 233, 250, 0.5);
+  box-shadow: inset 0 -1px 0 rgba(63, 115, 184, 0.08);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose hr {
-  border-top-color: rgba(20, 20, 19, 0.12);
+  border-top-color: rgba(35, 33, 29, 0.1);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose pre {
-  border-color: rgba(20, 20, 19, 0.07);
-  background: rgba(248, 244, 237, 0.92);
+  padding: 1.05rem 1.18rem;
+  font-size: 1.08rem;
+  border-color: rgba(136, 183, 234, 0.12);
+  background: rgba(248, 244, 237, 0.96);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    0 18px 48px rgba(72, 58, 43, 0.07);
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 18px 48px rgba(136, 183, 234, 0.08);
 }
 
 :root[data-slide-theme="absolutely"] .slide-prose :not(pre) > code {
-  color: color-mix(
-    in srgb,
-    var(--slide-absolutely-heading) 84%,
-    var(--slide-absolutely-accent) 16%
-  );
+  color: color-mix(in srgb, var(--slide-ui-heading) 84%, var(--slide-ui-accent) 16%);
 }
 
 :root[data-slide-theme="absolutely"] .slide-surface-frame {
@@ -201,14 +118,10 @@
   max-width: 100%;
   align-items: center;
   gap: 0.35rem;
-  border: 1px solid rgba(217, 119, 87, 0.16);
+  border: 1px solid rgba(136, 183, 234, 0.18);
   border-radius: 999px;
-  background: color-mix(
-    in srgb,
-    var(--slide-absolutely-accent-soft) 78%,
-    var(--slide-absolutely-surface) 22%
-  );
-  color: color-mix(in srgb, var(--slide-absolutely-accent) 76%, black 24%);
+  background: color-mix(in srgb, var(--slide-ui-accent-soft) 78%, var(--slide-ui-surface) 22%);
+  color: color-mix(in srgb, var(--slide-ui-accent-strong) 84%, black 16%);
   padding: 0.24rem 0.72rem;
   font-size: 0.76em;
   font-weight: 700;
@@ -223,7 +136,7 @@
   max-width: 100%;
   align-items: center;
   gap: 0.55rem;
-  color: color-mix(in srgb, var(--slide-absolutely-accent) 66%, black 34%);
+  color: color-mix(in srgb, var(--slide-ui-accent-strong) 72%, black 28%);
   font-size: clamp(0.92rem, 0.96vw, 1.06rem);
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -235,18 +148,18 @@
   display: inline-block;
   width: 2.2rem;
   height: 1px;
-  background: color-mix(in srgb, var(--slide-absolutely-accent) 62%, white 38%);
+  background: color-mix(in srgb, var(--slide-ui-accent) 62%, white 38%);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout {
   position: relative;
   margin: 1.1rem 0 1.2rem;
-  border: 1px solid rgba(20, 20, 19, 0.07);
+  border: 1px solid rgba(136, 183, 234, 0.12);
   border-left: 0;
   border-radius: 1.3rem;
-  background: rgba(245, 240, 232, 0.9);
+  background: color-mix(in srgb, var(--slide-ui-surface) 80%, var(--slide-ui-accent-soft) 20%);
   padding: 1rem 1.2rem 1rem 1.35rem;
-  box-shadow: 0 14px 34px rgba(72, 58, 43, 0.06);
+  box-shadow: 0 14px 34px rgba(136, 183, 234, 0.08);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout::before {
@@ -258,28 +171,28 @@
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout--info::before {
-  background: var(--slide-absolutely-accent);
+  background: var(--slide-ui-accent);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout--warn::before {
-  background: var(--slide-absolutely-accent-strong);
+  background: var(--slide-ui-accent-strong);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout--success::before {
-  background: var(--slide-absolutely-sage);
+  background: var(--slide-feedback-positive);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout-title {
   display: block;
   margin-bottom: 0.32rem;
-  color: var(--slide-absolutely-heading);
+  color: var(--slide-ui-heading);
   font-family: var(--font-serif);
   font-size: 1em;
   font-weight: 700;
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout-body {
-  color: var(--slide-absolutely-text);
+  color: var(--slide-ui-text);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-callout-body > :last-child {
@@ -292,11 +205,11 @@
   width: min(100%, 20rem);
   margin: 0;
   padding: 0.95rem 0 0;
-  border-top: 1px solid rgba(20, 20, 19, 0.1);
+  border-top: 1px solid rgba(35, 33, 29, 0.1);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-key-stat-value {
-  color: var(--slide-absolutely-heading);
+  color: var(--slide-ui-heading);
   font-family: var(--font-serif);
   font-size: clamp(2.8rem, 4.2vw, 4.4rem);
   line-height: 0.94;
@@ -309,7 +222,7 @@
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-key-stat-label {
-  color: var(--slide-absolutely-heading);
+  color: var(--slide-ui-heading);
   font-size: 0.94rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -317,7 +230,7 @@
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-key-stat-detail {
-  color: var(--slide-absolutely-muted);
+  color: var(--slide-ui-muted);
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -334,7 +247,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--slide-absolutely-heading);
+  color: var(--slide-ui-heading);
   font-family: var(--font-serif);
   font-size: clamp(1.9rem, 2.8vw, 3rem);
   line-height: 1.15;
@@ -354,21 +267,21 @@
   flex-wrap: wrap;
   gap: 0.6rem 1rem;
   align-items: center;
-  color: var(--slide-absolutely-muted);
+  color: var(--slide-ui-muted);
   font-size: 0.94rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-pull-quote-by {
-  color: var(--slide-absolutely-heading);
+  color: var(--slide-ui-heading);
   font-weight: 700;
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-pull-quote-extra::before {
   content: "/";
   margin-right: 0.65rem;
-  color: rgba(20, 20, 19, 0.22);
+  color: rgba(35, 33, 29, 0.22);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-layout-cover {
@@ -382,14 +295,14 @@
   min-height: 100%;
   overflow: hidden;
   padding: clamp(3rem, 4vw, 4rem);
-  border: 1px solid rgba(20, 20, 19, 0.07);
+  border: 1px solid rgba(35, 33, 29, 0.07);
   border-radius: 2rem;
   background:
-    linear-gradient(135deg, rgba(244, 239, 231, 0.92), rgba(250, 249, 245, 0.99)),
-    var(--slide-absolutely-surface);
+    linear-gradient(135deg, rgba(220, 233, 250, 0.22), rgba(251, 248, 243, 0.98)),
+    var(--slide-ui-surface);
   box-shadow:
-    0 28px 80px rgba(72, 58, 43, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    0 28px 80px rgba(136, 183, 234, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-cover-ornament {
@@ -405,8 +318,8 @@
   border-radius: 999px;
   background: radial-gradient(
     circle,
-    rgba(235, 212, 203, 0.84) 0%,
-    rgba(217, 119, 87, 0.12) 34%,
+    rgba(220, 233, 250, 0.88) 0%,
+    rgba(169, 161, 229, 0.22) 34%,
     transparent 68%
   );
 }
@@ -414,15 +327,15 @@
 :root[data-slide-theme="absolutely"] .absolutely-cover-ornament--grain {
   inset: 0;
   background-image:
-    linear-gradient(115deg, rgba(255, 255, 255, 0.18) 0%, transparent 36%),
-    radial-gradient(circle at 20% 20%, rgba(120, 140, 93, 0.03) 0%, transparent 28%);
+    linear-gradient(115deg, rgba(255, 255, 255, 0.24) 0%, transparent 36%),
+    radial-gradient(circle at 20% 20%, rgba(88, 199, 167, 0.045) 0%, transparent 28%);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-cover-rail {
   position: absolute;
   inset: 3rem auto 3rem 3rem;
   width: 1px;
-  background: linear-gradient(180deg, rgba(217, 119, 87, 0.32), rgba(217, 119, 87, 0));
+  background: linear-gradient(180deg, rgba(136, 183, 234, 0.32), rgba(136, 183, 234, 0));
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-cover-content {
@@ -444,7 +357,7 @@
 
 :root[data-slide-theme="absolutely"] .absolutely-layout-cover .slide-prose p {
   max-width: 32ch;
-  color: var(--slide-absolutely-muted);
+  color: var(--slide-ui-muted);
   font-size: clamp(1.36rem, 1.75vw, 1.82rem);
 }
 
@@ -468,7 +381,7 @@
 :root[data-slide-theme="absolutely"] .absolutely-section-rule {
   width: clamp(4rem, 8vw, 7rem);
   height: 1px;
-  background: linear-gradient(90deg, var(--slide-absolutely-accent), rgba(217, 119, 87, 0));
+  background: linear-gradient(90deg, var(--slide-ui-accent), rgba(169, 161, 229, 0));
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-section-content {
@@ -487,7 +400,7 @@
 
 :root[data-slide-theme="absolutely"] .absolutely-layout-section .slide-prose p {
   max-width: 28ch;
-  color: var(--slide-absolutely-muted);
+  color: var(--slide-ui-muted);
   font-size: clamp(1.42rem, 1.9vw, 2rem);
 }
 
@@ -516,14 +429,14 @@
 :root[data-slide-theme="absolutely"] .absolutely-layout-statement .slide-prose p {
   max-width: 22ch;
   margin-top: 0.85rem;
-  color: var(--slide-absolutely-muted);
+  color: var(--slide-ui-muted);
 }
 
 :root[data-slide-theme="absolutely"] .absolutely-statement-underline {
   width: min(20rem, 38vw);
   height: 0.4rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--slide-absolutely-accent), rgba(217, 119, 87, 0));
+  background: linear-gradient(90deg, var(--slide-ui-accent), rgba(169, 161, 229, 0));
 }
 
 @media (max-width: 960px) {
@@ -555,7 +468,7 @@
 
 @media print {
   :root[data-slide-theme="absolutely"] body {
-    background: var(--slide-absolutely-bg);
+    background: var(--slide-ui-background);
   }
 
   :root[data-slide-theme="absolutely"] .absolutely-cover-shell,
@@ -565,7 +478,7 @@
   }
 
   :root[data-slide-theme="absolutely"] .absolutely-cover-shell {
-    background: var(--slide-absolutely-surface);
+    background: var(--slide-ui-surface);
   }
 
   :root[data-slide-theme="absolutely"] .absolutely-cover-ornament,

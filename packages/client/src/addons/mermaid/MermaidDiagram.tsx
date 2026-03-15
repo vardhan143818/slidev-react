@@ -2,6 +2,9 @@ import mermaid from "mermaid";
 import { Expand, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useSlideThemeTokens } from "../../theme/ThemeProvider";
+import { serializeThemeTokens } from "../../theme/themeTokens";
+import type { SlideThemeTokens } from "../../theme/types";
 
 function normalizeDiagramCode(code: string | undefined, children: ReactNode) {
   if (typeof code === "string") return code;
@@ -15,128 +18,104 @@ function normalizeDiagramCode(code: string | undefined, children: ReactNode) {
 
 let initialized = false;
 let renderQueue = Promise.resolve();
-const mermaidFontFamily =
-  'Inter, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
-
-function resolveThemeVar(name: string, fallback: string) {
-  if (typeof document === "undefined") return fallback;
-  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return value || fallback;
-}
-
-export function resolveMermaidThemeVariables(): Record<string, string> {
-  const fontFamily = resolveThemeVar("--font-sans", mermaidFontFamily);
-  const primary = resolveThemeVar("--slide-diagram-primary", "#22C55E");
-  const primaryBorder = resolveThemeVar("--slide-diagram-primary-border", "#16A34A");
-  const line = resolveThemeVar("--slide-diagram-line", "#334155");
-  const surface = resolveThemeVar("--slide-diagram-surface", "#ffffff");
-  const surfaceAlt = resolveThemeVar("--slide-diagram-surface-alt", "#f8fafc");
-  const text = resolveThemeVar("--slide-diagram-text", "#000000");
-  const note = resolveThemeVar("--slide-diagram-note", "#fefce8");
-  const chartOne = resolveThemeVar("--slide-chart-category-1", "#60a5fa");
-  const chartTwo = resolveThemeVar("--slide-chart-category-2", "#34d399");
-  const chartThree = resolveThemeVar("--slide-chart-category-3", "#a78bfa");
-  const chartFour = resolveThemeVar("--slide-chart-category-4", "#f472b6");
-  const chartFive = resolveThemeVar("--slide-chart-category-5", "#fbbf24");
-  const chartSix = resolveThemeVar("--slide-chart-category-6", "#f87171");
-  const chartAccent = resolveThemeVar("--slide-chart-accent", primaryBorder);
-
-  return {
-    fontFamily,
-    fontSize: "19px",
-    primaryColor: primary,
-    primaryTextColor: text,
-    primaryBorderColor: primaryBorder,
-    lineColor: line,
-    background: surface,
-    mainBkg: surface,
-    secondBkg: surfaceAlt,
-    tertiaryColor: surfaceAlt,
-    textColor: text,
-    secondaryColor: line,
-    tertiaryTextColor: text,
-    border1: primaryBorder,
-    border2: line,
-    nodeBkg: surfaceAlt,
-    nodeBorder: line,
-    nodeTextColor: text,
-    clusterBkg: surfaceAlt,
-    clusterBorder: primaryBorder,
-    edgeLabelBackground: surface,
-    arrowheadColor: line,
-    actorBkg: surface,
-    actorBorder: primaryBorder,
-    actorTextColor: text,
-    actorLineColor: line,
-    signalColor: line,
-    signalTextColor: text,
-    labelBoxBkgColor: surfaceAlt,
-    labelBoxBorderColor: primaryBorder,
-    labelTextColor: text,
-    loopTextColor: text,
-    noteBkgColor: note,
-    noteTextColor: text,
-    noteBorderColor: primaryBorder,
-    activationBkgColor: primary,
-    activationBorderColor: primaryBorder,
-    labelColor: text,
-    classText: text,
-    git0: chartOne,
-    git1: chartTwo,
-    git2: chartThree,
-    git3: chartFour,
-    git4: chartFive,
-    git5: chartSix,
-    git6: chartAccent,
-    git7: line,
-    gitInv0: surface,
-    gitInv1: surface,
-    gitInv2: surface,
-    gitInv3: surface,
-    gitInv4: surface,
-    gitInv5: surface,
-    gitInv6: surface,
-    gitInv7: surface,
-    commitLabelColor: text,
-    commitLabelBackground: surfaceAlt,
-    fillType0: chartAccent,
-    fillType1: chartTwo,
-    fillType2: chartThree,
-    fillType3: chartFour,
-    fillType4: chartFive,
-    fillType5: chartSix,
-    fillType6: primaryBorder,
-    fillType7: line,
-  };
-}
-
-export function resolveMermaidSurfaceStyle() {
-  return {
-    color: resolveThemeVar("--slide-diagram-text", "#000000"),
-    fontFamily: resolveThemeVar("--font-sans", mermaidFontFamily),
-  };
-}
-
-function resolveMermaidFrameStyle() {
-  return {
-    borderColor: resolveThemeVar("--slide-absolutely-line", "#cbd5e1"),
-    background: resolveThemeVar("--slide-diagram-surface", "#ffffff"),
-  };
-}
-
-function resolveMermaidMutedSurfaceStyle() {
-  return {
-    borderColor: resolveThemeVar("--slide-absolutely-line", "#cbd5e1"),
-    background: resolveThemeVar("--slide-diagram-surface-alt", "#f8fafc"),
-    color: resolveThemeVar("--slide-diagram-line", "#475569"),
-  };
-}
 
 type MermaidRenderVariant = "preview" | "zoom";
 
-function createMermaidConfig(variant: MermaidRenderVariant) {
-  const themeVariables = resolveMermaidThemeVariables();
-  const fontFamily = themeVariables.fontFamily ?? mermaidFontFamily;
+export function resolveMermaidThemeVariables(tokens: SlideThemeTokens): Record<string, string> {
+  return {
+    fontFamily: tokens.fonts.sans,
+    fontSize: "19px",
+    primaryColor: tokens.diagram.primary,
+    primaryTextColor: tokens.diagram.text,
+    primaryBorderColor: tokens.diagram.primaryBorder,
+    lineColor: tokens.diagram.line,
+    background: tokens.diagram.surface,
+    mainBkg: tokens.diagram.surface,
+    secondBkg: tokens.diagram.surfaceAlt,
+    tertiaryColor: tokens.diagram.surfaceAlt,
+    textColor: tokens.diagram.text,
+    secondaryColor: tokens.diagram.line,
+    tertiaryTextColor: tokens.diagram.text,
+    border1: tokens.diagram.primaryBorder,
+    border2: tokens.diagram.line,
+    nodeBkg: tokens.diagram.surfaceAlt,
+    nodeBorder: tokens.diagram.line,
+    nodeTextColor: tokens.diagram.text,
+    clusterBkg: tokens.diagram.surfaceAlt,
+    clusterBorder: tokens.diagram.primaryBorder,
+    edgeLabelBackground: tokens.diagram.surface,
+    arrowheadColor: tokens.diagram.line,
+    actorBkg: tokens.diagram.surface,
+    actorBorder: tokens.diagram.primaryBorder,
+    actorTextColor: tokens.diagram.text,
+    actorLineColor: tokens.diagram.line,
+    signalColor: tokens.diagram.line,
+    signalTextColor: tokens.diagram.text,
+    labelBoxBkgColor: tokens.diagram.surfaceAlt,
+    labelBoxBorderColor: tokens.diagram.primaryBorder,
+    labelTextColor: tokens.diagram.text,
+    loopTextColor: tokens.diagram.text,
+    noteBkgColor: tokens.diagram.note,
+    noteTextColor: tokens.diagram.text,
+    noteBorderColor: tokens.diagram.primaryBorder,
+    activationBkgColor: tokens.diagram.primary,
+    activationBorderColor: tokens.diagram.primaryBorder,
+    labelColor: tokens.diagram.text,
+    classText: tokens.diagram.text,
+    git0: tokens.diagram.categorical[0],
+    git1: tokens.diagram.categorical[1],
+    git2: tokens.diagram.categorical[2],
+    git3: tokens.diagram.categorical[3],
+    git4: tokens.diagram.categorical[4],
+    git5: tokens.diagram.categorical[5],
+    git6: tokens.diagram.accent,
+    git7: tokens.diagram.line,
+    gitInv0: tokens.diagram.surface,
+    gitInv1: tokens.diagram.surface,
+    gitInv2: tokens.diagram.surface,
+    gitInv3: tokens.diagram.surface,
+    gitInv4: tokens.diagram.surface,
+    gitInv5: tokens.diagram.surface,
+    gitInv6: tokens.diagram.surface,
+    gitInv7: tokens.diagram.surface,
+    commitLabelColor: tokens.diagram.text,
+    commitLabelBackground: tokens.diagram.surfaceAlt,
+    fillType0: tokens.diagram.accent,
+    fillType1: tokens.diagram.categorical[1],
+    fillType2: tokens.diagram.categorical[2],
+    fillType3: tokens.diagram.categorical[3],
+    fillType4: tokens.diagram.categorical[4],
+    fillType5: tokens.diagram.categorical[5],
+    fillType6: tokens.diagram.primaryBorder,
+    fillType7: tokens.diagram.line,
+  };
+}
+
+export function resolveMermaidSurfaceStyle(tokens: SlideThemeTokens) {
+  return {
+    color: tokens.diagram.text,
+    fontFamily: tokens.fonts.sans,
+  };
+}
+
+export function resolveMermaidFrameStyle(tokens: SlideThemeTokens) {
+  return {
+    borderColor: tokens.ui.border,
+    background: tokens.diagram.surface,
+  };
+}
+
+export function resolveMermaidMutedSurfaceStyle(tokens: SlideThemeTokens) {
+  return {
+    borderColor: tokens.ui.border,
+    background: tokens.diagram.surfaceAlt,
+    color: tokens.diagram.line,
+  };
+}
+
+function createMermaidConfig(tokens: SlideThemeTokens, variant: MermaidRenderVariant) {
+  const themeVariables = resolveMermaidThemeVariables(tokens);
+  const fontFamily = themeVariables.fontFamily ?? tokens.fonts.sans;
 
   if (variant === "preview") {
     return {
@@ -224,11 +203,10 @@ function createMermaidConfig(variant: MermaidRenderVariant) {
   };
 }
 
-function ensureMermaid() {
+function ensureMermaid(tokens: SlideThemeTokens) {
   if (initialized) return;
 
-  mermaid.initialize(createMermaidConfig("zoom"));
-
+  mermaid.initialize(createMermaidConfig(tokens, "zoom"));
   initialized = true;
 }
 
@@ -241,14 +219,21 @@ async function enqueueMermaidRender<T>(task: () => Promise<T>) {
   return next;
 }
 
-async function renderMermaidSvg(id: string, source: string, variant: MermaidRenderVariant) {
-  ensureMermaid();
-  mermaid.initialize(createMermaidConfig(variant));
+async function renderMermaidSvg(
+  id: string,
+  source: string,
+  variant: MermaidRenderVariant,
+  tokens: SlideThemeTokens,
+) {
+  ensureMermaid(tokens);
+  mermaid.initialize(createMermaidConfig(tokens, variant));
   const result = await mermaid.render(id, source);
   return result.svg;
 }
 
 export function MermaidDiagram({ code, children }: { code?: string; children?: ReactNode }) {
+  const tokens = useSlideThemeTokens();
+  const themeSignature = useMemo(() => serializeThemeTokens(tokens), [tokens]);
   const source = normalizeDiagramCode(code, children);
   const [previewSvg, setPreviewSvg] = useState<string>("");
   const [zoomSvg, setZoomSvg] = useState<string>("");
@@ -257,9 +242,18 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
   const [zoomLoading, setZoomLoading] = useState(false);
   const previewId = useMemo(() => `mermaid-preview-${Math.random().toString(36).slice(2, 10)}`, []);
   const zoomId = useMemo(() => `mermaid-zoom-${Math.random().toString(36).slice(2, 10)}`, []);
-  const diagramSurfaceStyle = useMemo(() => resolveMermaidSurfaceStyle(), []);
-  const diagramFrameStyle = useMemo(() => resolveMermaidFrameStyle(), []);
-  const diagramMutedSurfaceStyle = useMemo(() => resolveMermaidMutedSurfaceStyle(), []);
+  const diagramSurfaceStyle = useMemo(
+    () => resolveMermaidSurfaceStyle(tokens),
+    [themeSignature, tokens],
+  );
+  const diagramFrameStyle = useMemo(
+    () => resolveMermaidFrameStyle(tokens),
+    [themeSignature, tokens],
+  );
+  const diagramMutedSurfaceStyle = useMemo(
+    () => resolveMermaidMutedSurfaceStyle(tokens),
+    [themeSignature, tokens],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -270,7 +264,7 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
         setZoomSvg("");
         setZoomLoading(false);
         const svg = await enqueueMermaidRender(() =>
-          renderMermaidSvg(previewId, source, "preview"),
+          renderMermaidSvg(previewId, source, "preview", tokens),
         );
         if (!cancelled) {
           setPreviewSvg(svg);
@@ -286,7 +280,7 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
     return () => {
       cancelled = true;
     };
-  }, [previewId, source]);
+  }, [previewId, source, themeSignature, tokens]);
 
   useEffect(() => {
     if (!zoomed || zoomSvg) return;
@@ -296,7 +290,9 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
     const render = async () => {
       try {
         setZoomLoading(true);
-        const svg = await enqueueMermaidRender(() => renderMermaidSvg(zoomId, source, "zoom"));
+        const svg = await enqueueMermaidRender(() =>
+          renderMermaidSvg(zoomId, source, "zoom", tokens),
+        );
         if (!cancelled) {
           setZoomSvg(svg);
           setError(null);
@@ -313,7 +309,7 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
     return () => {
       cancelled = true;
     };
-  }, [source, zoomId, zoomSvg, zoomed]);
+  }, [source, themeSignature, tokens, zoomId, zoomSvg, zoomed]);
 
   useEffect(() => {
     if (!zoomed) return;
@@ -352,31 +348,55 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
     zoomed && typeof document !== "undefined"
       ? createPortal(
           <div
-            className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-100/82 p-6 backdrop-blur-sm"
+            className="fixed inset-0 z-[120] flex items-center justify-center p-6 backdrop-blur-sm"
+            style={{ background: "color-mix(in srgb, var(--slide-ui-surface) 72%, transparent)" }}
             onClick={() => setZoomed(false)}
           >
             <div
-              className="relative flex h-[min(92vh,1200px)] w-[min(96vw,1600px)] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white "
+              className="relative flex h-[min(92vh,1200px)] w-[min(96vw,1600px)] flex-col overflow-hidden rounded-3xl border"
+              style={{
+                borderColor: tokens.ui.border,
+                background: tokens.diagram.surface,
+              }}
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 text-sm text-slate-700">
+              <div
+                className="flex items-center justify-between border-b px-5 py-3 text-sm"
+                style={{
+                  borderColor: tokens.ui.border,
+                  color: tokens.ui.muted,
+                }}
+              >
                 <div>
-                  <div className="font-semibold tracking-[0.16em] text-slate-900 uppercase">
+                  <div
+                    className="font-semibold tracking-[0.16em] uppercase"
+                    style={{ color: tokens.ui.heading }}
+                  >
                     Mermaid
                   </div>
-                  <div className="mt-1 text-xs text-slate-500">Esc or click outside to close</div>
+                  <div className="mt-1 text-xs" style={{ color: tokens.ui.muted }}>
+                    Esc or click outside to close
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setZoomed(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border transition"
+                  style={{
+                    borderColor: tokens.ui.border,
+                    background: tokens.diagram.surfaceAlt,
+                    color: tokens.ui.muted,
+                  }}
                   aria-label="Close Mermaid zoom preview"
                   title="Close"
                 >
                   <X size={18} />
                 </button>
               </div>
-              <div className="flex-1 overflow-auto bg-slate-50 p-6">
+              <div
+                className="flex-1 overflow-auto p-6"
+                style={{ background: tokens.diagram.surfaceAlt }}
+              >
                 {zoomSvg ? (
                   <div
                     className="inline-block min-w-full rounded-2xl border p-6 [&_svg]:h-auto [&_svg]:max-w-none [&_svg_tspan]:fill-current [&_svg_text]:fill-current"
@@ -405,7 +425,12 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
           <button
             type="button"
             onClick={() => setZoomed(true)}
-            className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/80 bg-white/92 text-slate-700 shadow-sm transition hover:bg-white hover:text-slate-950"
+            className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition"
+            style={{
+              borderColor: tokens.ui.border,
+              background: "color-mix(in srgb, var(--slide-diagram-surface) 92%, white 8%)",
+              color: tokens.ui.muted,
+            }}
             aria-label="Open Mermaid zoom preview"
             title="Zoom Mermaid diagram"
           >

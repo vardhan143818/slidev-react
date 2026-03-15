@@ -1,67 +1,97 @@
 import { expect, test } from "vitest";
-import { resolveMermaidSurfaceStyle, resolveMermaidThemeVariables } from "../MermaidDiagram";
+import {
+  resolveMermaidFrameStyle,
+  resolveMermaidMutedSurfaceStyle,
+  resolveMermaidSurfaceStyle,
+  resolveMermaidThemeVariables,
+} from "../MermaidDiagram";
+import type { SlideThemeTokens } from "../../../theme/types";
 
-const themedProperties = [
-  "--font-sans",
-  "--slide-diagram-primary",
-  "--slide-diagram-primary-border",
-  "--slide-diagram-line",
-  "--slide-diagram-surface",
-  "--slide-diagram-surface-alt",
-  "--slide-diagram-text",
-  "--slide-diagram-note",
-  "--slide-chart-category-1",
-  "--slide-chart-category-2",
-  "--slide-chart-category-3",
-  "--slide-chart-category-4",
-  "--slide-chart-category-5",
-  "--slide-chart-category-6",
-  "--slide-chart-accent",
-];
+const tokens: SlideThemeTokens = {
+  fonts: {
+    sans: "Avenir Next",
+    serif: "Iowan Old Style",
+    mono: "JetBrains Mono",
+  },
+  ui: {
+    background: "#faf9f5",
+    surface: "#f5f0e8",
+    surfaceStrong: "#ede8df",
+    text: "#141413",
+    heading: "#141413",
+    muted: "#6b5f4e",
+    mutedSoft: "#b0aea5",
+    accent: "#d97757",
+    accentStrong: "#d4722b",
+    accentSoft: "#ebd4cb",
+    border: "rgba(20, 20, 19, 0.1)",
+    borderStrong: "rgba(20, 20, 19, 0.16)",
+  },
+  feedback: {
+    positive: "#788c5d",
+    negative: "#b55a4e",
+    warning: "#d4722b",
+    info: "#6a9bcc",
+    neutral: "#a9a59c",
+  },
+  chart: {
+    accent: "#d97757",
+    categorical: ["#d97757", "#6a9bcc", "#788c5d", "#c78b72", "#9f8d79", "#b8b2a6"],
+    positive: "#788c5d",
+    negative: "#b55a4e",
+    warning: "#d4722b",
+    neutral: "#a9a59c",
+    axis: "rgba(20, 20, 19, 0.1)",
+    grid: "#efe9df",
+  },
+  diagram: {
+    primary: "#ebd4cb",
+    primaryBorder: "#d97757",
+    line: "#7a746a",
+    surface: "#f5f0e8",
+    surfaceAlt: "#efe9df",
+    text: "#141413",
+    note: "#f3e6c8",
+    categorical: ["#d97757", "#6a9bcc", "#788c5d", "#c78b72", "#9f8d79", "#b8b2a6"],
+    accent: "#d97757",
+  },
+  addons: {
+    insight: {
+      border: "rgba(120, 140, 93, 0.22)",
+      background: "rgba(245, 240, 232, 0.96)",
+      title: "#5a6349",
+      text: "#2d2b28",
+      shadow: "0 16px 38px rgba(72, 58, 43, 0.07)",
+    },
+  },
+};
 
-function resetThemeProperties() {
-  for (const property of themedProperties) {
-    document.documentElement.style.removeProperty(property);
-  }
-}
+test("resolves diagram tokens from theme tokens", () => {
+  const themeVariables = resolveMermaidThemeVariables(tokens);
+  const surfaceStyle = resolveMermaidSurfaceStyle(tokens);
+  const frameStyle = resolveMermaidFrameStyle(tokens);
+  const mutedSurfaceStyle = resolveMermaidMutedSurfaceStyle(tokens);
 
-test("resolves diagram tokens from CSS custom properties", () => {
-  resetThemeProperties();
-
-  try {
-    document.documentElement.style.setProperty("--font-sans", "Avenir Next");
-    document.documentElement.style.setProperty("--slide-diagram-primary", "#eacfc0");
-    document.documentElement.style.setProperty("--slide-diagram-primary-border", "#c56e45");
-    document.documentElement.style.setProperty("--slide-diagram-line", "#6d635d");
-    document.documentElement.style.setProperty("--slide-diagram-surface", "#fff8ef");
-    document.documentElement.style.setProperty("--slide-diagram-surface-alt", "#f0e7dc");
-    document.documentElement.style.setProperty("--slide-diagram-text", "#1f1a17");
-    document.documentElement.style.setProperty("--slide-diagram-note", "#f4e4bf");
-    document.documentElement.style.setProperty("--slide-chart-category-1", "#c56e45");
-    document.documentElement.style.setProperty("--slide-chart-category-2", "#7c8a6a");
-    document.documentElement.style.setProperty("--slide-chart-category-3", "#9b7e62");
-    document.documentElement.style.setProperty("--slide-chart-category-4", "#d08b66");
-    document.documentElement.style.setProperty("--slide-chart-category-5", "#b4977c");
-    document.documentElement.style.setProperty("--slide-chart-category-6", "#7f6b5d");
-    document.documentElement.style.setProperty("--slide-chart-accent", "#c56e45");
-
-    const themeVariables = resolveMermaidThemeVariables();
-    const surfaceStyle = resolveMermaidSurfaceStyle();
-
-    expect(themeVariables.fontFamily).toBe("Avenir Next");
-    expect(themeVariables.primaryColor).toBe("#eacfc0");
-    expect(themeVariables.primaryBorderColor).toBe("#c56e45");
-    expect(themeVariables.lineColor).toBe("#6d635d");
-    expect(themeVariables.mainBkg).toBe("#fff8ef");
-    expect(themeVariables.noteBkgColor).toBe("#f4e4bf");
-    expect(themeVariables.git0).toBe("#c56e45");
-    expect(themeVariables.git5).toBe("#7f6b5d");
-    expect(themeVariables.fillType6).toBe("#c56e45");
-    expect(surfaceStyle).toEqual({
-      color: "#1f1a17",
-      fontFamily: "Avenir Next",
-    });
-  } finally {
-    resetThemeProperties();
-  }
+  expect(themeVariables.fontFamily).toBe("Avenir Next");
+  expect(themeVariables.primaryColor).toBe("#ebd4cb");
+  expect(themeVariables.primaryBorderColor).toBe("#d97757");
+  expect(themeVariables.lineColor).toBe("#7a746a");
+  expect(themeVariables.mainBkg).toBe("#f5f0e8");
+  expect(themeVariables.noteBkgColor).toBe("#f3e6c8");
+  expect(themeVariables.git0).toBe("#d97757");
+  expect(themeVariables.git5).toBe("#b8b2a6");
+  expect(themeVariables.fillType6).toBe("#d97757");
+  expect(surfaceStyle).toEqual({
+    color: "#141413",
+    fontFamily: "Avenir Next",
+  });
+  expect(frameStyle).toEqual({
+    borderColor: "rgba(20, 20, 19, 0.1)",
+    background: "#f5f0e8",
+  });
+  expect(mutedSurfaceStyle).toEqual({
+    borderColor: "rgba(20, 20, 19, 0.1)",
+    background: "#efe9df",
+    color: "#7a746a",
+  });
 });

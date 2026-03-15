@@ -5,6 +5,7 @@ import {
 } from "@slidev-react/core/slides/viewport";
 import { resolveSlideTheme } from "../registry";
 import { resolveThemeRootAttributes } from "../ThemeProvider";
+import { defaultSlideThemeTokens, themeTokensToCssVars } from "../themeTokens";
 
 describe("ThemeProvider root attributes", () => {
   it("keeps theme attributes when no viewport is provided", () => {
@@ -31,6 +32,17 @@ describe("ThemeProvider root attributes", () => {
     expect(resolveThemeRootAttributes(theme, DEFAULT_SLIDES_VIEWPORT)).toEqual({
       "data-slide-theme": "default",
       "data-slide-viewport-orientation": "landscape",
+    });
+  });
+
+  it("serializes theme tokens into shared css vars", () => {
+    expect(themeTokensToCssVars(defaultSlideThemeTokens)).toMatchObject({
+      "--font-sans": defaultSlideThemeTokens.fonts.sans,
+      "--slide-ui-accent": defaultSlideThemeTokens.ui.accent,
+      "--slide-color-body": "var(--slide-ui-text)",
+      "--slide-chart-category-4": defaultSlideThemeTokens.chart.categorical[3],
+      "--slide-diagram-primary": defaultSlideThemeTokens.diagram.primary,
+      "--slide-insight-bg": defaultSlideThemeTokens.addons.insight.background,
     });
   });
 });

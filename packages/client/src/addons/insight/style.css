@@ -1,11 +1,3 @@
-:root[data-slide-addon-insight="active"] {
-  --slide-insight-border: rgba(14, 116, 144, 0.24);
-  --slide-insight-bg: rgba(236, 254, 255, 0.88);
-  --slide-insight-title: #155e75;
-  --slide-insight-text: #164e63;
-  --slide-insight-shadow: 0 16px 38px rgba(14, 116, 144, 0.08);
-}
-
 .slide-layout-spotlight {
   background:
     radial-gradient(circle at top left, rgba(103, 232, 249, 0.22), transparent 34%),

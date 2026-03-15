@@ -43,13 +43,13 @@ The project is under active development. Core features (MDX authoring, layouts, 
 
 This is a pnpm workspace monorepo with the following packages:
 
-| Package | Path | Description |
-|---------|------|-------------|
-| `@slidev-react/core` | `packages/core` | Pure presentation models, flow logic, and shared contracts |
-| `@slidev-react/client` | `packages/client` | React app assembly, providers, presentation UI, themes, addons |
-| `@slidev-react/node` | `packages/node` | Node-side dev/build/export/lint entry points and servers |
-| `@slidev-react/cli` | `packages/cli` | The `slidev-react` command-line interface |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | The "paper" theme package |
+| Package                     | Path                   | Description                                                    |
+| --------------------------- | ---------------------- | -------------------------------------------------------------- |
+| `@slidev-react/core`        | `packages/core`        | Pure presentation models, flow logic, and shared contracts     |
+| `@slidev-react/client`      | `packages/client`      | React app assembly, providers, presentation UI, themes, addons |
+| `@slidev-react/node`        | `packages/node`        | Node-side dev/build/export/lint entry points and servers       |
+| `@slidev-react/cli`         | `packages/cli`         | The `slidev-react` command-line interface                      |
+| `@slidev-react/theme-paper` | `packages/theme-paper` | The "paper" theme package                                      |
 
 The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Sub-packages under `packages/core`, `packages/node`, and `packages/cli` are publishable to npm via [Changesets](https://github.com/changesets/changesets).
 
@@ -71,21 +71,21 @@ Open the viewer at `http://localhost:5173/1` or the presenter at `http://localho
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start the Vite development server |
-| `pnpm build` | Build production assets |
-| `pnpm preview` | Preview the production build |
-| `pnpm clean` | Remove `dist/`, `.generated/`, and `output/` |
-| `pnpm presentation:server` | Start the WebSocket relay for cross-device sync |
-| `pnpm test` | Run the Vitest suite |
-| `pnpm test:e2e` | Run the Playwright end-to-end suite |
-| `pnpm test:e2e:headed` | Run Playwright with a visible browser |
-| `pnpm test:e2e:install` | Install the Chromium browser for Playwright |
-| `pnpm lint` | Run type-aware Oxlint |
-| `pnpm lint:slides` | Lint slides authoring (unknown themes, addons, layouts) |
-| `pnpm format` | Format the repository with Oxfmt |
-| `pnpm format:check` | Check formatting with Oxfmt |
+| Command                    | Description                                             |
+| -------------------------- | ------------------------------------------------------- |
+| `pnpm dev`                 | Start the Vite development server                       |
+| `pnpm build`               | Build production assets                                 |
+| `pnpm preview`             | Preview the production build                            |
+| `pnpm clean`               | Remove `dist/`, `.generated/`, and `output/`            |
+| `pnpm presentation:server` | Start the WebSocket relay for cross-device sync         |
+| `pnpm test`                | Run the Vitest suite                                    |
+| `pnpm test:e2e`            | Run the Playwright end-to-end suite                     |
+| `pnpm test:e2e:headed`     | Run Playwright with a visible browser                   |
+| `pnpm test:e2e:install`    | Install the Chromium browser for Playwright             |
+| `pnpm lint`                | Run type-aware Oxlint                                   |
+| `pnpm lint:slides`         | Lint slides authoring (unknown themes, addons, layouts) |
+| `pnpm format`              | Format the repository with Oxfmt                        |
+| `pnpm format:check`        | Check formatting with Oxfmt                             |
 
 Use `pnpm lint:slides -- --strict` to fail on warnings in CI.
 
@@ -142,28 +142,28 @@ Core authoring rules:
 
 **Slides-level** (first slide block):
 
-| Field | Description |
-|-------|-------------|
-| `title` | Presentation title |
-| `theme` | Theme id (e.g. `paper`); falls back to `default` |
-| `addons` | List of addon ids to enable (e.g. `[mermaid, g2, insight]`) |
-| `layout` | Default layout for all slides |
-| `background` | Default background (color, gradient, or image URL) |
-| `transition` | Default transition: `fade`, `slide-left`, `slide-up`, `zoom` |
-| `exportFilename` | Base name for export files and recording downloads |
+| Field            | Description                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| `title`          | Presentation title                                           |
+| `theme`          | Theme id (e.g. `paper`); falls back to `default`             |
+| `addons`         | List of addon ids to enable (e.g. `[mermaid, g2, insight]`)  |
+| `layout`         | Default layout for all slides                                |
+| `background`     | Default background (color, gradient, or image URL)           |
+| `transition`     | Default transition: `fade`, `slide-left`, `slide-up`, `zoom` |
+| `exportFilename` | Base name for export files and recording downloads           |
 
 **Slide-level**:
 
-| Field | Description |
-|-------|-------------|
-| `title` | Slide title |
-| `layout` | Layout override for this slide |
-| `class` | CSS class applied to the stage article element |
-| `background` | Colors, gradients, CSS background values, or bare image URLs |
-| `transition` | Per-slide transition override |
-| `clicks` | Explicit reveal steps (even when fewer `<Reveal />` blocks exist) |
-| `notes` | Presenter notes (YAML block strings work best) |
-| `src` | Load slide body from an external file relative to `slides.mdx` |
+| Field        | Description                                                       |
+| ------------ | ----------------------------------------------------------------- |
+| `title`      | Slide title                                                       |
+| `layout`     | Layout override for this slide                                    |
+| `class`      | CSS class applied to the stage article element                    |
+| `background` | Colors, gradients, CSS background values, or bare image URLs      |
+| `transition` | Per-slide transition override                                     |
+| `clicks`     | Explicit reveal steps (even when fewer `<Reveal />` blocks exist) |
+| `notes`      | Presenter notes (YAML block strings work best)                    |
+| `src`        | Load slide body from an external file relative to `slides.mdx`    |
 
 Invalid frontmatter reports field-level parser errors, and compile-time generation warns for unknown themes or addons.
 
@@ -184,6 +184,7 @@ exportFilename: client-demo
 ---
 
 ---
+
 title: Compare
 layout: two-cols
 class: px-20
@@ -192,8 +193,9 @@ transition: slide-left
 clicks: 3
 src: ./slides/compare.mdx
 notes: |
-  Open with the tradeoff, not the implementation.
-  Pause after the chart before moving to the API boundary.
+Open with the tradeoff, not the implementation.
+Pause after the chart before moving to the API boundary.
+
 ---
 
 # Left column
@@ -224,12 +226,13 @@ Themes are distributed as workspace packages. The built-in non-default theme is 
 
 A theme package exports a `SlideThemeDefinition` from its entry point, with support for:
 
+- `tokens` — the single source of truth for theme fonts, UI colors, chart colors, diagram colors, and addon colors
 - `rootAttributes` and `rootClassName` — document-level tokens or selectors
 - `layouts` — override or extend slide layouts
 - `mdxComponents` — override MDX helpers such as `Badge`
 - `provider` — theme-scoped React context when needed
 
-Theme CSS files (e.g. `style.css`) are auto-loaded. If a requested theme is missing, the runtime falls back to the default theme.
+Theme CSS files (e.g. `style.css`) are auto-loaded. CSS custom properties are derived from `tokens` at runtime, so CSS is a consumer of theme tokens rather than the source of truth. If a requested theme is missing, the runtime falls back to the default theme.
 
 ## Addons
 
@@ -248,10 +251,10 @@ Addons live under `packages/client/src/addons/<addon-id>/` and are discovered au
 
 ### Available Addons
 
-| Addon | Components | Description |
-|-------|-----------|-------------|
-| `mermaid` | `MermaidDiagram` | Mermaid diagram rendering |
-| `g2` | `Chart` | G2 data visualization charts |
+| Addon     | Components                    | Description                            |
+| --------- | ----------------------------- | -------------------------------------- |
+| `mermaid` | `MermaidDiagram`              | Mermaid diagram rendering              |
+| `g2`      | `Chart`                       | G2 data visualization charts           |
 | `insight` | `Insight`, `spotlight` layout | Insight component and spotlight layout |
 
 ### Addon Contract
@@ -283,33 +286,37 @@ layout: spotlight
 
 ### Core (always available)
 
-| Component | Description |
-|-----------|-------------|
-| `Badge` | Inline badge labels |
-| `Callout` | Callout blocks with titles |
-| `Annotate` | Rough-notation style annotations (highlight, underline, box, bracket) |
-| `CourseCover` | Course cover page helper |
-| `MagicMoveDemo` | Shiki Magic Move code animations |
-| `MinimaxReactVisualizer` | Minimax tree visualizer |
-| `PlantUmlDiagram` | PlantUML diagram rendering |
-| `Reveal` | Step-based reveal for click-triggered content |
-| `RevealGroup` | Auto-numbered reveal container |
+| Component                | Description                                                           |
+| ------------------------ | --------------------------------------------------------------------- |
+| `Badge`                  | Inline badge labels                                                   |
+| `Callout`                | Callout blocks with titles                                            |
+| `Annotate`               | Rough-notation style annotations (highlight, underline, box, bracket) |
+| `CourseCover`            | Course cover page helper                                              |
+| `MagicMoveDemo`          | Shiki Magic Move code animations                                      |
+| `MinimaxReactVisualizer` | Minimax tree visualizer                                               |
+| `PlantUmlDiagram`        | PlantUML diagram rendering                                            |
+| `Reveal`                 | Step-based reveal for click-triggered content                         |
+| `RevealGroup`            | Auto-numbered reveal container                                        |
 
 ### Via Addons
 
-| Component | Addon | Description |
-|-----------|-------|-------------|
+| Component        | Addon     | Description      |
+| ---------------- | --------- | ---------------- |
 | `MermaidDiagram` | `mermaid` | Mermaid diagrams |
-| `Chart` | `g2` | G2 data charts |
-| `Insight` | `insight` | Insight blocks |
+| `Chart`          | `g2`      | G2 data charts   |
+| `Insight`        | `insight` | Insight blocks   |
 
 `Annotate` example:
 
 ```mdx
 <Annotate>Default highlight</Annotate>
 <Annotate type="underline">Key idea</Annotate>
-<Annotate type="box" color="#2563eb">API boundary</Annotate>
-<Annotate type="bracket" brackets={["left", "right"]}>Focus block</Annotate>
+<Annotate type="box" color="#2563eb">
+  API boundary
+</Annotate>
+<Annotate type="bracket" brackets={["left", "right"]}>
+  Focus block
+</Annotate>
 ```
 
 ## Project Structure

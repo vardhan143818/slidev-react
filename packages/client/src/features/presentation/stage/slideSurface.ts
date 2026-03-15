@@ -14,7 +14,7 @@ function looksLikeBareImageSource(value: string) {
 
 function resolveBackgroundStyle(background: string | undefined): CSSProperties {
   const style: CSSProperties = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--slide-ui-background)",
   };
 
   if (!background) return style;

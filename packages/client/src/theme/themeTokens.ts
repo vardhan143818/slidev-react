@@ -1,0 +1,146 @@
+import type { SlideThemeTokens } from "./types";
+
+export const defaultSlideThemeTokens: SlideThemeTokens = {
+  fonts: {
+    sans: '"Inter", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
+    serif:
+      '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Source Han Serif SC", "Songti SC", serif',
+    mono: '"JetBrains Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", "Fira Code", monospace',
+  },
+  ui: {
+    background: "#ffffff",
+    surface: "#ffffff",
+    surfaceStrong: "#f8fafc",
+    text: "#0f172a",
+    heading: "#0f172a",
+    muted: "#475569",
+    mutedSoft: "#94a3b8",
+    accent: "#22c55e",
+    accentStrong: "#15803d",
+    accentSoft: "#dcfce7",
+    border: "rgba(15, 23, 42, 0.09)",
+    borderStrong: "rgba(15, 23, 42, 0.16)",
+  },
+  feedback: {
+    positive: "#22c55e",
+    negative: "#ef4444",
+    warning: "#f59e0b",
+    info: "#0ea5e9",
+    neutral: "#94a3b8",
+  },
+  chart: {
+    accent: "#22c55e",
+    categorical: ["#60a5fa", "#34d399", "#a78bfa", "#f472b6", "#fbbf24", "#f87171"],
+    positive: "#22c55e",
+    negative: "#ef4444",
+    warning: "#f59e0b",
+    neutral: "#94a3b8",
+    axis: "rgba(15, 23, 42, 0.16)",
+    grid: "#e8ecf1",
+  },
+  diagram: {
+    primary: "#dcfce7",
+    primaryBorder: "#16a34a",
+    line: "#334155",
+    surface: "#ffffff",
+    surfaceAlt: "#f8fafc",
+    text: "#0f172a",
+    note: "#fefce8",
+    categorical: ["#60a5fa", "#34d399", "#a78bfa", "#f472b6", "#fbbf24", "#f87171"],
+    accent: "#22c55e",
+  },
+  addons: {
+    insight: {
+      border: "rgba(14, 116, 144, 0.24)",
+      background: "rgba(236, 254, 255, 0.88)",
+      title: "#155e75",
+      text: "#164e63",
+      shadow: "0 16px 38px rgba(14, 116, 144, 0.08)",
+    },
+  },
+};
+
+export function themeTokensToCssVars(tokens: SlideThemeTokens): Record<string, string> {
+  return {
+    "--font-sans": tokens.fonts.sans,
+    "--font-serif": tokens.fonts.serif,
+    "--font-mono": tokens.fonts.mono,
+    "--slide-ui-background": tokens.ui.background,
+    "--slide-ui-surface": tokens.ui.surface,
+    "--slide-ui-surface-strong": tokens.ui.surfaceStrong,
+    "--slide-ui-text": tokens.ui.text,
+    "--slide-ui-heading": tokens.ui.heading,
+    "--slide-ui-muted": tokens.ui.muted,
+    "--slide-ui-muted-soft": tokens.ui.mutedSoft,
+    "--slide-ui-accent": tokens.ui.accent,
+    "--slide-ui-accent-strong": tokens.ui.accentStrong,
+    "--slide-ui-accent-soft": tokens.ui.accentSoft,
+    "--slide-ui-border": tokens.ui.border,
+    "--slide-ui-border-strong": tokens.ui.borderStrong,
+    "--slide-feedback-positive": tokens.feedback.positive,
+    "--slide-feedback-negative": tokens.feedback.negative,
+    "--slide-feedback-warning": tokens.feedback.warning,
+    "--slide-feedback-info": tokens.feedback.info,
+    "--slide-feedback-neutral": tokens.feedback.neutral,
+    "--slide-chart-accent": tokens.chart.accent,
+    "--slide-chart-category-1": tokens.chart.categorical[0],
+    "--slide-chart-category-2": tokens.chart.categorical[1],
+    "--slide-chart-category-3": tokens.chart.categorical[2],
+    "--slide-chart-category-4": tokens.chart.categorical[3],
+    "--slide-chart-category-5": tokens.chart.categorical[4],
+    "--slide-chart-category-6": tokens.chart.categorical[5],
+    "--slide-chart-positive": tokens.chart.positive,
+    "--slide-chart-negative": tokens.chart.negative,
+    "--slide-chart-warning": tokens.chart.warning,
+    "--slide-chart-neutral": tokens.chart.neutral,
+    "--slide-chart-axis": tokens.chart.axis,
+    "--slide-chart-grid": tokens.chart.grid,
+    "--slide-diagram-primary": tokens.diagram.primary,
+    "--slide-diagram-primary-border": tokens.diagram.primaryBorder,
+    "--slide-diagram-line": tokens.diagram.line,
+    "--slide-diagram-surface": tokens.diagram.surface,
+    "--slide-diagram-surface-alt": tokens.diagram.surfaceAlt,
+    "--slide-diagram-text": tokens.diagram.text,
+    "--slide-diagram-note": tokens.diagram.note,
+    "--slide-diagram-category-1": tokens.diagram.categorical[0],
+    "--slide-diagram-category-2": tokens.diagram.categorical[1],
+    "--slide-diagram-category-3": tokens.diagram.categorical[2],
+    "--slide-diagram-category-4": tokens.diagram.categorical[3],
+    "--slide-diagram-category-5": tokens.diagram.categorical[4],
+    "--slide-diagram-category-6": tokens.diagram.categorical[5],
+    "--slide-diagram-accent": tokens.diagram.accent,
+    "--slide-insight-border": tokens.addons.insight.border,
+    "--slide-insight-bg": tokens.addons.insight.background,
+    "--slide-insight-title": tokens.addons.insight.title,
+    "--slide-insight-text": tokens.addons.insight.text,
+    "--slide-insight-shadow": tokens.addons.insight.shadow,
+    "--slide-color-body": "var(--slide-ui-text)",
+    "--slide-color-heading": "var(--slide-ui-heading)",
+    "--slide-color-muted": "var(--slide-ui-muted)",
+    "--slide-link-decoration-color": "color-mix(in srgb, var(--slide-ui-accent) 28%, transparent)",
+    "--slide-link-decoration-color-hover":
+      "color-mix(in srgb, var(--slide-ui-accent) 52%, transparent)",
+    "--slide-list-bullet-bg":
+      "linear-gradient(135deg, color-mix(in srgb, var(--slide-ui-accent-soft) 66%, white 34%) 0%, var(--slide-ui-accent) 100%)",
+    "--slide-list-bullet-shadow":
+      "0 0 0 2px color-mix(in srgb, var(--slide-ui-accent) 10%, transparent), 0 4px 10px color-mix(in srgb, var(--slide-ui-accent-strong) 18%, transparent)",
+    "--slide-ol-badge-bg": "color-mix(in srgb, var(--slide-ui-accent) 13%, transparent)",
+    "--slide-ol-badge-color":
+      "color-mix(in srgb, var(--slide-ui-accent) 86%, var(--slide-ui-heading) 14%)",
+    "--slide-blockquote-border-color": "var(--slide-ui-accent)",
+    "--slide-blockquote-bg":
+      "color-mix(in srgb, var(--slide-ui-accent-soft) 38%, var(--slide-ui-surface) 62%)",
+    "--slide-blockquote-color": "var(--slide-ui-text)",
+    "--slide-table-head-bg": "color-mix(in srgb, var(--slide-ui-heading) 3.5%, transparent)",
+    "--slide-inline-code-bg": "color-mix(in srgb, var(--slide-ui-heading) 6%, transparent)",
+    "--slide-badge-bg":
+      "color-mix(in srgb, var(--slide-ui-accent-soft) 72%, var(--slide-ui-surface) 28%)",
+    "--slide-badge-color":
+      "color-mix(in srgb, var(--slide-ui-accent) 74%, var(--slide-ui-heading) 26%)",
+    "--slide-badge-border": "1px solid color-mix(in srgb, var(--slide-ui-accent) 16%, transparent)",
+  };
+}
+
+export function serializeThemeTokens(tokens: SlideThemeTokens) {
+  return JSON.stringify(tokens);
+}

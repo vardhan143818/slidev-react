@@ -26,19 +26,19 @@ Weak fit today:
 
 ## Quick Mapping
 
-| Slidev concept           | `slidev-react` status             | Notes                                                 |
-| ------------------------ | --------------------------------- | ----------------------------------------------------- |
-| Slides frontmatter       | supported                         | Use slides frontmatter in `slides.mdx`                |
-| Slide frontmatter        | supported                         | Use `---` to start a slide, then slide frontmatter    |
-| Markdown slides          | supported                         | Markdown and MDX both work                            |
-| Vue components in slides | rewrite required                  | Replace with React components / MDX helpers           |
-| Presenter notes          | supported with different syntax   | Use `notes:` in slide frontmatter                     |
-| Layouts                  | supported                         | Built-in layouts plus theme/addon layouts             |
-| Themes                   | supported with different contract | npm package themes (`@slidev-react/theme-<id>`)       |
-| Addons / extensions      | supported with different contract | Built-in addon seam, not broad ecosystem compatibility|
-| PDF / PNG export         | supported                         | Browser print and Playwright export are available     |
-| Reveal flow              | supported with React-first syntax | Use `<Step />`, not Vue directives                    |
-| Monaco / live coding     | not implemented yet               | Planned but not shipped                               |
+| Slidev concept           | `slidev-react` status             | Notes                                                  |
+| ------------------------ | --------------------------------- | ------------------------------------------------------ |
+| Slides frontmatter       | supported                         | Use slides frontmatter in `slides.mdx`                 |
+| Slide frontmatter        | supported                         | Use `---` to start a slide, then slide frontmatter     |
+| Markdown slides          | supported                         | Markdown and MDX both work                             |
+| Vue components in slides | rewrite required                  | Replace with React components / MDX helpers            |
+| Presenter notes          | supported with different syntax   | Use `notes:` in slide frontmatter                      |
+| Layouts                  | supported                         | Built-in layouts plus theme/addon layouts              |
+| Themes                   | supported with different contract | npm package themes (`@slidev-react/theme-<id>`)        |
+| Addons / extensions      | supported with different contract | Built-in addon seam, not broad ecosystem compatibility |
+| PDF / PNG export         | supported                         | Browser print and Playwright export are available      |
+| Reveal flow              | supported with React-first syntax | Use `<Step />`, not Vue directives                     |
+| Monaco / live coding     | not implemented yet               | Planned but not shipped                                |
 
 ## Frontmatter Mapping
 
@@ -140,7 +140,8 @@ Themes:
 
 - installed as npm packages (`@slidev-react/theme-<id>`) or local workspace packages (`packages/theme-<id>/`)
 - export a `SlideThemeDefinition` from `index.ts`
-- can provide layouts, MDX component overrides, root attributes, and an optional provider
+- provide a required `tokens` object as the single theme source of truth
+- can also provide layouts, MDX component overrides, root attributes, and an optional provider
 
 Addons:
 

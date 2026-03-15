@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/core",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": false,
   "description": "Pure presentation models, flow, and shared contracts for slidev-react",
   "license": "MIT",

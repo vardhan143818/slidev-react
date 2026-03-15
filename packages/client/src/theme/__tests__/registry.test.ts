@@ -12,6 +12,7 @@ describe("theme registry", () => {
     const theme = resolveSlideTheme();
 
     expect(theme.definition.id).toBe("default");
+    expect(theme.tokens.ui.accent).toBe("#22c55e");
   });
 
   it("provides default layouts and base mdx components", () => {
@@ -38,6 +39,7 @@ describe("theme registry", () => {
     expect(theme.rootAttributes).toEqual({
       "data-slide-theme": "absolutely",
     });
+    expect(theme.tokens.ui.accent).toBe("#cc7d5e");
     expect(theme.layouts.default).toBeDefined();
     expect(theme.layouts["two-cols"]).toBeDefined();
     expect(theme.layouts.cover).toBe(absolutelyTheme.layouts?.cover);
