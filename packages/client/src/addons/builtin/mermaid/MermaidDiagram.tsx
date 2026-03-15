@@ -2,9 +2,9 @@ import mermaid from "mermaid";
 import { Expand, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { useSlideThemeTokens } from "../../theme/ThemeProvider";
-import { serializeThemeTokens } from "../../theme/themeTokens";
-import type { SlideThemeTokens } from "../../theme/types";
+import { useSlideThemeTokens } from "../../../theme/ThemeProvider";
+import { serializeThemeTokens } from "../../../theme/themeTokens";
+import type { SlideThemeTokens } from "../../../theme/types";
 
 function normalizeDiagramCode(code: string | undefined, children: ReactNode) {
   if (typeof code === "string") return code;

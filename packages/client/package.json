@@ -12,26 +12,36 @@
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./runtime": {
-      "types": "./dist/src/runtime.d.ts",
-      "import": "./dist/runtime.js"
+      "types": "./dist/src/runtime/entry.d.ts",
+      "import": "./dist/runtime.js",
+      "default": "./dist/runtime.js"
+    },
+    "./runtime/manifest": {
+      "types": "./dist/src/runtime/manifest.d.ts",
+      "import": "./dist/runtime/manifest.js",
+      "default": "./dist/runtime/manifest.js"
     },
     "./style.css": "./dist/style.css",
     "./manifest": "./dist/manifest.json",
     "./addons/mermaid": {
-      "types": "./dist/src/addons/mermaid/index.d.ts",
-      "import": "./dist/addons/mermaid.js"
+      "types": "./dist/src/addons/builtin/mermaid/index.d.ts",
+      "import": "./dist/addons/mermaid.js",
+      "default": "./dist/addons/mermaid.js"
     },
     "./addons/g2": {
-      "types": "./dist/src/addons/g2/index.d.ts",
-      "import": "./dist/addons/g2.js"
+      "types": "./dist/src/addons/builtin/g2/index.d.ts",
+      "import": "./dist/addons/g2.js",
+      "default": "./dist/addons/g2.js"
     },
     "./addons/g2/style.css": "./dist/addons/g2/style.css",
     "./addons/insight": {
-      "types": "./dist/src/addons/insight/index.d.ts",
-      "import": "./dist/addons/insight.js"
+      "types": "./dist/src/addons/builtin/insight/index.d.ts",
+      "import": "./dist/addons/insight.js",
+      "default": "./dist/addons/insight.js"
     },
     "./addons/insight/style.css": "./dist/addons/insight/style.css",
     "./package.json": "./package.json"

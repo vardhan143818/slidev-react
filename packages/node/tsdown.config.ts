@@ -3,7 +3,7 @@ import { defineConfig } from "vite-plus/pack";
 export default defineConfig({
   entry: {
     index: "src/index.ts",
-    "slides/build/createSlidesViteConfig": "src/slides/build/createSlidesViteConfig.ts",
+    "slides/build/createSlidesViteConfig": "src/slides/build/config/createSlidesViteConfig.ts",
   },
   dts: true,
   deps: {

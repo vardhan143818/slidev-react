@@ -1,4 +1,4 @@
-import type { SlideAddonDefinition } from "../types";
+import type { SlideAddonDefinition } from "../../types";
 import { MermaidDiagram } from "./MermaidDiagram";
 
 export const addon: SlideAddonDefinition = {

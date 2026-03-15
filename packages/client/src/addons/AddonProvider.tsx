@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { resolveSlideAddons } from "./registry";
+import { resolveSlideAddons } from "./runtime/registry";
 import type { ResolvedSlideAddons } from "./types";
 
 const AddonContext = createContext<ResolvedSlideAddons | null>(null);

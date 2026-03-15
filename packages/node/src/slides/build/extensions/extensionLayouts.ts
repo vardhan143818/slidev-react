@@ -7,7 +7,7 @@ const require = createRequire(import.meta.url);
 
 function extractStringArrayLiteral(source: string, propertyName: string) {
   const propertyIndex = source.indexOf(`${propertyName}:`);
-  if (propertyIndex === -1) return [];
+  if (propertyIndex === -1) return null;
 
   const arrayStart = source.indexOf("[", propertyIndex);
   if (arrayStart === -1) return [];
@@ -35,10 +35,51 @@ function extractStringArrayLiteral(source: string, propertyName: string) {
     .filter((value): value is string => Boolean(value));
 }
 
+function extractObjectLiteralKeys(source: string, propertyName: string) {
+  const propertyIndex = source.indexOf(`${propertyName}:`);
+  if (propertyIndex === -1) return [];
+
+  const objectStart = source.indexOf("{", propertyIndex);
+  if (objectStart === -1) return [];
+
+  let depth = 0;
+  let objectEnd = -1;
+  for (let index = objectStart; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === "{") depth += 1;
+    if (char === "}") depth -= 1;
+
+    if (depth === 0) {
+      objectEnd = index;
+      break;
+    }
+  }
+
+  if (objectEnd === -1) return [];
+
+  const objectBody = source.slice(objectStart + 1, objectEnd);
+  const keys = objectBody.matchAll(/(?:^|\n|\s)(["']?[\w-]+["']?)\s*:/g);
+
+  return [...keys]
+    .map((match) => match[1]?.replace(/^["']|["']$/g, ""))
+    .filter((key): key is string => Boolean(key));
+}
+
+function extractLayoutIds(source: string) {
+  const layoutIds = extractStringArrayLiteral(source, "layoutIds");
+  if (layoutIds) return layoutIds;
+
+  return extractObjectLiteralKeys(source, "layouts");
+}
+
+function readLayoutsFromDefinitionSource(source: string) {
+  return extractLayoutIds(source);
+}
+
 function readLayoutsFromLocalDefinition(definitionFilePath: string) {
   try {
     const source = readFileSync(definitionFilePath, "utf8");
-    return extractStringArrayLiteral(source, "layoutIds");
+    return readLayoutsFromDefinitionSource(source);
   } catch {
     return [];
   }
@@ -50,7 +91,7 @@ function readLayoutsFromResolvedImport(importPath: string) {
       ? path.normalize(new URL(importPath).pathname)
       : require.resolve(importPath);
     const source = readFileSync(resolvedImportPath, "utf8");
-    return extractStringArrayLiteral(source, "layoutIds");
+    return readLayoutsFromDefinitionSource(source);
   } catch {
     return [];
   }

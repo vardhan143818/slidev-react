@@ -19,46 +19,40 @@ export interface ClientRuntimeManifest {
 
 let manifestCache: ClientRuntimeManifest | null = null;
 
-function resolveClientPackageRoot() {
-  const clientPkgPath = require.resolve("@slidev-react/client/package.json");
-  return path.dirname(clientPkgPath);
-}
-
-function resolveClientRuntimeAsset(packageRoot: string, relativePath: string) {
-  return pathToFileURL(path.join(packageRoot, relativePath)).href;
+function resolveClientRuntimeSpecifier(specifier: string) {
+  return pathToFileURL(require.resolve(specifier)).href;
 }
 
 export function loadClientRuntimeManifest(): ClientRuntimeManifest {
   if (manifestCache) return manifestCache;
 
-  const clientPackageRoot = resolveClientPackageRoot();
-
   try {
     const manifestPath = require.resolve("@slidev-react/client/manifest");
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as ClientRuntimeManifest;
     manifestCache = {
-      runtimeEntry: resolveClientRuntimeAsset(clientPackageRoot, manifest.runtimeEntry),
-      styleEntry: resolveClientRuntimeAsset(clientPackageRoot, manifest.styleEntry),
+      runtimeEntry: resolveClientRuntimeSpecifier(manifest.runtimeEntry),
+      styleEntry: resolveClientRuntimeSpecifier(manifest.styleEntry),
       addons: manifest.addons.map((addon) => ({
         ...addon,
-        module: resolveClientRuntimeAsset(clientPackageRoot, addon.module),
+        module: resolveClientRuntimeSpecifier(addon.module),
         style: addon.style
-          ? resolveClientRuntimeAsset(clientPackageRoot, addon.style)
+          ? resolveClientRuntimeSpecifier(addon.style)
           : undefined,
       })),
     };
     return manifestCache;
   } catch {
+    const clientPackageRoot = path.dirname(require.resolve("@slidev-react/client/package.json"));
     const manifestPath = path.join(clientPackageRoot, "manifest.json");
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as ClientRuntimeManifest;
     manifestCache = {
-      runtimeEntry: resolveClientRuntimeAsset(clientPackageRoot, manifest.runtimeEntry),
-      styleEntry: resolveClientRuntimeAsset(clientPackageRoot, manifest.styleEntry),
+      runtimeEntry: resolveClientRuntimeSpecifier(manifest.runtimeEntry),
+      styleEntry: resolveClientRuntimeSpecifier(manifest.styleEntry),
       addons: manifest.addons.map((addon) => ({
         ...addon,
-        module: resolveClientRuntimeAsset(clientPackageRoot, addon.module),
+        module: resolveClientRuntimeSpecifier(addon.module),
         style: addon.style
-          ? resolveClientRuntimeAsset(clientPackageRoot, addon.style)
+          ? resolveClientRuntimeSpecifier(addon.style)
           : undefined,
       })),
     };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
-import { createSlidesViteConfig } from "../createSlidesViteConfig.ts";
+import { createSlidesViteConfig } from "../config/createSlidesViteConfig.ts";
 
 describe("createSlidesViteConfig", () => {
   it("keeps dependency optimization on the default Vite path", () => {

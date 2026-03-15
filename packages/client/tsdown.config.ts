@@ -3,10 +3,11 @@ import { defineConfig } from "vite-plus/pack";
 export default defineConfig({
   entry: {
     index: "src/index.ts",
-    runtime: "src/runtime.tsx",
-    "addons/mermaid": "src/addons/mermaid/index.ts",
-    "addons/g2": "src/addons/g2/index.ts",
-    "addons/insight": "src/addons/insight/index.ts",
+    runtime: "src/runtime/entry.tsx",
+    "runtime/manifest": "src/runtime/manifest.ts",
+    "addons/mermaid": "src/addons/builtin/mermaid/index.ts",
+    "addons/g2": "src/addons/builtin/g2/index.ts",
+    "addons/insight": "src/addons/builtin/insight/index.ts",
   },
   dts: true,
   deps: {
@@ -16,8 +17,8 @@ export default defineConfig({
     "manifest.json",
     "src/style.css",
     { from: "src/theme", to: "dist" },
-    { from: "src/addons/g2/style.css", to: "dist/addons/g2" },
-    { from: "src/addons/insight/style.css", to: "dist/addons/insight" },
+    { from: "src/addons/builtin/g2/style.css", to: "dist/addons/g2" },
+    { from: "src/addons/builtin/insight/style.css", to: "dist/addons/insight" },
   ],
   format: "esm",
   outDir: "dist",

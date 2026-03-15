@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { loadClientRuntimeManifest, type ClientRuntimeAddonManifestEntry } from "./runtimeManifest.ts";
+import { loadClientRuntimeManifest, type ClientRuntimeAddonManifestEntry } from "../runtime/runtimeManifest.ts";
 
 const require = createRequire(import.meta.url);
 const LOCAL_DEFINITION_FILES = ["index.ts", "index.tsx", "index.js", "index.jsx"];

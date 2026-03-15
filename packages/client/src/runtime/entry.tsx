@@ -3,7 +3,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import 'katex/dist/katex.min.css'
 import 'shiki-magic-move/dist/style.css'
-import App from './app/App'
+import App from '../app/App'
 
 export function mountSlidesApp(rootElement: HTMLElement | null) {
   if (!rootElement) {

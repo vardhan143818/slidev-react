@@ -1,7 +1,7 @@
 import type { SlidesDocument } from "@slidev-react/core/slides/slides";
 import { layoutNames } from "@slidev-react/core/slides/layout";
-import { readAddonLayoutIds, readThemeLayoutIds } from "../build/extensionLayouts.ts";
-import { resolveAddonExtension, resolveThemeExtension } from "../build/resolvedExtensions.ts";
+import { readAddonLayoutIds, readThemeLayoutIds } from "../build/extensions/extensionLayouts.ts";
+import { resolveAddonExtension, resolveThemeExtension } from "../build/extensions/resolvedExtensions.ts";
 
 function collectKnownLayouts() {
   return new Set<string>(layoutNames);
@@ -33,7 +33,7 @@ export async function validateSlidesAuthoring({
     );
   }
 
-  for (const layoutName of await readThemeLayoutIds(resolvedTheme)) {
+  for (const layoutName of readThemeLayoutIds(resolvedTheme)) {
     knownLayouts.add(layoutName);
   }
 
@@ -46,7 +46,7 @@ export async function validateSlidesAuthoring({
       continue;
     }
 
-    for (const layoutName of await readAddonLayoutIds(resolvedAddon)) {
+    for (const layoutName of readAddonLayoutIds(resolvedAddon)) {
       knownLayouts.add(layoutName);
     }
   }

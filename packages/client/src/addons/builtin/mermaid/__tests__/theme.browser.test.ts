@@ -5,7 +5,7 @@ import {
   resolveMermaidSurfaceStyle,
   resolveMermaidThemeVariables,
 } from "../MermaidDiagram";
-import type { SlideThemeTokens } from "../../../theme/types";
+import type { SlideThemeTokens } from "../../../../theme/types";
 
 const tokens: SlideThemeTokens = {
   fonts: {

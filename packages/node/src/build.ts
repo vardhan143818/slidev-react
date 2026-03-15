@@ -1,6 +1,6 @@
 import { build, mergeConfig } from "vite";
 import { parseBuildArgs } from "./cli/buildArgs.ts";
-import { createSlidesViteConfig } from "./slides/build/createSlidesViteConfig.ts";
+import { createSlidesViteConfig } from "./slides/build/config/createSlidesViteConfig.ts";
 import {
   createSuccessResult,
   resolveSlidesCommandContext,

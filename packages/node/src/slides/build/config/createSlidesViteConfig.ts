@@ -7,11 +7,11 @@ import {
   generatedSlidesAlias,
   generatedSlidesEntry,
   pluginCompileTimeSlides,
-} from "./generateCompiledSlides.ts";
-import { pluginAddons } from "./addonsPlugin.ts";
-import { loadClientRuntimeManifest } from "./runtimeManifest.ts";
-import { pluginTheme } from "./themePlugin.ts";
-import { pluginVirtualEntry } from "./virtualEntryPlugin.ts";
+} from "../artifacts/generateCompiledSlides.ts";
+import { pluginAddons } from "../extensions/addonsPlugin.ts";
+import { loadClientRuntimeManifest } from "../runtime/runtimeManifest.ts";
+import { pluginTheme } from "../extensions/themePlugin.ts";
+import { pluginVirtualEntry } from "../runtime/virtualEntryPlugin.ts";
 import { resolveSlidesSourceFile } from "./slidesSourceFile.ts";
 
 const require = createRequire(import.meta.url);

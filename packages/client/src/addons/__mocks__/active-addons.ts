@@ -1,5 +1,5 @@
 import type { ResolvedSlideAddons } from "../types";
-import { addon as insightAddon } from "../insight/index";
+import { addon as insightAddon } from "../builtin/insight/index";
 
 const activeAddons: ResolvedSlideAddons = {
   definitions: [insightAddon],

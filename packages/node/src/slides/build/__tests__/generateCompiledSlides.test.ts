@@ -2,7 +2,7 @@ import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promise
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vite-plus/test";
-import { generateCompiledSlidesArtifacts } from "../generateCompiledSlides.ts";
+import { generateCompiledSlidesArtifacts } from "../artifacts/generateCompiledSlides.ts";
 
 async function createTempAppRoot() {
   return mkdtemp(path.join(tmpdir(), "slide-react-slides-"));
@@ -451,6 +451,66 @@ describe("generateCompiledSlidesArtifacts", () => {
     );
     expect(result.warnings).not.toContain(
       'Unknown addon "focus". Add packages/addon-focus/index.ts or install @slidev-react/addon-focus.',
+    );
+    expect(result.warnings).not.toContain(
+      'Unknown layout "spotlight" in slide 1 (Intro). The runtime will fall back to the default layout.',
+    );
+  });
+
+  it("accepts layouts from legacy theme and addon definitions without layoutIds", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "packages/theme-paper/index.ts",
+      [
+        "export const theme = {",
+        "  id: 'paper',",
+        "  layouts: {",
+        "    cover: PaperCoverLayout,",
+        "  },",
+        "}",
+      ].join("\n"),
+    );
+    await writeSupportFile(
+      appRoot,
+      "packages/addon-focus/index.ts",
+      [
+        "export const addon = {",
+        "  id: 'focus',",
+        "  layouts: {",
+        "    spotlight: SpotlightLayout,",
+        "  },",
+        "}",
+      ].join("\n"),
+    );
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "theme: paper",
+        "addons:",
+        "  - focus",
+        "layout: cover",
+        "---",
+        "",
+        "---",
+        "title: Intro",
+        "layout: spotlight",
+        "---",
+        "",
+        "# Hello",
+      ].join("\n"),
+    );
+
+    const result = await generateCompiledSlidesArtifacts({
+      appRoot,
+      slidesSourceFile,
+    });
+
+    expect(result.warnings).not.toContain(
+      'Unknown slides layout "cover". The runtime will fall back to the default layout.',
     );
     expect(result.warnings).not.toContain(
       'Unknown layout "spotlight" in slide 1 (Intro). The runtime will fall back to the default layout.',

@@ -1,5 +1,5 @@
 import type { G2Theme } from "@antv/g2/esm/runtime/types/theme";
-import type { SlideThemeTokens } from "../../theme/types";
+import type { SlideThemeTokens } from "../../../theme/types";
 
 export function resolveChartFont(tokens: SlideThemeTokens): string {
   return tokens.fonts.sans;

@@ -1,5 +1,5 @@
 import path from "node:path";
-import { resolveSlidesSourceFile } from "./slides/build/slidesSourceFile.ts";
+import { resolveSlidesSourceFile } from "./slides/build/config/slidesSourceFile.ts";
 
 export interface CommandResult {
   code: number;

@@ -200,6 +200,62 @@ describe("lint-slides CLI", () => {
     expect(result.stderr).toBe("");
   });
 
+  it("accepts legacy theme and addon layout contributions without layoutIds", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "packages/theme-paper/index.ts",
+      [
+        "export const theme = {",
+        "  id: 'paper',",
+        "  layouts: {",
+        "    cover: PaperCoverLayout,",
+        "  },",
+        "}",
+      ].join("\n"),
+    );
+    await writeSupportFile(
+      appRoot,
+      "packages/addon-focus/index.ts",
+      [
+        "export const addon = {",
+        "  id: 'focus',",
+        "  layouts: {",
+        "    spotlight: SpotlightLayout,",
+        "  },",
+        "}",
+      ].join("\n"),
+    );
+    await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "theme: paper",
+        "addons:",
+        "  - focus",
+        "layout: cover",
+        "---",
+        "",
+        "---",
+        "title: Intro",
+        "layout: spotlight",
+        "---",
+        "",
+        "# Hello",
+      ].join("\n"),
+    );
+
+    const result = await runLintSlides({
+      cwd: appRoot,
+    });
+
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("Slides lint passed: no authoring warnings for slides.mdx");
+    expect(result.stderr).toBe("");
+  });
+
   it("accepts the absolutely theme package and its brand layouts", async () => {
     const appRoot = await createTempAppRoot();
     tempDirs.push(appRoot);

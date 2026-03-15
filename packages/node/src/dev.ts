@@ -1,6 +1,6 @@
 import { createServer, mergeConfig, type ViteDevServer } from "vite";
 import { parseDevArgs } from "./cli/devArgs.ts";
-import { createSlidesViteConfig } from "./slides/build/createSlidesViteConfig.ts";
+import { createSlidesViteConfig } from "./slides/build/config/createSlidesViteConfig.ts";
 import {
   createSuccessResult,
   resolveSlidesCommandContext,

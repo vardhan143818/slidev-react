@@ -3,10 +3,10 @@ import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { compile } from "@mdx-js/mdx";
 import type { Plugin, ViteDevServer } from "vite";
-import { getMdxCompileOptions } from "../compiling/mdx-options.ts";
-import { parseImportedSlides, parseSlides } from "../parsing/parseSlides.ts";
 import type { SlideUnit } from "@slidev-react/core/slides/slide";
-import { validateSlidesAuthoring } from "../validation/validateSlidesAuthoring.ts";
+import { getMdxCompileOptions } from "../../compiling/mdx-options.ts";
+import { parseImportedSlides, parseSlides } from "../../parsing/parseSlides.ts";
+import { validateSlidesAuthoring } from "../../validation/validateSlidesAuthoring.ts";
 
 const GENERATED_SLIDES_DIR_ROOT = ".slidev-react/slides";
 const GENERATED_SLIDE_MODULES_DIR = `${GENERATED_SLIDES_DIR_ROOT}/slides`;

@@ -1,4 +1,4 @@
-import type { SlideAddonDefinition } from "../types"
+import type { SlideAddonDefinition } from "../../types"
 import {
   Chart,
   BarChart,

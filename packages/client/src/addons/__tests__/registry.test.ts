@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vite-plus/test";
-import { listRegisteredAddons, resolveAddonDefinitions, resolveSlideAddons } from "../registry";
-import { Insight } from "../insight/Insight";
-import { InsightAddonProvider } from "../insight/InsightAddonProvider";
-import { SpotlightLayout } from "../insight/SpotlightLayout";
+import { listRegisteredAddons, resolveAddonDefinitions, resolveSlideAddons } from "../runtime/registry";
+import { Insight } from "../builtin/insight/Insight";
+import { InsightAddonProvider } from "../builtin/insight/InsightAddonProvider";
+import { SpotlightLayout } from "../builtin/insight/SpotlightLayout";
 
 describe("addon registry", () => {
   it("registers local addons discovered from the addons directory", () => {

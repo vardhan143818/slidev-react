@@ -8,7 +8,7 @@ for (const [key, value] of Object.entries(plotlib())) {
   register(key as Parameters<typeof register>[0], value as Parameters<typeof register>[1]);
 }
 
-import { useSlideThemeTokens } from "../../theme/ThemeProvider";
+import { useSlideThemeTokens } from "../../../theme/ThemeProvider";
 import {
   buildSlideTheme,
   resolveHeatmapPalette,

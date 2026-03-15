@@ -46,7 +46,11 @@ export function pluginVirtualEntry(options: {
           })
         : undefined;
 
-      buildIndexCleanup = virtualBuildIndex?.cleanup;
+      buildIndexCleanup = virtualBuildIndex
+        ? () => {
+            virtualBuildIndex.cleanup();
+          }
+        : undefined;
 
       return {
         appType: "custom",
