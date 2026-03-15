@@ -50,7 +50,9 @@ describe("slidev-react CLI", () => {
     expect(result.stdout).toContain("Commands:");
     expect(result.stdout).toContain("dev [file]");
     expect(result.stdout).toContain("export [file]");
-    expect(result.stdout).toContain("Supported dev options:");
+    expect(result.stdout).toContain(
+      "Run `slidev-react <command> --help` for command-specific options.",
+    );
     expect(result.stdout).toContain("Examples:");
   });
 
@@ -61,5 +63,24 @@ describe("slidev-react CLI", () => {
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain("error: unknown command 'nope'");
     expect(result.stderr).not.toContain("[slidev-react]");
+  });
+
+  it("prints command-specific help for export", async () => {
+    const result = await runCli(["export", "--help"]);
+
+    expect(result.code).toBe(0);
+    expect(result.stderr).toBe("");
+    expect(result.stdout).toContain("Usage: slidev-react export [options] [file]");
+    expect(result.stdout).toContain("Supported options:");
+    expect(result.stdout).toContain("--format pdf|png|all");
+    expect(result.stdout).toContain("--slides <range>");
+  });
+
+  it("rejects extra positional args for lint", async () => {
+    const result = await runCli(["lint", "slides-a.mdx", "slides-b.mdx"]);
+
+    expect(result.code).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain('[slidev-react] Unknown lint argument "slides-b.mdx".');
   });
 });

@@ -26,6 +26,10 @@ export function parseLintArgs(argv: string[]): LintCliArgs {
     }
 
     if (!entry.startsWith("--")) {
+      if (slidesFile) {
+        throw new Error(`Unknown lint argument "${entry}".`);
+      }
+
       slidesFile = entry;
       continue;
     }

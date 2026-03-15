@@ -46,6 +46,13 @@ export function parseBuildArgs(argv: string[]): BuildCliArgs {
       continue;
     }
 
+    if (entry === "--file" || entry.startsWith("--file=")) {
+      const result = readOptionValue(argv, index, "--file");
+      slidesFile = result.value;
+      index = result.nextIndex;
+      continue;
+    }
+
     if (entry === "--outDir" || entry.startsWith("--outDir=")) {
       const result = readOptionValue(argv, index, "--outDir");
       outDir = result.value;
@@ -74,19 +81,13 @@ export function parseBuildArgs(argv: string[]): BuildCliArgs {
 
     if (entry.startsWith("--sourcemap=")) {
       const value = entry.slice("--sourcemap=".length);
-      sourcemap =
-        value === "inline" || value === "hidden"
-          ? value
-          : parseBooleanFlag(value);
+      sourcemap = value === "inline" || value === "hidden" ? value : parseBooleanFlag(value);
       continue;
     }
 
     if (entry.startsWith("--minify=")) {
       const value = entry.slice("--minify=".length);
-      minify =
-        value === "esbuild" || value === "terser"
-          ? value
-          : parseBooleanFlag(value);
+      minify = value === "esbuild" || value === "terser" ? value : parseBooleanFlag(value);
       continue;
     }
 

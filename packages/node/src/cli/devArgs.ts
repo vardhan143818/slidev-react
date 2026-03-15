@@ -41,6 +41,13 @@ export function parseDevArgs(argv: string[]): DevCliArgs {
       continue;
     }
 
+    if (entry === "--file" || entry.startsWith("--file=")) {
+      const result = readOptionValue(argv, index, "--file");
+      slidesFile = result.value;
+      index = result.nextIndex;
+      continue;
+    }
+
     if (entry === "--host" || entry.startsWith("--host=")) {
       const result = readOptionValue(argv, index, "--host");
       host = result.value;

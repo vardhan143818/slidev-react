@@ -1,13 +1,9 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { buildPrintExportUrl } from "@slidev-react/core/presentation/export/urls";
-import { parseExportArgs } from "./cli/exportArgs.ts"
-import {
-  createSuccessResult,
-  type CommandResult,
-  type SlidesCommandOptions,
-} from "./context.ts"
-import { startSlidesDevServer, stopSlidesDevServer } from "./dev.ts"
-import type { ExportSlidesArtifactsResult } from "./exportBrowser.ts"
+import { parseExportArgs } from "./cli/exportArgs.ts";
+import { createSuccessResult, type CommandResult, type SlidesCommandOptions } from "./context.ts";
+import { startSlidesDevServer, stopSlidesDevServer } from "./dev.ts";
+import type { ExportSlidesArtifactsResult } from "./exportBrowser.ts";
 
 const DEV_SERVER_TIMEOUT_MS = 120_000;
 
@@ -63,7 +59,7 @@ export async function exportSlidesArtifacts(
   }
 
   try {
-    const { exportSlidesInBrowser } = await import("./exportBrowser.ts")
+    const { exportSlidesInBrowser } = await import("./exportBrowser.ts");
     return await exportSlidesInBrowser({
       printUrl,
       format: exportOptions.format,
@@ -75,7 +71,7 @@ export async function exportSlidesArtifacts(
     const message = error instanceof Error ? error.message : String(error);
     if (/Executable doesn't exist|browserType\.launch/i.test(message)) {
       throw new Error(
-        `${message}\nRun \`pnpm run test:e2e:install\` first so Playwright can install Chromium.`,
+        `${message}\nInstall Playwright Chromium first, for example with \`npx playwright install chromium\`.`,
       );
     }
 
@@ -87,11 +83,9 @@ export async function exportSlidesArtifacts(
   }
 }
 
-export async function runSlidesExport(
-  options: ExportSlidesOptions = {},
-): Promise<CommandResult> {
+export async function runSlidesExport(options: ExportSlidesOptions = {}): Promise<CommandResult> {
   const result = await exportSlidesArtifacts(options);
-  console.log("[slide-react] export complete");
+  console.log("[slidev-react] export complete");
   console.log(
     `  slides: ${result.selectedSlides.join(", ")}${result.variantLabel ? ` (${result.variantLabel})` : ""}`,
   );
