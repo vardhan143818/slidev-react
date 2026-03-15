@@ -10,16 +10,19 @@ describe("createSlidesViteConfig", () => {
     expect(config.optimizeDeps).toBeUndefined();
   });
 
-  it("only aliases app-owned runtime modules", () => {
+  it("aliases generated modules and self-contained runtime fallbacks", () => {
     const config = createSlidesViteConfig({
       appRoot: process.cwd(),
     });
 
     expect(config.resolve?.alias).not.toHaveProperty("@");
     expect(config.resolve?.alias).toHaveProperty("@generated/slides");
-    expect(Object.keys(config.resolve?.alias ?? {})).toHaveLength(1);
-    expect(config.resolve?.alias).not.toHaveProperty("react");
-    expect(config.resolve?.alias).not.toHaveProperty("react-dom");
-    expect(config.resolve?.alias).not.toHaveProperty("react-dom/client");
+    expect(config.resolve?.alias).toHaveProperty("@mdx-js/react");
+    expect(config.resolve?.alias).toHaveProperty("react");
+    expect(config.resolve?.alias).toHaveProperty("react-dom");
+    expect(config.resolve?.alias).toHaveProperty("react-dom/client");
+    expect(config.resolve?.alias).toHaveProperty("react/jsx-runtime");
+    expect(config.resolve?.alias).toHaveProperty("react/jsx-dev-runtime");
+    expect(Object.keys(config.resolve?.alias ?? {})).toHaveLength(7);
   });
 });

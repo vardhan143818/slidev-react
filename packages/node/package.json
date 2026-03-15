@@ -3,18 +3,22 @@
   "version": "0.4.2",
   "private": false,
   "description": "Node-side command APIs for slidev-react authoring and build workflows",
-  "license": "MIT",
-  "type": "module",
-  "scripts": {
-    "build:pkg": "pnpm exec tsdown",
-    "dev:pkg": "pnpm exec tsdown --watch",
-    "prepack": "pnpm run build:pkg"
+  "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/node",
+  "bugs": {
+    "url": "https://github.com/hylarucoder/slidev-react/issues"
   },
-  "types": "./dist/index.d.mts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hylarucoder/slidev-react.git",
+    "directory": "packages/node"
+  },
   "files": [
     "dist",
     "README.md"
   ],
+  "type": "module",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -25,20 +29,33 @@
       "import": "./dist/slides/build/createSlidesViteConfig.mjs"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
+  },
   "dependencies": {
     "@mdx-js/mdx": "3.1.1",
     "@mdx-js/react": "3.1.1",
     "@slidev-react/client": "workspace:*",
     "@slidev-react/core": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.18",
     "@vitejs/plugin-react": "^6.0.0",
     "react": "19.2.3",
     "rehype-katex": "7.0.1",
     "remark-gfm": "4.0.1",
     "remark-math": "6.0.0",
     "shiki": "4.0.1",
+    "tailwindcss": "4.2.1",
     "vite": "catalog:",
     "yaml": "2.8.2",
     "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "vite-plus": "catalog:"
   },
   "peerDependencies": {
     "@playwright/test": "^1.58.2"
@@ -48,22 +65,7 @@
       "optional": true
     }
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/hylarucoder/slidev-react.git",
-    "directory": "packages/node"
-  },
-  "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/node",
-  "bugs": {
-    "url": "https://github.com/hylarucoder/slidev-react/issues"
-  },
   "engines": {
     "node": ">=22"
-  },
-  "devDependencies": {
-    "vite-plus": "catalog:"
   }
 }
