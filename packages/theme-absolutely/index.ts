@@ -74,6 +74,7 @@ export default defineTheme({
   rootAttributes: {
     "data-slide-theme": "absolutely",
   },
+  layoutIds: ["cover", "section", "statement"],
   layouts: {
     cover: AbsolutelyCoverLayout,
     section: AbsolutelySectionLayout,

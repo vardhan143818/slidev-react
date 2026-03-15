@@ -68,6 +68,7 @@ export default defineTheme({
   rootAttributes: {
     "data-slide-theme": "paper",
   },
+  layoutIds: ["cover"],
   layouts: {
     cover: PaperCoverLayout,
   },

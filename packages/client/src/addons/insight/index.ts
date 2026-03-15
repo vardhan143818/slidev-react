@@ -8,6 +8,7 @@ export const addon: SlideAddonDefinition = {
   label: "Insight",
   experimental: true,
   provider: InsightAddonProvider,
+  layoutIds: ["spotlight"],
   layouts: {
     spotlight: SpotlightLayout,
   },

@@ -8,6 +8,7 @@ export interface SlideAddonDefinition {
   label: string;
   experimental?: boolean;
   provider?: AddonProviderComponent;
+  layoutIds?: string[];
   layouts?: LayoutRegistry;
   mdxComponents?: ThemeMDXComponents;
 }

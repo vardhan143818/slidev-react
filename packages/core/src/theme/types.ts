@@ -94,6 +94,7 @@ export interface SlideThemeDefinition {
   rootAttributes?: Record<string, string>;
   rootClassName?: string;
   provider?: ThemeProviderComponent;
+  layoutIds?: string[];
   layouts?: LayoutRegistry;
   mdxComponents?: ThemeMDXComponents;
 }

@@ -401,6 +401,7 @@ describe("generateCompiledSlidesArtifacts", () => {
       [
         "export const theme = {",
         "  id: 'paper',",
+        "  layoutIds: ['cover'],",
         "  layouts: {",
         "    cover: PaperCoverLayout,",
         "  },",
@@ -413,6 +414,7 @@ describe("generateCompiledSlidesArtifacts", () => {
       [
         "export const addon = {",
         "  id: 'focus',",
+        "  layoutIds: ['spotlight'],",
         "  layouts: {",
         "    spotlight: SpotlightLayout,",
         "  },",
@@ -464,6 +466,7 @@ describe("generateCompiledSlidesArtifacts", () => {
       [
         "export const theme = {",
         "  id: 'absolutely',",
+        "  layoutIds: ['cover', 'section', 'statement'],",
         "  layouts: {",
         "    cover: CoverLayout,",
         "    section: SectionLayout,",
