@@ -3,17 +3,12 @@
   "version": "0.4.2",
   "description": "Browser-side React app and presentation UI for slidev-react",
   "license": "MIT",
-  "scripts": {
-    "build:pkg": "pnpm exec tsdown",
-    "dev:pkg": "pnpm exec tsdown --watch",
-    "prepack": "pnpm run build:pkg"
-  },
-  "type": "module",
-  "types": "./dist/src/index.d.ts",
   "files": [
     "dist",
     "README.md"
   ],
+  "type": "module",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
@@ -41,8 +36,16 @@
     "./addons/insight/style.css": "./dist/addons/insight/style.css",
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
+  },
   "dependencies": {
-    "@slidev-react/core": "workspace:*",
+    "@slidev-react/core": "0.4.2",
     "katex": "0.16.33",
     "lucide-react": "0.568.0",
     "plantuml-encoder": "1.4.0",
@@ -71,8 +74,5 @@
   },
   "engines": {
     "node": ">=22"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

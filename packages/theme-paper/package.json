@@ -1,11 +1,10 @@
 {
   "name": "@slidev-react/theme-paper",
   "version": "0.4.2",
-  "scripts": {
-    "build:pkg": "pnpm exec tsdown",
-    "dev:pkg": "pnpm exec tsdown --watch",
-    "prepack": "pnpm run build:pkg"
-  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -15,15 +14,16 @@
     },
     "./style.css": "./dist/style.css"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "peerDependencies": {
-    "@slidev-react/core": "workspace:*",
-    "react": "^19.0.0"
-  },
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
+  },
+  "peerDependencies": {
+    "@slidev-react/core": "^0.4.2",
+    "react": "^19.0.0"
   }
 }
