@@ -62,13 +62,13 @@ This repository currently has no commit history, so no project-specific conventi
 
 ### 升级版本
 
-使用 `scripts/bump-version.sh` 统一升级根目录和所有子包的版本号：
+使用 `tsx` 运行 `scripts/bump-version.ts`，统一升级可发布子包的版本号：
 
 ```bash
-./scripts/bump-version.sh          # patch: 0.2.8 → 0.2.9
-./scripts/bump-version.sh minor    # minor: 0.2.8 → 0.3.0
-./scripts/bump-version.sh major    # major: 0.2.8 → 1.0.0
-./scripts/bump-version.sh 1.0.0    # 指定版本
+pnpm exec tsx ./scripts/bump-version.ts          # patch: 0.2.8 → 0.2.9
+pnpm exec tsx ./scripts/bump-version.ts minor    # minor: 0.2.8 → 0.3.0
+pnpm exec tsx ./scripts/bump-version.ts major    # major: 0.2.8 → 1.0.0
+pnpm exec tsx ./scripts/bump-version.ts 1.0.0    # 指定版本
 ```
 
 ### 发布
@@ -78,12 +78,12 @@ npm login                    # 确保已登录 npm
 pnpm run release:publish     # 构建子包并发布到 npm
 ```
 
-`release:publish` 会先执行 `build:packages` 构建 `@slidev-react/core`、`@slidev-react/node`、`@slidev-react/cli`，然后通过 changeset 发布。
+`release:publish` 会先执行 `build:packages` 构建 `@slidev-react/core`、`@slidev-react/client`、`@slidev-react/theme-paper`、`@slidev-react/node`、`@slidev-react/cli`，然后通过 changeset 发布。
 
 ### 完整流程
 
 ```bash
-./scripts/bump-version.sh       # 1. 升版本
+pnpm exec tsx ./scripts/bump-version.ts  # 1. 升版本
 git add -A && git commit -m "chore: bump v0.2.9"  # 2. 提交
 pnpm run release:publish         # 3. 构建 + 发布
 git push                         # 4. 推送
