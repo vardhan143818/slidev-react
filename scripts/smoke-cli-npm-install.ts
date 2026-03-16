@@ -89,6 +89,7 @@ async function startPresentationRelay(options: {
     {
       cwd: options.cwd,
       env: {
+        PRESENTATION_WS_ENABLED: "true",
         PRESENTATION_WS_HOST: "127.0.0.1",
         PRESENTATION_WS_PORT: String(options.port),
       },
@@ -383,6 +384,7 @@ async function runCreateAppSmoke(options: {
     {
       cwd: path.dirname(options.appRoot),
       env: {
+        PRESENTATION_WS_ENABLED: "true",
         PRESENTATION_WS_PORT: String(options.relayPort),
       },
     },
@@ -421,6 +423,7 @@ async function runCreateAppSmoke(options: {
     {
       cwd: options.appRoot,
       env: {
+        PRESENTATION_WS_ENABLED: "true",
         PRESENTATION_WS_PORT: String(options.relayPort),
       },
     },
@@ -436,6 +439,7 @@ async function runCreateAppSmoke(options: {
   const buildProcess = spawnCommand("npm", ["run", "build"], {
     cwd: options.appRoot,
     env: {
+      PRESENTATION_WS_ENABLED: "true",
       PRESENTATION_WS_PORT: String(options.relayPort),
     },
   });
@@ -456,6 +460,7 @@ async function runCreateAppSmoke(options: {
   const devProcess = spawnCommand("npm", ["run", "dev", "--", "--port", String(port)], {
     cwd: options.appRoot,
     env: {
+      PRESENTATION_WS_ENABLED: "true",
       PRESENTATION_WS_PORT: String(options.relayPort),
     },
     onStdout: (output) => {

@@ -3,34 +3,8 @@
 import { createInterface } from 'node:readline/promises'
 import path from 'node:path'
 import process from 'node:process'
+import { parseArgs, resolveTargetDir } from './cli'
 import { scaffoldProject } from './createApp'
-
-interface CliOptions {
-  force: boolean
-  targetDir?: string
-}
-
-function parseArgs(argv: string[]): CliOptions {
-  const options: CliOptions = {
-    force: false,
-  }
-
-  for (const arg of argv) {
-    if (arg === '--yes' || arg === '-y') {
-      options.force = true
-      continue
-    }
-
-    if (!arg.startsWith('-') && !options.targetDir) {
-      options.targetDir = arg
-      continue
-    }
-
-    throw new Error(`Unknown argument "${arg}".`)
-  }
-
-  return options
-}
 
 async function promptProjectName() {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
@@ -80,7 +54,7 @@ function printNextSteps(targetDir: string, packageManagerHint: string) {
 
 async function run() {
   const options = parseArgs(process.argv.slice(2))
-  const targetDir = options.targetDir ?? await promptProjectName()
+  const targetDir = await resolveTargetDir(options, promptProjectName)
   const result = scaffoldProject({
     cwd: process.cwd(),
     targetDir,

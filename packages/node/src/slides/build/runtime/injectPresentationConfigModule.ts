@@ -20,15 +20,35 @@ function normalizePath(value: string | undefined, fallback: string) {
   return `/${nextValue}`
 }
 
+function parseBoolean(value: string | undefined, fallback: boolean) {
+  if (!value) return fallback
+
+  const normalized = value.trim().toLowerCase()
+  if (normalized === 'true' || normalized === '1') return true
+  if (normalized === 'false' || normalized === '0') return false
+
+  throw new Error(
+    `[slidev-react] Expected PRESENTATION_WS_ENABLED to be true/false/1/0, received "${value}".`,
+  )
+}
+
 function generatePresentationConfigModuleCode() {
   const relayUrl = process.env.PRESENTATION_WS_URL?.trim() || null
   const relayPort = parsePort(process.env.PRESENTATION_WS_PORT, 4860)
   const relayPath = normalizePath(process.env.PRESENTATION_WS_PATH, '/ws')
+  const relayEnabledByDefault = parseBoolean(
+    process.env.PRESENTATION_WS_ENABLED,
+    [
+      process.env.PRESENTATION_WS_URL,
+      process.env.PRESENTATION_WS_PORT,
+      process.env.PRESENTATION_WS_PATH,
+    ].some((value) => value?.trim()),
+  )
 
   return [
     'const presentationConfig = {',
     '  relay: {',
-    '    enabledByDefault: true,',
+    `    enabledByDefault: ${JSON.stringify(relayEnabledByDefault)},`,
     `    url: ${JSON.stringify(relayUrl)},`,
     `    port: ${JSON.stringify(relayPort)},`,
     `    path: ${JSON.stringify(relayPath)},`,

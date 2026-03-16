@@ -1,6 +1,6 @@
 const presentationConfig = {
   relay: {
-    enabledByDefault: true,
+    enabledByDefault: false,
     url: null,
     port: 4860,
     path: '/ws',
