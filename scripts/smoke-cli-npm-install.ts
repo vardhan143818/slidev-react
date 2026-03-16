@@ -152,6 +152,19 @@ async function waitForPresentationMount(page: Page, timeoutMs: number) {
   );
 }
 
+async function waitForAddonRender(page: Page, timeoutMs: number) {
+  await page.waitForFunction(
+    () => {
+      const chartSvg = document.querySelector("#g2-smoke svg");
+      const mermaidSvg = document.querySelector("#mermaid-smoke svg");
+      return !!chartSvg && !!mermaidSvg;
+    },
+    {
+      timeout: timeoutMs,
+    },
+  );
+}
+
 function assertNoKnownPackagingErrors(output: string) {
   const patterns = [
     /Unsupported URL Type "catalog:"/i,
@@ -238,12 +251,35 @@ async function main() {
     [
       "---",
       "title: npm Install Smoke",
-      "addons: [g2]",
+      "addons: [g2, mermaid]",
       "---",
       "",
       "# Hello",
       "",
       "This deck boots from npm-installed tarballs.",
+      "",
+      '<div id="g2-smoke">',
+      "",
+      "<BarChart",
+      '  width={480}',
+      '  height={240}',
+      "  data={[",
+      '    { genre: "Sports", sold: 275 },',
+      '    { genre: "Strategy", sold: 115 },',
+      '    { genre: "Action", sold: 120 },',
+      "  ]}",
+      '  x="genre"',
+      '  y="sold"',
+      '  color="genre"',
+      "/>",
+      "",
+      "</div>",
+      "",
+      '<div id="mermaid-smoke">',
+      "",
+      '<MermaidDiagram code={`graph TD\\nA[Deck] --> B[Mermaid]\\nA --> C[G2]`} />',
+      "",
+      "</div>",
       "",
     ].join("\n"),
     "utf8",
@@ -349,6 +385,7 @@ async function main() {
   try {
     await waitForPageReady(page, devUrl, "npm Install Smoke", 30_000);
     await waitForPresentationMount(page, 10_000);
+    await waitForAddonRender(page, 10_000);
     await page.waitForTimeout(1_500);
 
     if (browserConsoleErrors.length > 0 || browserPageErrors.length > 0 || browserRequestFailures.length > 0) {

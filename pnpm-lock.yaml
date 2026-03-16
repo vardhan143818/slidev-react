@@ -118,8 +118,8 @@ importers:
         specifier: ^14.0.0
         version: 14.0.0(commander@14.0.3)
       '@slidev-react/node':
-        specifier: workspace:*
-        version: link:../node
+        specifier: 0.4.8
+        version: 0.4.8(@antv/g-svg@2.1.1)(@antv/g2@5.4.8)(@playwright/test@1.58.2)(@types/node@25.3.5)(@types/react@19.2.7)(esbuild@0.27.3)(jiti@2.6.1)(mermaid@11.12.3)(react-dom@19.2.3(react@19.2.3))(tsx@4.21.0)(typescript@5.9.3)
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -127,17 +127,17 @@ importers:
   packages/client:
     dependencies:
       '@antv/g-svg':
-        specifier: '>=2.0.0'
+        specifier: ^2.1.1
         version: 2.1.1
       '@antv/g2':
-        specifier: '>=5.0.0'
+        specifier: ^5.4.8
         version: 5.4.8
       '@mdx-js/react':
         specifier: '>=3.0.0'
         version: 3.1.1(@types/react@19.2.7)(react@19.2.3)
       '@slidev-react/core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: 0.4.8
+        version: 0.4.8
       katex:
         specifier: 0.16.33
         version: 0.16.33
@@ -145,7 +145,7 @@ importers:
         specifier: 0.568.0
         version: 0.568.0(react@19.2.3)
       mermaid:
-        specifier: '>=11.0.0'
+        specifier: 11.12.3
         version: 11.12.3
       plantuml-encoder:
         specifier: 1.4.0
@@ -187,11 +187,14 @@ importers:
         specifier: ^1.58.2
         version: 1.58.2
       '@slidev-react/client':
-        specifier: workspace:*
-        version: link:../client
+        specifier: 0.4.8
+        version: 0.4.8(@antv/g-svg@2.1.1)(@antv/g2@5.4.8)(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(mermaid@11.12.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@slidev-react/core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: 0.4.8
+        version: 0.4.8
+      '@tailwindcss/postcss':
+        specifier: ^4.1.18
+        version: 4.2.1
       '@vitejs/plugin-react':
         specifier: ^6.0.0
         version: 6.0.0(@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))
@@ -210,25 +213,27 @@ importers:
       shiki:
         specifier: 4.0.1
         version: 4.0.1
+      tailwindcss:
+        specifier: 4.2.1
+        version: 4.2.1
       vite:
-        specifier: 'catalog:'
+        specifier: npm:@voidzero-dev/vite-plus-core@0.1.11
         version: '@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)'
+      vite-plus:
+        specifier: 0.1.11
+        version: 0.1.11(@types/node@25.3.5)(@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       yaml:
         specifier: 2.8.2
         version: 2.8.2
       zod:
         specifier: 4.3.6
         version: 4.3.6
-    devDependencies:
-      vite-plus:
-        specifier: 'catalog:'
-        version: 0.1.11(@types/node@25.3.5)(@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
 
   packages/theme-absolutely:
     dependencies:
       '@slidev-react/core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: ^0.4.8
+        version: 0.4.8
       react:
         specifier: ^19.0.0
         version: 19.2.3
@@ -236,8 +241,8 @@ importers:
   packages/theme-paper:
     dependencies:
       '@slidev-react/core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: ^0.4.8
+        version: 0.4.8
       react:
         specifier: ^19.0.0
         version: 19.2.3
@@ -1032,6 +1037,37 @@ packages:
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
+
+  '@slidev-react/client@0.4.8':
+    resolution: {integrity: sha512-epSPEIPFRIJIS4SS43a6ae5mB1cUy1CI4ansYAKbjZTGsf5VsH58DJMpVuToXBeHQeac9XMaDW36iX1xHVKEzw==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@antv/g-svg': '>=2.0.0'
+      '@antv/g2': '>=5.0.0'
+      '@mdx-js/react': '>=3.0.0'
+      mermaid: '>=11.0.0'
+      react: '>=19.0.0'
+      react-dom: '>=19.0.0'
+    peerDependenciesMeta:
+      '@antv/g-svg':
+        optional: true
+      '@antv/g2':
+        optional: true
+      mermaid:
+        optional: true
+
+  '@slidev-react/core@0.4.8':
+    resolution: {integrity: sha512-wGciaisZDMKifqs4/ORI0qwUQa1ESaahySQX0Em6GkslCIJXMBI/KCkrJRrnkXDJ+dsC1Uoz4PLhBRDRLvepqQ==}
+    engines: {node: '>=22'}
+
+  '@slidev-react/node@0.4.8':
+    resolution: {integrity: sha512-5YXgQsF0jHTW3FLeeNeS4T1dxPaVEgdmcFY5eY0716p+3zWfHNArnYoYoJnqKFdebDoPsljJrhNSwEVgSPGwtg==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@playwright/test': ^1.58.2
+    peerDependenciesMeta:
+      '@playwright/test':
+        optional: true
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -3827,6 +3863,89 @@ snapshots:
       '@types/hast': 3.0.4
 
   '@shikijs/vscode-textmate@10.0.2': {}
+
+  '@slidev-react/client@0.4.8(@antv/g-svg@2.1.1)(@antv/g2@5.4.8)(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(mermaid@11.12.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@mdx-js/react': 3.1.1(@types/react@19.2.7)(react@19.2.3)
+      '@slidev-react/core': 0.4.8
+      katex: 0.16.33
+      lucide-react: 0.568.0(react@19.2.3)
+      plantuml-encoder: 1.4.0
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+      shiki: 4.0.1
+      shiki-magic-move: 1.2.1(react@19.2.3)(shiki@4.0.1)
+      zod: 4.3.6
+    optionalDependencies:
+      '@antv/g-svg': 2.1.1
+      '@antv/g2': 5.4.8
+      mermaid: 11.12.3
+    transitivePeerDependencies:
+      - solid-js
+      - svelte
+      - vue
+
+  '@slidev-react/core@0.4.8':
+    dependencies:
+      react: 19.2.3
+      zod: 4.3.6
+
+  '@slidev-react/node@0.4.8(@antv/g-svg@2.1.1)(@antv/g2@5.4.8)(@playwright/test@1.58.2)(@types/node@25.3.5)(@types/react@19.2.7)(esbuild@0.27.3)(jiti@2.6.1)(mermaid@11.12.3)(react-dom@19.2.3(react@19.2.3))(tsx@4.21.0)(typescript@5.9.3)':
+    dependencies:
+      '@mdx-js/mdx': 3.1.1
+      '@mdx-js/react': 3.1.1(@types/react@19.2.7)(react@19.2.3)
+      '@slidev-react/client': 0.4.8(@antv/g-svg@2.1.1)(@antv/g2@5.4.8)(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(mermaid@11.12.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@slidev-react/core': 0.4.8
+      '@tailwindcss/postcss': 4.2.1
+      '@vitejs/plugin-react': 6.0.0(@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))
+      react: 19.2.3
+      rehype-katex: 7.0.1
+      remark-gfm: 4.0.1
+      remark-math: 6.0.0
+      shiki: 4.0.1
+      tailwindcss: 4.2.1
+      vite: '@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)'
+      vite-plus: 0.1.11(@types/node@25.3.5)(@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      yaml: 2.8.2
+      zod: 4.3.6
+    optionalDependencies:
+      '@playwright/test': 1.58.2
+    transitivePeerDependencies:
+      - '@antv/g-svg'
+      - '@antv/g2'
+      - '@arethetypeswrong/core'
+      - '@edge-runtime/vm'
+      - '@opentelemetry/api'
+      - '@rolldown/plugin-babel'
+      - '@tsdown/css'
+      - '@tsdown/exe'
+      - '@types/node'
+      - '@types/react'
+      - '@vitejs/devtools'
+      - '@vitest/ui'
+      - babel-plugin-react-compiler
+      - bufferutil
+      - esbuild
+      - happy-dom
+      - jiti
+      - jsdom
+      - less
+      - mermaid
+      - publint
+      - react-dom
+      - sass
+      - sass-embedded
+      - solid-js
+      - stylus
+      - sugarss
+      - supports-color
+      - svelte
+      - terser
+      - tsx
+      - typescript
+      - unplugin-unused
+      - utf-8-validate
+      - vue
 
   '@standard-schema/spec@1.1.0': {}
 

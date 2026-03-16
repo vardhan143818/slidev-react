@@ -16,6 +16,13 @@ import { resolveSlidesSourceFile } from "./slidesSourceFile.ts";
 
 const require = createRequire(import.meta.url);
 
+const prebundledPresentationDeps = [
+  "@antv/g2",
+  "@antv/g2/esm/lib/plot",
+  "@antv/g-svg",
+  "mermaid/dist/mermaid.esm.min.mjs",
+];
+
 function resolvePackageImport(specifier: string) {
   return require.resolve(specifier);
 }
@@ -34,6 +41,9 @@ export function createSlidesViteConfig(options: {
       postcss: {
         plugins: [tailwindcss()],
       },
+    },
+    optimizeDeps: {
+      include: prebundledPresentationDeps,
     },
     plugins: [
       pluginVirtualEntry({

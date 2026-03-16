@@ -1,4 +1,4 @@
-import mermaid from "mermaid";
+import mermaid from "mermaid/dist/mermaid.esm.min.mjs";
 import { Expand, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";

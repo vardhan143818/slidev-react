@@ -2,12 +2,17 @@ import { describe, expect, it } from "vite-plus/test";
 import { createSlidesViteConfig } from "../config/createSlidesViteConfig.ts";
 
 describe("createSlidesViteConfig", () => {
-  it("keeps dependency optimization on the default Vite path", () => {
+  it("prebundles browser-heavy addon runtimes for dev startup", () => {
     const config = createSlidesViteConfig({
       appRoot: process.cwd(),
     });
 
-    expect(config.optimizeDeps).toBeUndefined();
+    expect(config.optimizeDeps?.include).toEqual([
+      "@antv/g2",
+      "@antv/g2/esm/lib/plot",
+      "@antv/g-svg",
+      "mermaid/dist/mermaid.esm.min.mjs",
+    ]);
   });
 
   it("aliases generated modules and self-contained runtime fallbacks", () => {
