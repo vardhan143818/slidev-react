@@ -411,6 +411,7 @@ async function runCreateAppSmoke(options: {
   clientTarball: string;
   nodeTarball: string;
   cliTarball: string;
+  themeAbsolutelyTarball: string;
   reactVersion: string;
   reactDomVersion: string;
   mdxReactVersion: string;
@@ -445,6 +446,9 @@ async function runCreateAppSmoke(options: {
   if (generatedPackageJson.name !== path.basename(options.appRoot)) {
     throw new Error("create-slidev-react generated package.json, but the package name does not match the target directory.");
   }
+  if (generatedPackageJson.dependencies?.["@slidev-react/theme-absolutely"] == null) {
+    throw new Error("create-slidev-react generated package.json, but the absolutely theme dependency is missing.");
+  }
   if (generatedPackageJson.scripts?.dev !== "vp dev") {
     throw new Error("create-slidev-react generated package.json, but the dev script does not match the starter contract.");
   }
@@ -453,8 +457,13 @@ async function runCreateAppSmoke(options: {
   }
 
   const generatedSlides = await readFile(path.join(options.appRoot, "slides.mdx"), "utf8");
-  if (!generatedSlides.includes("addons:") || !generatedSlides.includes("g2") || !generatedSlides.includes("mermaid")) {
-    throw new Error("create-slidev-react generated slides.mdx, but the default g2 + mermaid starter content is missing.");
+  if (
+    !generatedSlides.includes("theme: absolutely")
+    || !generatedSlides.includes("addons:")
+    || !generatedSlides.includes("g2")
+    || !generatedSlides.includes("mermaid")
+  ) {
+    throw new Error("create-slidev-react generated slides.mdx, but the default absolutely + g2 + mermaid starter content is missing.");
   }
 
   const localVpBin = path.join(
@@ -475,6 +484,7 @@ async function runCreateAppSmoke(options: {
       options.clientTarball,
       options.nodeTarball,
       options.cliTarball,
+      options.themeAbsolutelyTarball,
     ],
     {
       cwd: options.appRoot,
@@ -552,12 +562,13 @@ async function main() {
     throw new Error("Missing runtime peer versions needed for npm install smoke test.");
   }
 
-  const [createAppTarball, coreTarball, clientTarball, nodeTarball, cliTarball] = await Promise.all([
+  const [createAppTarball, coreTarball, clientTarball, nodeTarball, cliTarball, themeAbsolutelyTarball] = await Promise.all([
     packPackage(path.join(repoRoot, "packages/create-app"), packDir),
     packPackage(path.join(repoRoot, "packages/core"), packDir),
     packPackage(path.join(repoRoot, "packages/client"), packDir),
     packPackage(path.join(repoRoot, "packages/node"), packDir),
     packPackage(path.join(repoRoot, "packages/cli"), packDir),
+    packPackage(path.join(repoRoot, "packages/theme-absolutely"), packDir),
   ]);
 
   const relay = await startPresentationRelay({
@@ -574,6 +585,7 @@ async function main() {
       clientTarball,
       nodeTarball,
       cliTarball,
+      themeAbsolutelyTarball,
       reactVersion,
       reactDomVersion,
       mdxReactVersion,

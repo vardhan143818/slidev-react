@@ -1,11 +1,9 @@
 import { existsSync } from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { loadClientRuntimeManifest, type ClientRuntimeAddonManifestEntry } from "../runtime/runtimeManifest.ts";
 import type { ResolvedAddonExtension, ResolvedThemeExtension } from "./types.ts";
 
-const require = createRequire(import.meta.url);
 const LOCAL_DEFINITION_FILES = ["index.ts", "index.tsx", "index.js", "index.jsx"];
 const LOCAL_STYLE_FILE = "style.css";
 const THEME_PACKAGE_PREFIX = "theme-";
@@ -22,10 +20,17 @@ function findDefinitionFile(rootDir: string) {
 
 function resolvePackageStyleEntry(packageName: string) {
   try {
-    require.resolve(`${packageName}/style.css`);
-    return `${packageName}/style.css`;
+    return import.meta.resolve(`${packageName}/style.css`);
   } catch {
     return undefined;
+  }
+}
+
+function resolvePackageImport(specifier: string) {
+  try {
+    return import.meta.resolve(specifier);
+  } catch {
+    return null;
   }
 }
 
@@ -33,16 +38,14 @@ function resolveThemePackage(id: string) {
   const candidates = [`@slidev-react/theme-${id}`, `slidev-react-theme-${id}`];
 
   for (const packageName of candidates) {
-    try {
-      require.resolve(packageName);
+    const importPath = resolvePackageImport(packageName);
+    if (importPath) {
       return {
         id,
-        importPath: packageName,
+        importPath,
         styleImportPath: resolvePackageStyleEntry(packageName),
         source: "package" as const,
       };
-    } catch {
-      // Try the next package candidate.
     }
   }
 
@@ -53,16 +56,14 @@ function resolveAddonPackage(id: string) {
   const candidates = [`@slidev-react/addon-${id}`, `slidev-react-addon-${id}`];
 
   for (const packageName of candidates) {
-    try {
-      require.resolve(packageName);
+    const importPath = resolvePackageImport(packageName);
+    if (importPath) {
       return {
         id,
-        importPath: packageName,
+        importPath,
         styleImportPath: resolvePackageStyleEntry(packageName),
         source: "package" as const,
       };
-    } catch {
-      // Try the next package candidate.
     }
   }
 
