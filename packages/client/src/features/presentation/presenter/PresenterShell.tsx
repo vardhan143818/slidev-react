@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import type { CompiledSlide, SlidesConfig } from './types'
+import type { CompiledSlide, SlidesConfig } from './model/types'
 import { DrawProvider } from "../draw/DrawProvider"
 import { KeyboardController } from "../navigation/KeyboardController"
 import { ShortcutsHelpOverlay } from "../navigation/ShortcutsHelpOverlay"
@@ -14,11 +14,11 @@ import type { PresentationSyncMode } from "../types"
 import { RevealProvider } from "../reveal/RevealContext"
 import { FlowTimelinePreview } from "./FlowTimelinePreview"
 import { PresenterTopProgress } from "./PresenterTopProgress"
-import { usePresentationFlowRuntime } from "./usePresentationFlowRuntime"
-import { usePresenterChromeRuntime } from "./usePresenterChromeRuntime"
-import { usePresenterSessionState } from "./usePresenterSessionState"
-import { useWakeLock } from "./useWakeLock"
-import { useFullscreen } from "./useFullscreen"
+import { usePresenterFlowRuntime } from "./runtime/usePresenterFlowRuntime"
+import { usePresenterChromeRuntime } from "./runtime/usePresenterChromeRuntime"
+import { usePresenterSessionRuntime } from "./runtime/usePresenterSessionRuntime"
+import { useWakeLock } from "./platform/useWakeLock"
+import { useFullscreen } from "./platform/useFullscreen"
 import { PresenterModeView } from "./PresenterModeView"
 import { StandaloneModeView } from "./StandaloneModeView"
 
@@ -53,12 +53,12 @@ export function PresenterShell({
   const isPresenterRole = session.role === "presenter"
   const canOpenOverview = canControl || session.role === "viewer"
 
-  const flow = usePresentationFlowRuntime({ slides, navigation })
+  const flow = usePresenterFlowRuntime({ slides, navigation })
   const chrome = usePresenterChromeRuntime({ canControl, canOpenOverview, isPresenterRole })
   const wakeLock = useWakeLock()
   const fullscreen = useFullscreen()
 
-  const sessionState = usePresenterSessionState({
+  const sessionState = usePresenterSessionRuntime({
     slides,
     session,
     navigation,

@@ -1,5 +1,5 @@
-import type { DrawStroke } from "../draw/DrawProvider";
-import type { PresentationCursorState, PresentationSharedState } from "../types";
+import type { DrawStroke } from "../../draw/DrawProvider";
+import type { PresentationCursorState, PresentationSharedState } from "../../types";
 
 export interface LocalPresentationSyncState {
   page: number;

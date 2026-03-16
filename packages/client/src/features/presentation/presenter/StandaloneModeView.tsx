@@ -1,8 +1,8 @@
 import type { PresentationCursorState } from "../types"
 import { RevealProvider } from "../reveal/RevealContext"
 import { SlideStage } from "../stage/SlideStage"
-import type { CompiledSlide, SlidesConfig } from "./types"
-import type { PresentationFlowRuntime } from "./usePresentationFlowRuntime"
+import type { CompiledSlide, SlidesConfig } from "./model/types"
+import type { PresenterFlowRuntime } from "./runtime/usePresenterFlowRuntime"
 
 export function StandaloneModeView({
   currentSlide,
@@ -17,7 +17,7 @@ export function StandaloneModeView({
   canControl: boolean
   remoteCursor: PresentationCursorState | null
   setLocalCursor: (cursor: PresentationCursorState | null) => void
-  flow: PresentationFlowRuntime
+  flow: PresenterFlowRuntime
 }) {
   const CurrentSlide = currentSlide.component
 

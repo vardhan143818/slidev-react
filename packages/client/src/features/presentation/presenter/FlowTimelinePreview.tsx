@@ -1,11 +1,11 @@
 import { X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { SlidesConfig } from "./types";
+import type { SlidesConfig } from "./model/types";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "../stage/slideSurface";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
 import { resolveOverviewStageMetrics } from "./stage";
-import type { CompiledSlide } from "./types";
+import type { CompiledSlide } from "./model/types";
 import { ChromeIconButton } from "../../../ui/primitives/ChromeIconButton";
 import { ChromePanel } from "../../../ui/primitives/ChromePanel";
 import { ChromeTag, chromeTagClassName } from "../../../ui/primitives/ChromeTag";

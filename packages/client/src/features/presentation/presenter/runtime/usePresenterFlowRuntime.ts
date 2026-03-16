@@ -7,8 +7,8 @@ import {
   resolveAdvanceFlow,
   resolveRetreatFlow,
 } from "@slidev-react/core/presentation/flow/navigation";
-import { type RevealContextValue } from "../reveal/RevealContext";
-import type { CompiledSlide } from "./types";
+import { type RevealContextValue } from "../../reveal/RevealContext";
+import type { CompiledSlide } from "../model/types";
 
 interface SlidesNavigationLike {
   currentIndex: number;
@@ -27,7 +27,7 @@ function resolveMaxCueStep(stepCounts: Map<number, number> | undefined) {
   return max;
 }
 
-export function usePresentationFlowRuntime({
+export function usePresenterFlowRuntime({
   slides,
   navigation,
 }: {
@@ -235,4 +235,4 @@ export function usePresentationFlowRuntime({
   }
 }
 
-export type PresentationFlowRuntime = ReturnType<typeof usePresentationFlowRuntime>
+export type PresenterFlowRuntime = ReturnType<typeof usePresenterFlowRuntime>

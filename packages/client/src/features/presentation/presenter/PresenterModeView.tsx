@@ -1,13 +1,11 @@
-import type { LayoutName } from "@slidev-react/core/slides/layout"
-import type { TransitionName } from "@slidev-react/core/slides/transition"
 import type { PresentationCursorState } from "../types"
 import { RevealProvider } from "../reveal/RevealContext"
 import { SlideStage } from "../stage/SlideStage"
 import { PresenterSidePreview } from "./PresenterSidePreview"
 import { SpeakerNotesPanel } from "./SpeakerNotesPanel"
-import type { CompiledSlide, SlidesConfig } from "./types"
-import type { PresentationFlowRuntime } from "./usePresentationFlowRuntime"
-import type { usePresenterChromeRuntime } from "./usePresenterChromeRuntime"
+import type { CompiledSlide, SlidesConfig } from "./model/types"
+import type { PresenterFlowRuntime } from "./runtime/usePresenterFlowRuntime"
+import type { usePresenterChromeRuntime } from "./runtime/usePresenterChromeRuntime"
 
 export function PresenterModeView({
   currentSlide,
@@ -28,7 +26,7 @@ export function PresenterModeView({
   remoteCursor: PresentationCursorState | null
   localCursor: PresentationCursorState | null
   setLocalCursor: (cursor: PresentationCursorState | null) => void
-  flow: PresentationFlowRuntime
+  flow: PresenterFlowRuntime
   chrome: ReturnType<typeof usePresenterChromeRuntime>
   navigation: { currentIndex: number; total: number }
 }) {

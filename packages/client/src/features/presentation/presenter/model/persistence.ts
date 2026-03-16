@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { PresenterCursorMode } from "./usePresenterChromeRuntime";
+import type { PresenterCursorMode } from "../runtime/usePresenterChromeRuntime";
 
 export const PRESENTER_STAGE_SCALE_STORAGE_KEY = "slide-react:presenter-stage-scale";
 export const PRESENTER_CURSOR_MODE_STORAGE_KEY = "slide-react:presenter-cursor-mode";

@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { formatViewportAspectRatio } from "@slidev-react/core/slides/viewport";
-import type { CompiledSlide, SlidesConfig } from "../presenter/types";
+import type { CompiledSlide, SlidesConfig } from "../presenter/model/types";
 import { ChromeIconButton } from "../../../ui/primitives/ChromeIconButton";
 import { ChromePanel } from "../../../ui/primitives/ChromePanel";
 import { ChromeTag } from "../../../ui/primitives/ChromeTag";
@@ -18,7 +18,7 @@ function OverviewSlidePreview({
   slide: CompiledSlide;
   slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
 }) {
-  const { slidesViewport, slidesLayout, slidesBackground } = slidesConfig;
+  const { slidesViewport } = slidesConfig;
   return (
     <div
       style={{ aspectRatio: formatViewportAspectRatio(slidesViewport) }}

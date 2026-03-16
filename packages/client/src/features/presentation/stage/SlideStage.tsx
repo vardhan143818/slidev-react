@@ -4,7 +4,7 @@ import type { SlideComponent, SlideMeta } from "@slidev-react/core/slides/slide"
 import { DrawOverlay } from "../draw/DrawOverlay";
 import { useDraw } from "../draw/DrawProvider";
 import type { PresentationCursorState } from "../types";
-import type { SlidesConfig } from "../presenter/types";
+import type { SlidesConfig } from "../presenter/model/types";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import { useSlideScale } from "./slideViewport";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";

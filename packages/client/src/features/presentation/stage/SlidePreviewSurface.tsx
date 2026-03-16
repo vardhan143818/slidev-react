@@ -1,6 +1,6 @@
 import { useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
 import type { SlideMeta, SlideComponent } from "@slidev-react/core/slides/slide";
-import type { SlidesConfig } from "../presenter/types";
+import type { SlidesConfig } from "../presenter/model/types";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import { useSlideScale } from "./slideViewport";

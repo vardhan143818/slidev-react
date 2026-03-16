@@ -29,8 +29,8 @@ import type {
   UsePresentationSyncResult,
 } from './sync';
 import type { PresentationRecorderRuntime } from "./usePresentationRecorder";
-import type { WakeLockRuntime } from "./presenter/useWakeLock";
-import type { FullscreenRuntime } from "./presenter/useFullscreen";
+import type { WakeLockRuntime } from "./presenter/platform/useWakeLock";
+import type { FullscreenRuntime } from "./presenter/platform/useFullscreen";
 import { ChromeIconButton } from "../../ui/primitives/ChromeIconButton";
 import { ChromeTag } from "../../ui/primitives/ChromeTag";
 import { FormSelect } from "../../ui/primitives/FormSelect";

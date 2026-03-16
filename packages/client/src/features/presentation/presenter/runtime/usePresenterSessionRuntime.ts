@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import type { DrawStroke } from "../draw/DrawProvider"
-import { usePresentationSync } from "../sync"
-import { usePresentationRecorder } from "../usePresentationRecorder"
+import type { DrawStroke } from "../../draw/DrawProvider"
+import { usePresentationSync } from "../../sync"
+import { usePresentationRecorder } from "../../usePresentationRecorder"
 import type {
   PresentationCursorState,
   PresentationSharedState,
-} from "../types"
-import type { PresentationSession } from "../session"
-import { buildPresentationSharedState, mapRemotePresentationPatch } from "./presentationSyncBridge"
-import type { CompiledSlide } from "./types"
-import type { PresentationFlowRuntime } from "./usePresentationFlowRuntime"
+} from "../../types"
+import type { PresentationSession } from "../../session"
+import { buildPresentationSharedState, mapRemotePresentationPatch } from "../model/presentationSyncBridge"
+import type { CompiledSlide } from "../model/types"
+import type { PresenterFlowRuntime } from "./usePresenterFlowRuntime"
 
 export interface PresenterSessionState {
   followPresenter: boolean
@@ -31,7 +31,7 @@ export interface PresenterSessionState {
   detachFromPresenter: () => void
 }
 
-export function usePresenterSessionState({
+export function usePresenterSessionRuntime({
   slides,
   session,
   navigation,
@@ -43,7 +43,7 @@ export function usePresenterSessionState({
   slides: CompiledSlide[]
   session: PresentationSession
   navigation: { currentIndex: number; total: number; goTo: (index: number) => void }
-  flow: PresentationFlowRuntime
+  flow: PresenterFlowRuntime
   canControl: boolean
   slidesExportFilename?: string
   slidesTitle?: string

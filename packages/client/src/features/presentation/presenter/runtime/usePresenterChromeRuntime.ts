@@ -13,9 +13,9 @@ import {
   isShortcutHelpOpenKey,
   registerShortcutHelpKeyDown,
   registerShortcutHelpKeyUp,
-} from "../navigation/keyboardShortcuts";
-import { useIdleCursor } from "./useIdleCursor";
-import { isTypingElement } from "../browser";
+} from "../../navigation/keyboardShortcuts";
+import { useIdleCursor } from "../platform/useIdleCursor";
+import { isTypingElement } from "../../browser";
 import {
   parsePersistedPresenterCursorMode,
   parsePersistedPresenterSidebarWidth,
@@ -23,7 +23,7 @@ import {
   PRESENTER_CURSOR_MODE_STORAGE_KEY,
   PRESENTER_SIDEBAR_WIDTH_STORAGE_KEY,
   PRESENTER_STAGE_SCALE_STORAGE_KEY,
-} from "./persistence";
+} from "../model/persistence";
 
 const PRESENTER_SIDEBAR_WIDTH_MIN = 280;
 const PRESENTER_SIDEBAR_WIDTH_MAX = 420;

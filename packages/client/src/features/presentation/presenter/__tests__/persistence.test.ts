@@ -3,7 +3,7 @@ import {
   parsePersistedPresenterCursorMode,
   parsePersistedPresenterSidebarWidth,
   parsePersistedPresenterStageScale,
-} from "../persistence";
+} from "../model/persistence";
 
 describe("presenter persistence", () => {
   it("parses allowed stage scale values", () => {

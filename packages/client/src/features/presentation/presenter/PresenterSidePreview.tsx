@@ -1,4 +1,4 @@
-import type { CompiledSlide, SlidesConfig } from "./types";
+import type { CompiledSlide, SlidesConfig } from "./model/types";
 import { ChromePanel, chromePanelClassName } from "../../../ui/primitives/ChromePanel";
 import { ChromeTag } from "../../../ui/primitives/ChromeTag";
 import { SlidePreviewSurface } from "../stage/SlidePreviewSurface";

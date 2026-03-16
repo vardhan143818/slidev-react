@@ -17,7 +17,7 @@ import {
 } from "@slidev-react/core/slides/viewport";
 import { resolveCueTotal } from "@slidev-react/core/presentation/flow/cue";
 import { SlidePreviewSurface } from "./stage/SlidePreviewSurface";
-import type { CompiledSlide } from "./presenter/types";
+import type { CompiledSlide } from "./presenter/model/types";
 import { RevealProvider, type RevealContextValue } from "./reveal/RevealContext";
 import { useResolvedLayout } from "../../theme/useResolvedLayout";
 

@@ -1,6 +1,6 @@
 import { NotebookText, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { CompiledSlide } from "../presenter/types";
+import type { CompiledSlide } from "../presenter/model/types";
 import { ChromePanel } from "../../../ui/primitives/ChromePanel";
 
 function summarizeNotes(notes?: string) {

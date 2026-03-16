@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vite-plus/test";
-import { buildPresentationSharedState, mapRemotePresentationPatch } from "../presentationSyncBridge";
+import { buildPresentationSharedState, mapRemotePresentationPatch } from "../model/presentationSyncBridge";
 
 describe("presentationSyncBridge", () => {
   it("builds a shared state payload without mutating timestamps", () => {
