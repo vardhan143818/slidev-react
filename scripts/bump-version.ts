@@ -6,6 +6,10 @@ interface PackageJson {
   name?: string
   version?: string
   private?: boolean
+  dependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
+  peerDependencies?: Record<string, string>
+  optionalDependencies?: Record<string, string>
 }
 
 function readJson<T>(filePath: string): T {
@@ -80,6 +84,36 @@ if (!isSemver(bump) && versions.length !== 1) {
 
 const currentDisplay = versions.length === 1 ? versions[0] : 'mixed'
 const nextVersion = bumpVersion(versions[0]!, bump)
+const packageNames = new Set(
+  packageFiles
+    .map((filePath) => readJson<PackageJson>(filePath).name)
+    .filter((name): name is string => Boolean(name)),
+)
+
+function updateInternalDependencyVersions(
+  dependencies: Record<string, string> | undefined,
+  nextVersion: string,
+) {
+  if (!dependencies) return
+
+  for (const [dependencyName, dependencyVersion] of Object.entries(dependencies)) {
+    if (!packageNames.has(dependencyName)) continue
+
+    if (dependencyVersion.startsWith('^')) {
+      dependencies[dependencyName] = `^${nextVersion}`
+      continue
+    }
+
+    if (dependencyVersion.startsWith('~')) {
+      dependencies[dependencyName] = `~${nextVersion}`
+      continue
+    }
+
+    if (isSemver(dependencyVersion)) {
+      dependencies[dependencyName] = nextVersion
+    }
+  }
+}
 
 console.log(`Current publishable package version: ${currentDisplay}`)
 console.log(`Bumping publishable sub-packages -> ${nextVersion}`)
@@ -88,6 +122,10 @@ console.log('')
 for (const filePath of packageFiles) {
   const pkg = readJson<PackageJson>(filePath)
   pkg.version = nextVersion
+  updateInternalDependencyVersions(pkg.dependencies, nextVersion)
+  updateInternalDependencyVersions(pkg.devDependencies, nextVersion)
+  updateInternalDependencyVersions(pkg.peerDependencies, nextVersion)
+  updateInternalDependencyVersions(pkg.optionalDependencies, nextVersion)
   writeJson(filePath, pkg)
   console.log(`  ✓ ${path.relative(rootDir, filePath)} -> ${nextVersion}`)
 }
