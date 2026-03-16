@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { page } from "@vitest/browser/context";
+import { page } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
 import { ShortcutsHelpOverlay } from "../ShortcutsHelpOverlay";
 import { buildShortcutHelpSections } from "../keyboardShortcuts";
@@ -10,7 +10,7 @@ test("renders keyboard shortcuts overlay in a real browser", async () => {
     canOpenOverview: true,
   });
 
-  render(<ShortcutsHelpOverlay open sections={sections} onClose={() => {}} />);
+  await render(<ShortcutsHelpOverlay open sections={sections} onClose={() => {}} />);
 
   await expect
     .element(page.getByRole("heading", { name: /everything the runtime can do/i }))

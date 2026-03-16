@@ -30,12 +30,13 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:install": "playwright install chromium",
     "test:smoke:runtime": "node --import tsx ./scripts/smoke-runtime-self-contained.ts",
+    "test:smoke:npm-install": "node --import tsx ./scripts/smoke-cli-npm-install.ts",
     "lint": "vp lint --type-aware --tsconfig tsconfig.json packages scripts e2e vite.config.ts vitest.config.ts playwright.config.ts postcss.config.mjs",
     "format": "vp fmt .",
     "format:check": "vp fmt --check .",
     "release:bump": "tsx ./scripts/bump-version.ts",
     "release:version": "changeset version && pnpm install --lockfile-only",
-    "release:publish": "pnpm run build:packages && pnpm run test:smoke:runtime && changeset publish",
+    "release:publish": "pnpm run build:packages && pnpm run test:smoke:runtime && pnpm run test:smoke:npm-install && changeset publish",
     "prepare": "vp config"
   },
   "dependencies": {
@@ -59,7 +60,6 @@
     "@types/react-dom": "19.2.3",
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^6.0.0",
-    "@vitest/browser-playwright": "^4.1.0",
     "lucide-react": "0.568.0",
     "mermaid": "11.12.3",
     "postcss": "^8.5.6",

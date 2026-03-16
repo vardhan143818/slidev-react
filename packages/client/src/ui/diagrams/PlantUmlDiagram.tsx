@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import plantumlEncoder from "plantuml-encoder";
+import { encodePlantUml } from "./plantumlEncoder";
 
 const DEFAULT_SERVER = "https://www.plantuml.com/plantuml/svg/";
 
@@ -22,7 +22,7 @@ export function PlantUmlDiagram({
   children?: ReactNode;
   server?: string;
 }) {
-  const encoded = plantumlEncoder.encode(normalizeDiagramCode(code, children));
+  const encoded = encodePlantUml(normalizeDiagramCode(code, children));
   const src = `${server}${encoded}`;
 
   return (
