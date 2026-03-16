@@ -39,13 +39,15 @@
 
 | 包名                        | 路径                   | 说明                                     |
 | --------------------------- | ---------------------- | ---------------------------------------- |
+| `create-slidev-react`       | `packages/create-app`  | starter app 脚手架与推荐入口             |
 | `@slidev-react/core`        | `packages/core`        | 纯演示模型、flow 逻辑、共享契约          |
 | `@slidev-react/client`      | `packages/client`      | React 应用装配、UI、主题、addons         |
 | `@slidev-react/node`        | `packages/node`        | Node 侧 dev/build/export/lint 入口和服务 |
-| `@slidev-react/cli`         | `packages/cli`         | `slidev-react` 命令行工具                |
+| `@slidev-react/cli`         | `packages/cli`         | 模板项目 scripts 背后的底层命令层        |
+| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | "absolutely" 主题包                |
 | `@slidev-react/theme-paper` | `packages/theme-paper` | "paper" 主题包                           |
 
-根目录 `package.json` 设为 `private: true`，承载 Vite 开发服务器和顶层脚本。`packages/core`、`packages/node`、`packages/cli` 等子包通过 [Changesets](https://github.com/changesets/changesets) 发布到 npm。
+根目录 `package.json` 设为 `private: true`，承载 Vite 开发服务器和顶层脚本。`packages/` 下的可发布子包通过 [Changesets](https://github.com/changesets/changesets) 统一发布到 npm。
 
 ## 快速开始
 
@@ -54,14 +56,31 @@
 - Node.js `>=22`
 - pnpm `10`
 
-### 安装并运行
+### 创建一个 deck app
 
 ```bash
+npm create slidev-react@latest my-deck
+cd my-deck
 pnpm install
 pnpm dev
 ```
 
 打开 Viewer：`http://localhost:5173/1`，或 Presenter：`http://localhost:5173/presenter/1`。
+
+生成出来的 app 默认包含：
+
+- 一个最小可跑的 `slides.mdx`
+- 内置 `g2 + mermaid` 示例
+- `pnpm dev`、`pnpm build`、`pnpm export`、`pnpm lint` scripts
+
+### 开发当前 monorepo
+
+如果你要改的是这个仓库本身，而不是创建 deck 项目：
+
+```bash
+pnpm install
+pnpm dev
+```
 
 ## 脚本
 
@@ -317,6 +336,7 @@ layout: spotlight
 
 ```
 packages/
+  create-app/   → create-slidev-react     — starter app 脚手架
   core/         → @slidev-react/core     — 模型、flow、共享契约
   client/       → @slidev-react/client   — React 应用、UI、主题、addons
     src/
@@ -326,7 +346,8 @@ packages/
       theme/    — 主题注册、布局、视觉 token
       ui/       — 可复用展示组件和 MDX helper
   node/         → @slidev-react/node     — dev/build/export/lint
-  cli/          → @slidev-react/cli      — CLI 入口
+  cli/          → @slidev-react/cli      — 底层命令执行层
+  theme-absolutely/ → @slidev-react/theme-absolutely — "absolutely" 主题
   theme-paper/  → @slidev-react/theme-paper — "paper" 主题
 ```
 

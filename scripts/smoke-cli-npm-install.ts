@@ -7,8 +7,10 @@ import { spawn } from "node:child_process";
 import { chromium, type Page } from "@playwright/test";
 
 interface PackageJson {
+  name?: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
+  scripts?: Record<string, string>;
 }
 
 interface BrowserProbe {
@@ -26,12 +28,17 @@ function spawnCommand(
   args: string[],
   options: {
     cwd: string;
+    env?: Record<string, string | undefined>;
     onStdout?: (output: string) => void;
     onStderr?: (output: string) => void;
   },
 ) {
   const child = spawn(cmd, args, {
     cwd: options.cwd,
+    env: {
+      ...process.env,
+      ...options.env,
+    },
     stdio: "pipe",
   });
 
@@ -68,6 +75,40 @@ function spawnCommand(
   return {
     child,
     completed,
+  };
+}
+
+async function startPresentationRelay(options: {
+  cwd: string;
+  port: number;
+}) {
+  let relayOutput = "";
+  const relayProcess = spawnCommand(
+    "node",
+    ["--import", "tsx", "./scripts/presentation-server.ts"],
+    {
+      cwd: options.cwd,
+      env: {
+        PRESENTATION_WS_HOST: "127.0.0.1",
+        PRESENTATION_WS_PORT: String(options.port),
+      },
+      onStdout: (output) => {
+        relayOutput += output;
+      },
+      onStderr: (output) => {
+        relayOutput += output;
+      },
+    },
+  );
+
+  await waitForOutput(
+    () => /\bpresentation relay listening\b/i.test(relayOutput),
+    10_000,
+  );
+
+  return {
+    relayProcess,
+    relayOutput: () => relayOutput,
   };
 }
 
@@ -366,6 +407,7 @@ async function runInstalledCliSmoke(options: {
   reactVersion: string;
   reactDomVersion: string;
   mdxReactVersion: string;
+  relayPort: number;
 }) {
   await writeSmokeSlides(options.appRoot, {
     title: "npm Install Smoke",
@@ -386,6 +428,9 @@ async function runInstalledCliSmoke(options: {
     ],
     {
       cwd: options.appRoot,
+      env: {
+        PRESENTATION_WS_PORT: String(options.relayPort),
+      },
     },
   );
   const installResult = await installProcess.completed;
@@ -400,6 +445,9 @@ async function runInstalledCliSmoke(options: {
 
   const helpProcess = spawnCommand("node", [cliFile, "--help"], {
     cwd: options.appRoot,
+    env: {
+      PRESENTATION_WS_PORT: String(options.relayPort),
+    },
   });
   const helpResult = await helpProcess.completed;
 
@@ -411,6 +459,9 @@ async function runInstalledCliSmoke(options: {
 
   const buildProcess = spawnCommand("node", [cliFile, "build", "slides.mdx", "--outDir", "dist"], {
     cwd: options.appRoot,
+    env: {
+      PRESENTATION_WS_PORT: String(options.relayPort),
+    },
   });
   const buildResult = await buildProcess.completed;
 
@@ -430,6 +481,9 @@ async function runInstalledCliSmoke(options: {
   let devOutput = "";
   const devProcess = spawnCommand("node", [cliFile, "dev", "slides.mdx", "--port", String(port)], {
     cwd: options.appRoot,
+    env: {
+      PRESENTATION_WS_PORT: String(options.relayPort),
+    },
     onStdout: (output) => {
       devOutput += output;
     },
@@ -455,6 +509,7 @@ async function runExecCliSmoke(options: {
   clientTarball: string;
   nodeTarball: string;
   cliTarball: string;
+  relayPort: number;
 }) {
   await writeSmokeSlides(options.appRoot, {
     title: "npm Exec Smoke",
@@ -476,6 +531,9 @@ async function runExecCliSmoke(options: {
     ],
     {
       cwd: options.appRoot,
+      env: {
+        PRESENTATION_WS_PORT: String(options.relayPort),
+      },
     },
   );
   const helpResult = await helpProcess.completed;
@@ -504,6 +562,9 @@ async function runExecCliSmoke(options: {
     ],
     {
       cwd: options.appRoot,
+      env: {
+        PRESENTATION_WS_PORT: String(options.relayPort),
+      },
     },
   );
   const buildResult = await buildProcess.completed;
@@ -540,6 +601,9 @@ async function runExecCliSmoke(options: {
     ],
     {
       cwd: options.appRoot,
+      env: {
+        PRESENTATION_WS_PORT: String(options.relayPort),
+      },
       onStdout: (output) => {
         devOutput += output;
       },
@@ -560,11 +624,133 @@ async function runExecCliSmoke(options: {
   });
 }
 
+async function runCreateAppSmoke(options: {
+  appRoot: string;
+  createAppTarball: string;
+  coreTarball: string;
+  clientTarball: string;
+  nodeTarball: string;
+  cliTarball: string;
+  reactVersion: string;
+  reactDomVersion: string;
+  mdxReactVersion: string;
+  relayPort: number;
+}) {
+  const createProcess = spawnCommand(
+    "npm",
+    [
+      "exec",
+      "--yes",
+      `--package=${options.createAppTarball}`,
+      "--",
+      "create-slidev-react",
+      options.appRoot,
+      "--yes",
+    ],
+    {
+      cwd: path.dirname(options.appRoot),
+      env: {
+        PRESENTATION_WS_PORT: String(options.relayPort),
+      },
+    },
+  );
+  const createResult = await createProcess.completed;
+
+  if (createResult.code !== 0) {
+    throw new Error(`create-slidev-react smoke failed:\n${createResult.stderr || createResult.stdout}`);
+  }
+
+  const generatedPackageJson = readJson<PackageJson>(path.join(options.appRoot, "package.json"));
+  if (generatedPackageJson.name !== path.basename(options.appRoot)) {
+    throw new Error("create-slidev-react generated package.json, but the package name does not match the target directory.");
+  }
+  if (generatedPackageJson.scripts?.dev !== "slidev-react dev slides.mdx") {
+    throw new Error("create-slidev-react generated package.json, but the dev script does not match the starter contract.");
+  }
+
+  const generatedSlides = await readFile(path.join(options.appRoot, "slides.mdx"), "utf8");
+  if (!generatedSlides.includes("addons:") || !generatedSlides.includes("g2") || !generatedSlides.includes("mermaid")) {
+    throw new Error("create-slidev-react generated slides.mdx, but the default g2 + mermaid starter content is missing.");
+  }
+
+  const installProcess = spawnCommand(
+    "npm",
+    [
+      "install",
+      `react@${options.reactVersion}`,
+      `react-dom@${options.reactDomVersion}`,
+      `@mdx-js/react@${options.mdxReactVersion}`,
+      options.coreTarball,
+      options.clientTarball,
+      options.nodeTarball,
+      options.cliTarball,
+    ],
+    {
+      cwd: options.appRoot,
+      env: {
+        PRESENTATION_WS_PORT: String(options.relayPort),
+      },
+    },
+  );
+  const installResult = await installProcess.completed;
+
+  if (installResult.code !== 0) {
+    throw new Error(`create-app npm install smoke failed:\n${installResult.stderr || installResult.stdout}`);
+  }
+
+  assertNoKnownPackagingErrors(createResult.stdout + createResult.stderr + installResult.stdout + installResult.stderr);
+
+  const buildProcess = spawnCommand("npm", ["run", "build"], {
+    cwd: options.appRoot,
+    env: {
+      PRESENTATION_WS_PORT: String(options.relayPort),
+    },
+  });
+  const buildResult = await buildProcess.completed;
+
+  if (buildResult.code !== 0) {
+    throw new Error(`create-app build smoke failed:\n${buildResult.stderr || buildResult.stdout}`);
+  }
+
+  const builtHtml = await readFile(path.join(options.appRoot, "dist/index.html"), "utf8");
+  if (!builtHtml.includes("My Slidev React Deck")) {
+    throw new Error("create-app build produced output, but dist/index.html is missing the starter deck title.");
+  }
+
+  const port = await findFreePort();
+  const devUrl = `http://localhost:${port}/`;
+  let devOutput = "";
+  const devProcess = spawnCommand("npm", ["run", "dev", "--", "--port", String(port)], {
+    cwd: options.appRoot,
+    env: {
+      PRESENTATION_WS_PORT: String(options.relayPort),
+    },
+    onStdout: (output) => {
+      devOutput += output;
+    },
+    onStderr: (output) => {
+      devOutput += output;
+    },
+  });
+
+  await waitForOutput(() => /Local:\s+http:\/\/localhost:/i.test(devOutput), 30_000);
+  assertNoKnownPackagingErrors(devOutput);
+
+  await assertDevServerInBrowser({
+    devUrl,
+    expectedTitle: "My Slidev React Deck",
+    devProcess,
+    devOutput: () => devOutput,
+  });
+}
+
 async function main() {
   const repoRoot = path.resolve(import.meta.dirname, "..");
   const packDir = await mkdtemp(path.join(tmpdir(), "slidev-react-pack-"));
   const npmInstallAppRoot = await mkdtemp(path.join(tmpdir(), "slidev-react-npm-install-"));
   const npmExecAppRoot = await mkdtemp(path.join(tmpdir(), "slidev-react-npm-exec-"));
+  const createAppRoot = path.join(await mkdtemp(path.join(tmpdir(), "slidev-react-create-app-")), "starter-deck");
+  const relayPort = await findFreePort();
   const rootPackageJson = readJson<PackageJson>(path.join(repoRoot, "package.json"));
   const reactVersion = rootPackageJson.dependencies?.react;
   const reactDomVersion = rootPackageJson.dependencies?.["react-dom"];
@@ -574,31 +760,70 @@ async function main() {
     throw new Error("Missing runtime peer versions needed for npm install smoke test.");
   }
 
-  const [coreTarball, clientTarball, nodeTarball, cliTarball] = await Promise.all([
+  const [createAppTarball, coreTarball, clientTarball, nodeTarball, cliTarball] = await Promise.all([
+    packPackage(path.join(repoRoot, "packages/create-app"), packDir),
     packPackage(path.join(repoRoot, "packages/core"), packDir),
     packPackage(path.join(repoRoot, "packages/client"), packDir),
     packPackage(path.join(repoRoot, "packages/node"), packDir),
     packPackage(path.join(repoRoot, "packages/cli"), packDir),
   ]);
 
-  await runInstalledCliSmoke({
-    appRoot: npmInstallAppRoot,
-    coreTarball,
-    clientTarball,
-    nodeTarball,
-    cliTarball,
-    reactVersion,
-    reactDomVersion,
-    mdxReactVersion,
+  const relay = await startPresentationRelay({
+    cwd: repoRoot,
+    port: relayPort,
   });
+  let relayShutdownError: Error | null = null;
 
-  await runExecCliSmoke({
-    appRoot: npmExecAppRoot,
-    coreTarball,
-    clientTarball,
-    nodeTarball,
-    cliTarball,
-  });
+  try {
+    await runCreateAppSmoke({
+      appRoot: createAppRoot,
+      createAppTarball,
+      coreTarball,
+      clientTarball,
+      nodeTarball,
+      cliTarball,
+      reactVersion,
+      reactDomVersion,
+      mdxReactVersion,
+      relayPort,
+    });
+
+    await runInstalledCliSmoke({
+      appRoot: npmInstallAppRoot,
+      coreTarball,
+      clientTarball,
+      nodeTarball,
+      cliTarball,
+      reactVersion,
+      reactDomVersion,
+      mdxReactVersion,
+      relayPort,
+    });
+
+    await runExecCliSmoke({
+      appRoot: npmExecAppRoot,
+      coreTarball,
+      clientTarball,
+      nodeTarball,
+      cliTarball,
+      relayPort,
+    });
+  } finally {
+    relay.relayProcess.child.kill("SIGINT");
+    const relayResult = await waitForCompletion(
+      relay.relayProcess.completed,
+      10_000,
+      `Timed out waiting for the presentation relay smoke server to shut down:\n${relay.relayOutput()}`,
+    );
+
+    if (relayResult.code !== 0 && relayResult.code !== null) {
+      relayShutdownError = new Error(`Presentation relay smoke server exited unexpectedly:\n${relayResult.stderr || relayResult.stdout}`);
+    }
+  }
+
+  if (relayShutdownError) {
+    throw relayShutdownError;
+  }
 }
 
 await main();

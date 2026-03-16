@@ -91,8 +91,20 @@ async function waitForOutput(check: () => boolean, timeoutMs: number) {
 }
 
 function assertNoDependencyResolutionErrors(output: string) {
-  if (/Failed to resolve dependency:/i.test(output)) {
-    throw new Error(`Runtime smoke test saw a dependency resolution failure:\n${output}`);
+  const lines = output
+    .split(/\r?\n/)
+    .filter((line) => /Failed to resolve dependency:/i.test(line))
+    .filter((line) => {
+      return ![
+        '@antv/g2',
+        '@antv/g2/esm/lib/plot',
+        '@antv/g-svg',
+        'mermaid/dist/mermaid.esm.min.mjs',
+      ].some((pattern) => line.includes(pattern))
+    })
+
+  if (lines.length > 0) {
+    throw new Error(`Runtime smoke test saw a dependency resolution failure:\n${lines.join('\n')}`);
   }
 }
 

@@ -45,13 +45,15 @@ This is a pnpm workspace monorepo with the following packages:
 
 | Package                     | Path                   | Description                                                    |
 | --------------------------- | ---------------------- | -------------------------------------------------------------- |
+| `create-slidev-react`       | `packages/create-app`  | Starter app scaffolding and recommended first-run entry        |
 | `@slidev-react/core`        | `packages/core`        | Pure presentation models, flow logic, and shared contracts     |
 | `@slidev-react/client`      | `packages/client`      | React app assembly, providers, presentation UI, themes, addons |
 | `@slidev-react/node`        | `packages/node`        | Node-side dev/build/export/lint entry points and servers       |
-| `@slidev-react/cli`         | `packages/cli`         | The `slidev-react` command-line interface                      |
+| `@slidev-react/cli`         | `packages/cli`         | Low-level command runner used by generated app scripts         |
+| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | The "absolutely" theme package                           |
 | `@slidev-react/theme-paper` | `packages/theme-paper` | The "paper" theme package                                      |
 
-The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Sub-packages under `packages/core`, `packages/node`, and `packages/cli` are publishable to npm via [Changesets](https://github.com/changesets/changesets).
+The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Publishable packages under `packages/` are released via [Changesets](https://github.com/changesets/changesets).
 
 ## Quick Start
 
@@ -60,14 +62,31 @@ The root `package.json` is `private: true` and wires the Vite dev server and top
 - Node.js `>=22`
 - pnpm `10`
 
-### Install and run
+### Create a deck
 
 ```bash
+npm create slidev-react@latest my-deck
+cd my-deck
 pnpm install
 pnpm dev
 ```
 
 Open the viewer at `http://localhost:5173/1` or the presenter at `http://localhost:5173/presenter/1`.
+
+The generated app includes:
+
+- `slides.mdx` with a minimal starter deck
+- built-in `g2 + mermaid` examples
+- `pnpm dev`, `pnpm build`, `pnpm export`, and `pnpm lint` scripts
+
+### Develop this repository
+
+If you are contributing to the monorepo itself instead of creating a deck app:
+
+```bash
+pnpm install
+pnpm dev
+```
 
 ## Scripts
 
@@ -323,6 +342,7 @@ layout: spotlight
 
 ```
 packages/
+  create-app/   → create-slidev-react     — starter app scaffolding
   core/         → @slidev-react/core     — models, flow, shared contracts
   client/       → @slidev-react/client   — React app, UI, themes, addons
     src/
@@ -332,7 +352,8 @@ packages/
       theme/    — theme registry, layouts, visual tokens
       ui/       — reusable components and MDX helpers
   node/         → @slidev-react/node     — dev/build/export/lint
-  cli/          → @slidev-react/cli      — CLI entry point
+  cli/          → @slidev-react/cli      — low-level command runner
+  theme-absolutely/ → @slidev-react/theme-absolutely — "absolutely" theme
   theme-paper/  → @slidev-react/theme-paper — "paper" theme
 ```
 

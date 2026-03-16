@@ -10,19 +10,13 @@ import {
   pluginCompileTimeSlides,
 } from "../artifacts/generateCompiledSlides.ts";
 import { pluginAddonsModule } from "../extensions/injectAddonsModule.ts";
+import { pluginPresentationConfigModule } from "../runtime/injectPresentationConfigModule.ts";
 import { loadClientRuntimeManifest } from "../runtime/runtimeManifest.ts";
 import { pluginThemeModule } from "../extensions/injectThemeModule.ts";
 import { pluginVirtualEntry } from "../runtime/virtualEntryPlugin.ts";
 import { resolveSlidesSourceFile } from "./slidesSourceFile.ts";
 
 const require = createRequire(import.meta.url);
-
-const prebundledPresentationDeps = [
-  "@antv/g2",
-  "@antv/g2/esm/lib/plot",
-  "@antv/g-svg",
-  "mermaid/dist/mermaid.esm.min.mjs",
-];
 
 const clientRuntimeRequire = createRequire(resolvePackageImport("@slidev-react/client/package.json"));
 
@@ -89,9 +83,6 @@ export function createSlidesViteConfig(options: {
         plugins: [tailwindcss()],
       },
     },
-    optimizeDeps: {
-      include: prebundledPresentationDeps,
-    },
     plugins: [
       pluginVirtualEntry({
         appRoot,
@@ -111,6 +102,7 @@ export function createSlidesViteConfig(options: {
         appRoot,
         slidesSourceFile,
       }),
+      pluginPresentationConfigModule(),
       react(),
     ],
     resolve: {

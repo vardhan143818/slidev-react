@@ -93,6 +93,17 @@ describe("resolvePresentationSession", () => {
     expect(location.search).toBe("");
     expect(session.viewerUrl).toBe("http://localhost:3000/2");
   });
+
+  it("enables the websocket relay by default for session routes", () => {
+    const { location } = installWindow("http://localhost:3000/4");
+
+    const session = resolvePresentationSession("deckhash");
+
+    expect(session.enabled).toBe(true);
+    expect(session.wsUrl).toBe("ws://localhost:4860/ws");
+    expect(location.pathname).toBe("/4");
+    expect(location.search).toBe("");
+  });
 });
 
 describe("presentation entry urls", () => {

@@ -1,6 +1,7 @@
 import type { PresentationRole, PresentationSyncMode } from "./types";
 import { buildRolePathFromPathname, buildStandalonePathFromPathname } from "./path";
 import { resolveSessionLocationState } from "./location";
+import presentationConfig from "virtual:slidev-react/presentation-config";
 
 export interface PresentationSession {
   enabled: boolean;
@@ -51,8 +52,12 @@ function parseWsUrl(value: string | null): string | null {
 }
 
 function createDefaultWsUrl(): string | null {
+  const { relay } = presentationConfig;
+  if (!relay.enabledByDefault) return null;
+  if (relay.url) return parseWsUrl(relay.url);
+
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  return parseWsUrl(`${protocol}//${window.location.hostname}:4860/ws`);
+  return parseWsUrl(`${protocol}//${window.location.hostname}:${relay.port}${relay.path}`);
 }
 
 function buildUrl(role: "presenter" | "viewer", slideNumber: number) {

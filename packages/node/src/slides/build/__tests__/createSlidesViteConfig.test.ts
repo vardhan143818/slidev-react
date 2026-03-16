@@ -13,17 +13,12 @@ function getAliasFindList() {
 }
 
 describe("createSlidesViteConfig", () => {
-  it("prebundles browser-heavy addon runtimes for dev startup", () => {
+  it("keeps dependency optimization on Vite defaults once runtime aliases are explicit", () => {
     const config = createSlidesViteConfig({
       appRoot: process.cwd(),
     });
 
-    expect(config.optimizeDeps?.include).toEqual([
-      "@antv/g2",
-      "@antv/g2/esm/lib/plot",
-      "@antv/g-svg",
-      "mermaid/dist/mermaid.esm.min.mjs",
-    ]);
+    expect(config.optimizeDeps).toBeUndefined();
   });
 
   it("aliases generated modules and self-contained runtime fallbacks", () => {
