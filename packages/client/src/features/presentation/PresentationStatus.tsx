@@ -24,7 +24,10 @@ import { useMemo, useState } from "react";
 import { useDraw } from "./draw/DrawProvider";
 import type { PresentationSession } from "./session";
 import type { PresentationSyncMode } from "./types";
-import type { PresentationSyncStatus, UsePresentationSyncResult } from "./usePresentationSync";
+import type {
+  PresentationSyncStatus,
+  UsePresentationSyncResult,
+} from './sync';
 import type { PresentationRecorderRuntime } from "./usePresentationRecorder";
 import type { WakeLockRuntime } from "./presenter/useWakeLock";
 import type { FullscreenRuntime } from "./presenter/useFullscreen";

@@ -3,28 +3,13 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { loadClientRuntimeManifest, type ClientRuntimeAddonManifestEntry } from "../runtime/runtimeManifest.ts";
+import type { ResolvedAddonExtension, ResolvedThemeExtension } from "./types.ts";
 
 const require = createRequire(import.meta.url);
 const LOCAL_DEFINITION_FILES = ["index.ts", "index.tsx", "index.js", "index.jsx"];
 const LOCAL_STYLE_FILE = "style.css";
 const THEME_PACKAGE_PREFIX = "theme-";
 const ADDON_PACKAGE_PREFIX = "addon-";
-
-export interface ResolvedThemeExtension {
-  id: string;
-  importPath: string;
-  styleImportPath?: string;
-  definitionFilePath?: string;
-  source: "local" | "package";
-}
-
-export interface ResolvedAddonExtension {
-  id: string;
-  importPath: string;
-  styleImportPath?: string;
-  definitionFilePath?: string;
-  source: "builtin" | "local" | "package";
-}
 
 function findDefinitionFile(rootDir: string) {
   for (const fileName of LOCAL_DEFINITION_FILES) {

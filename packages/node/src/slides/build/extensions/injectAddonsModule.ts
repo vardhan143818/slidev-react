@@ -1,6 +1,6 @@
 import type { Plugin } from "vite";
 import { readSlidesDeckExtensions } from "./deckExtensions.ts";
-import { resolveAddonExtension } from "./resolvedExtensions.ts";
+import { resolveAddonExtension } from "./resolveExtensions.ts";
 
 const VIRTUAL_ADDONS = "virtual:slidev-react/active-addons";
 const RESOLVED_VIRTUAL_ADDONS = "\0" + VIRTUAL_ADDONS;
@@ -56,7 +56,7 @@ function generateAddonsModuleCode(options: {
   ].join("\n");
 }
 
-export function pluginAddons(options: {
+export function pluginAddonsModule(options: {
   appRoot: string;
   slidesSourceFile: string;
 }): Plugin {

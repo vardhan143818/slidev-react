@@ -1,6 +1,6 @@
 import type { Plugin } from "vite";
 import { readSlidesDeckExtensions } from "./deckExtensions.ts";
-import { resolveThemeExtension } from "./resolvedExtensions.ts";
+import { resolveThemeExtension } from "./resolveExtensions.ts";
 
 const VIRTUAL_THEME = "virtual:slidev-react/active-theme";
 const RESOLVED_VIRTUAL = "\0" + VIRTUAL_THEME;
@@ -31,7 +31,7 @@ function generateThemeModuleCode(options: {
   ].join("\n");
 }
 
-export function pluginTheme(options: {
+export function pluginThemeModule(options: {
   appRoot: string;
   slidesSourceFile: string;
 }): Plugin {

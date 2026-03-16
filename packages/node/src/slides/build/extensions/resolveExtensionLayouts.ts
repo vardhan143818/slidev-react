@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import type { ResolvedAddonExtension, ResolvedThemeExtension } from "./resolvedExtensions.ts";
+import type { ResolvedAddonExtension, ResolvedThemeExtension } from "./types.ts";
 
 const require = createRequire(import.meta.url);
 

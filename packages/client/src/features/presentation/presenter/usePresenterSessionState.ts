@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { DrawStroke } from "../draw/DrawProvider"
-import { usePresentationSync } from "../usePresentationSync"
+import { usePresentationSync } from "../sync"
 import { usePresentationRecorder } from "../usePresentationRecorder"
 import type {
   PresentationCursorState,
   PresentationSharedState,
-  PresentationSyncMode,
 } from "../types"
 import type { PresentationSession } from "../session"
 import { buildPresentationSharedState, mapRemotePresentationPatch } from "./presentationSyncBridge"

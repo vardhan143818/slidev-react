@@ -8,9 +8,9 @@ import {
   generatedSlidesEntry,
   pluginCompileTimeSlides,
 } from "../artifacts/generateCompiledSlides.ts";
-import { pluginAddons } from "../extensions/addonsPlugin.ts";
+import { pluginAddonsModule } from "../extensions/injectAddonsModule.ts";
 import { loadClientRuntimeManifest } from "../runtime/runtimeManifest.ts";
-import { pluginTheme } from "../extensions/themePlugin.ts";
+import { pluginThemeModule } from "../extensions/injectThemeModule.ts";
 import { pluginVirtualEntry } from "../runtime/virtualEntryPlugin.ts";
 import { resolveSlidesSourceFile } from "./slidesSourceFile.ts";
 
@@ -46,11 +46,11 @@ export function createSlidesViteConfig(options: {
         appRoot,
         slidesSourceFile,
       }),
-      pluginAddons({
+      pluginAddonsModule({
         appRoot,
         slidesSourceFile,
       }),
-      pluginTheme({
+      pluginThemeModule({
         appRoot,
         slidesSourceFile,
       }),

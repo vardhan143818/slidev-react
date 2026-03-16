@@ -1,7 +1,7 @@
 import type { SlidesDocument } from "@slidev-react/core/slides/slides";
 import { layoutNames } from "@slidev-react/core/slides/layout";
-import { readAddonLayoutIds, readThemeLayoutIds } from "../build/extensions/extensionLayouts.ts";
-import { resolveAddonExtension, resolveThemeExtension } from "../build/extensions/resolvedExtensions.ts";
+import { readAddonLayoutIds, readThemeLayoutIds } from "../build/extensions/resolveExtensionLayouts.ts";
+import { resolveAddonExtension, resolveThemeExtension } from "../build/extensions/resolveExtensions.ts";
 
 function collectKnownLayouts() {
   return new Set<string>(layoutNames);
