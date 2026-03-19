@@ -1,4 +1,0 @@
-interface:
-  display_name: "Slidev React Diagnosis"
-  short_description: "Audit clarity, runtime boundaries, and stage fit"
-  default_prompt: "Use $slidev-react-clarity-diagnose to audit this repo for clarity, runtime boundaries, state ownership, evolution pressure, and refactor priorities."

